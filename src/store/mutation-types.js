@@ -1,1 +1,2 @@
 export const CHANGE_HEADER = 'CHANGE_HEADER'
+export const RECORD_USERINFO = 'RECORD_USERINFO'

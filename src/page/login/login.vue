@@ -98,7 +98,7 @@
         },
         methods: {
             ...mapMutations([
-                'RECORD_USERINFO',
+                'RECORD_USERINFO'
             ]),
             //是否显示密码
             changePassWordType(){
