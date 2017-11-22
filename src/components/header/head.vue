@@ -1,18 +1,15 @@
 <template>
     <header id='head_top'>
-        <slot name='logo'></slot>
-        <slot name='search'></slot>
+        
         <section class="head_goback" v-if="goBack" @click="$router.go(-1)">
             <span class="iconfont icon-fanhui title_text"></span>
         </section>
         <section class="title_head ellipsis" v-if="headTitle">
             <span class="title_text">{{headTitle}}</span>
         </section>
-
-        <slot name="edit"></slot>
-        <slot name="msite-title"></slot>
-        <slot name="changecity"></slot>
-        <slot name="changeLogin"></slot>
+        <div class="right">
+            <slot name='right'></slot>
+        </div>
     </header>
 </template>
 
@@ -91,5 +88,16 @@
             text-align: center;
             display: block;
         }
+    }
+    .right{
+        right: 0;
+        @include ct;
+        @include wh(10%,100%);
+        
+        text-align: center;
+        span{
+            @include sc(0.34rem, #fff);
+            line-height: 100%;
+        };
     }
 </style>

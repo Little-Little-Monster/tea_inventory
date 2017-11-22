@@ -16,6 +16,4 @@ export default {
         setStore('token', userInfo.token);
         setStore('menu', userInfo.menus);
     }
-
-
 }

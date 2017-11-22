@@ -1,14 +1,13 @@
 <template>
     <div>
-    	<head-top signin-up='msite' :headTitle="headTitle">
-
+    	<head-top signin-up='msite' goBack="true" head-title="门店管理">
+            <span slot="right" class="iconfont icon-jia" @click="addStore"></span>
     	</head-top>
 
         <div class="cneter-con">
-            <router-view></router-view>
+            
         </div>
 
-    	<foot-guide></foot-guide>
     </div>    
 </template>
 
@@ -16,7 +15,6 @@
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
 import headTop from 'src/components/header/head'
-import footGuide from 'src/components/footer/footGuide'
 
 export default {
 	data(){
@@ -29,7 +27,6 @@ export default {
     },
     components: {
     	headTop,
-    	footGuide,
     },
     computed: {
 		...mapState([
@@ -38,8 +35,11 @@ export default {
     },
     methods: {
     	...mapMutations([
-    		'RECORD_ADDRESS', 'SAVE_GEOHASH'
-    	]),
+
+        ]),
+        addStore(){
+            console.log('333')
+        }
     },
     watch: {
 

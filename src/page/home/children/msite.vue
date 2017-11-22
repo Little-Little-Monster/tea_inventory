@@ -129,12 +129,11 @@ export default {
 		}
 	}
 	.menu-con{
-		height: 6.0rem;
+		min-height: 6.1rem;
 		background: #fff;
-		padding-bottom: .89rem;
 		display: flex;
 		flex-wrap: wrap;
-		overflow: auto;
+		// overflow: auto;
 		.menu-item{
 			width:25%;
 			padding-top:5%;

@@ -2,12 +2,18 @@ import App from '../App'
 
 const login = r => require.ensure([], () => r(require('../page/login/login')), 'login')
 const forget = r => require.ensure([], () => r(require('../page/forget/forget')), 'forget')
+
 const home = r => require.ensure([], () => r(require('../page/home/home')), 'home')
 const msite = r => require.ensure([], () => r(require('../page/home/children/msite')), 'msite')
 const wirehouse = r => require.ensure([], () => r(require('../page/home/children/wirehouse')), 'wirehouse')
 const sensus = r => require.ensure([], () => r(require('../page/home/children/sensus')), 'sensus')
 const sale = r => require.ensure([], () => r(require('../page/home/children/sale')), 'sale')
 const basic = r => require.ensure([], () => r(require('../page/home/children/basic')), 'basic')
+
+
+const store = r => require.ensure([], () => r(require('../page/storeManage/store')), 'store')
+const storeOption = r => require.ensure([], () => r(require('../page/storeManage/storeOption')), 'storeOption')
+
 
 
 
@@ -66,6 +72,16 @@ export default [{
                     component: basic
                 }
             ]
+        },
+        {
+            path: '/store',
+            name: 'store',
+            component: store
+        },
+        {
+            path: '/storeOption',
+            name: 'storeOption',
+            component: storeOption
         }
     ]
 }]

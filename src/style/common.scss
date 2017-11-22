@@ -1,3 +1,4 @@
+@import "./mixin.scss";
 body,
 div,
 span,
@@ -86,8 +87,6 @@ textarea {
 
 html,
 body {
-    height: 100%;
-    width: 100%;
     font-size: 0.32rem;
     color: #444;
     background-color: #F5F5F5;
@@ -169,7 +168,12 @@ input {
 }
 
 .paddingTop {
-    padding-top: 0.88rem;
+    margin-top: 0.88rem;
+}
+
+.jiantou {
+    @include ct;
+    right: .1rem;
 }
 
 @keyframes backOpacity {
