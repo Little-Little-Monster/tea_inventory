@@ -76,6 +76,13 @@
                 isLogin:true//是否是登陆
             }
         },
+        beforeRouteEnter: (to, from, next) => {
+            if(sessionStorage.getItem('token')){
+                next({path:'/home/msite'});
+            }else{
+                next();
+            }
+        },
         created(){
 
         },
@@ -140,7 +147,7 @@
                     this.alertText = this.userInfo.message;
                 }else{
                     this.RECORD_USERINFO(this.userInfo.data);
-                    this.$router.push({path:"/msite"});
+                    this.$router.push({name:"msite"});
                 }
             },
             //发送注册信息

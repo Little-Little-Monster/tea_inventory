@@ -1,8 +1,6 @@
 <template>
     <div>
-    	<head-top signin-up='msite' head-title="销售"></head-top>
 
-    	<foot-guide></foot-guide>
     </div>    
 </template>
 
@@ -19,7 +17,7 @@ export default {
         }
     },
     async beforeMount(){
-		this.menuList = getStore("menu");
+        this.CHANGE_HEADER('销售')
     },
     mounted(){
 
@@ -33,8 +31,8 @@ export default {
     },
     methods: {
     	...mapMutations([
-    		'RECORD_ADDRESS', 'SAVE_GEOHASH'
-    	]),
+            'CHANGE_HEADER'
+        ])
     },
     watch: {
 

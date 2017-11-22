@@ -1,22 +1,22 @@
 <template>
     <section id='foot_guide'>
-        <section @click = "gotoAddress({path: '/msite'})" class="guide_item">
+        <section @click = "gotoAddress({name: 'msite'})" class="guide_item">
             <div class="guide-icon iconfont icon-liubianxing"></div>
             <span>首页</span>
         </section>
-        <section @click = "gotoAddress({path: '/wirehouse'})" class="guide_item">
+        <section @click = "gotoAddress({name: 'wirehouse'})" class="guide_item">
             <div class="guide-icon iconfont icon-kucun"></div>
             <span>库存</span>
         </section>
-        <section @click = "gotoAddress({path: '/sale'})" class="guide_item">
+        <section @click = "gotoAddress({name: 'sale'})" class="guide_item">
             <div class="guide-icon iconfont icon-xiaoshou"></div>
             <span>销售</span>
         </section>
-        <section @click = "gotoAddress({path: '/sensus'})" class="guide_item">
+        <section @click = "gotoAddress({name: 'sensus'})" class="guide_item">
             <div class="guide-icon iconfont icon-shapecopy25"></div>
             <span>统计</span>
         </section>
-        <section @click = "gotoAddress({path: '/basic'})" class="guide_item">
+        <section @click = "gotoAddress({name: 'basic'})" class="guide_item">
             <div class="guide-icon iconfont icon-jichu"></div>
             <span>基础</span>
         </section>

@@ -1,8 +1,6 @@
 <template>
     <div>
-    	<head-top signin-up='msite' head-title="基础"></head-top>
 
-    	<foot-guide></foot-guide>
     </div>    
 </template>
 
@@ -19,10 +17,10 @@ export default {
         }
     },
     async beforeMount(){
-		this.menuList = getStore("menu");
+        this.CHANGE_HEADER('仓库')
     },
     mounted(){
-
+        
     },
     components: {
     	headTop,
@@ -33,7 +31,7 @@ export default {
     },
     methods: {
     	...mapMutations([
-    		'RECORD_ADDRESS', 'SAVE_GEOHASH'
+    		'CHANGE_HEADER'
     	]),
     },
     watch: {

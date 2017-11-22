@@ -1,13 +1,17 @@
 <template>
     <div>
-    	<head-top  head-title="统计"></head-top>
+    	<head-top signin-up='msite' :headTitle="headTitle">
+
+    	</head-top>
+
+    	<router-view></router-view>
 
     	<foot-guide></foot-guide>
     </div>    
 </template>
 
 <script>
-import {mapMutations} from 'vuex'
+import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
 import headTop from 'src/components/header/head'
 import footGuide from 'src/components/footer/footGuide'
@@ -15,11 +19,8 @@ import footGuide from 'src/components/footer/footGuide'
 export default {
 	data(){
         return {
-			menuList:null,//菜单列表
+
         }
-    },
-    async beforeMount(){
-		this.menuList = getStore("menu");
     },
     mounted(){
 
@@ -29,7 +30,9 @@ export default {
     	footGuide,
     },
     computed: {
-
+		...mapState([
+			'headTitle'
+		])
     },
     methods: {
     	...mapMutations([
@@ -45,6 +48,5 @@ export default {
 
 <style lang="scss" scoped>
     @import 'src/style/mixin';
-	
 
 </style>

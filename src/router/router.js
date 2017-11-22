@@ -1,12 +1,13 @@
 import App from '../App'
 
-const msite = r => require.ensure([], () => r(require('../page/msite/msite')), 'msite')
 const login = r => require.ensure([], () => r(require('../page/login/login')), 'login')
 const forget = r => require.ensure([], () => r(require('../page/forget/forget')), 'forget')
-const wirehouse = r => require.ensure([], () => r(require('../page/wireHouse/wirehouse')), 'wirehouse')
-const sensus = r => require.ensure([], () => r(require('../page/sensus/sensus')), 'sensus')
-const sale = r => require.ensure([], () => r(require('../page/sale/sale')), 'sale')
-const basic = r => require.ensure([], () => r(require('../page/basic/basic')), 'basic')
+const home = r => require.ensure([], () => r(require('../page/home/home')), 'home')
+const msite = r => require.ensure([], () => r(require('../page/home/children/msite')), 'msite')
+const wirehouse = r => require.ensure([], () => r(require('../page/home/children/wirehouse')), 'wirehouse')
+const sensus = r => require.ensure([], () => r(require('../page/home/children/sensus')), 'sensus')
+const sale = r => require.ensure([], () => r(require('../page/home/children/sale')), 'sale')
+const basic = r => require.ensure([], () => r(require('../page/home/children/basic')), 'basic')
 
 
 
@@ -19,12 +20,6 @@ export default [{
             path: '',
             redirect: '/login'
         },
-        //项目首页
-        {
-            path: '/msite',
-            component: msite,
-            meta: { keepAlive: true },
-        },
         //登录注册页
         {
             path: '/login',
@@ -35,25 +30,42 @@ export default [{
             path: '/forget',
             component: forget
         },
-        //库存查看（主菜单）
+        //主界面
         {
-            path: '/wirehouse',
-            component: wirehouse
-        },
-        //统计查看（主菜单）
-        {
-            path: '/sensus',
-            component: sensus
-        },
-        //销售查看（主菜单）
-        {
-            path: '/sale',
-            component: sale
-        },
-        //基础查看（主菜单）
-        {
-            path: '/basic',
-            component: basic
-        },
+            path: '/home',
+            component: home,
+            children: [
+                //首页（主菜单）
+                {
+                    name: 'msite',
+                    path: 'msite',
+                    component: msite
+                },
+                //库存查看（主菜单）
+                {
+                    name: 'wirehouse',
+                    path: 'wirehouse',
+                    component: wirehouse
+                },
+                //统计查看（主菜单）
+                {
+                    name: 'sensus',
+                    path: 'sensus',
+                    component: sensus
+                },
+                //销售查看（主菜单）
+                {
+                    name: 'sale',
+                    path: 'sale',
+                    component: sale
+                },
+                //基础查看（主菜单）
+                {
+                    name: 'basic',
+                    path: 'basic',
+                    component: basic
+                }
+            ]
+        }
     ]
 }]

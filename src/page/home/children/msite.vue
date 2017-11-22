@@ -1,8 +1,5 @@
 <template>
     <div>
-    	<head-top signin-up='msite' head-title="茶叶进销存管理系统">
-
-    	</head-top>
     	<nav class="msite_nav paddingTop">
     		<div class="swiper-container">
 		        <div class="swiper-wrapper">
@@ -32,7 +29,6 @@
 				<p>{{menu.name}}</p>
 			</div>
     	</div>
-    	<foot-guide></foot-guide>
     </div>    
 </template>
 
@@ -54,6 +50,7 @@ export default {
     },
     async beforeMount(){
 		this.menuList = getStore("menu");
+		this.CHANGE_HEADER('茶叶进销存管理系统')
     },
     mounted(){
 
@@ -68,7 +65,7 @@ export default {
     },
     methods: {
     	...mapMutations([
-    		'RECORD_ADDRESS', 'SAVE_GEOHASH'
+    		'CHANGE_HEADER'
     	]),
     },
     watch: {
