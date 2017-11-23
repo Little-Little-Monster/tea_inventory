@@ -29,6 +29,11 @@ var sendLogin = (code, mobile, validate_token) => fetch('/v1/login/app_mobile', 
     validate_token
 }, 'POST');
 
+/**
+ * 添加/更新门店列表
+ */
+
+export const storehandel = (store, userId) => fetch('/api/invoicing/store/' + userId + '/handler', store, 'post');
 
 /**
  * 获取门店列表

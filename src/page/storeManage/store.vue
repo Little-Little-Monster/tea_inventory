@@ -8,7 +8,7 @@
         <div class="cneter-con paddingTop">
             <div class="store-list list" v-for="list in storeList">
                 <span>{{list.storeName}}</span>
-                <em class="list-option iconfont icon-bianji"> &nbsp;编辑</em>
+                <em class="list-option iconfont icon-bianji" @click="$router.push({name:'storeOption',query:list})"> &nbsp;编辑</em>
             </div>
         </div>
 

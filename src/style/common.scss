@@ -176,6 +176,16 @@ input {
     right: .1rem;
 }
 
+.required {
+    color: red;
+}
+
+.bottom {
+    position: fixed;
+    bottom: 0;
+    @include wh(100%, 1rem);
+}
+
 //列表样式
 .list {
     @include wh(100%, 1rem);
@@ -183,7 +193,7 @@ input {
     background: #fff;
     padding-left: .4rem;
     position: relative;
-    span {
+    &>span {
         line-height: 1rem;
     }
     .list-option {
