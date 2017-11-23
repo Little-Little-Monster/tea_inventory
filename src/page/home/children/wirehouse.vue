@@ -1,7 +1,20 @@
 <template>
-    <div>
-
-    </div>    
+    <div class="wirehouse paddingTop">
+      <ul class="wirehouse_ul">
+        <li>
+          <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>库存查询</div>
+          <div class="li_right">库存状况<i class="iconfont icon-qianjin"></i></div>
+        </li>
+        <li>
+          <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>库存查询</div>
+          <div class="li_right">库存状况<i class="iconfont icon-qianjin"></i></div>
+        </li>
+        <li>
+          <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>库存查询</div>
+          <div class="li_right">库存状况<i class="iconfont icon-qianjin"></i></div>
+        </li>
+      </ul>
+    </div>
 </template>
 
 <script>
@@ -20,7 +33,7 @@ export default {
         this.CHANGE_HEADER('仓库')
     },
     mounted(){
-        
+
     },
     components: {
     	headTop,
@@ -42,7 +55,24 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-    @import 'src/style/mixin';
-	
+    @import '../../../style/mixin';
+    .wirehouse{
+      .wirehouse_ul{
+        @include same_ul_style;
+        li{
+          padding-left:0.4rem;
+          .li_left{
+            i{
+              margin-right: 0.43rem;
+            }
+          }
+          .li_right{
+            i{
+              margin-left: 0.15rem;
+            }
+          }
+        }
+      }
+    }
 
 </style>
