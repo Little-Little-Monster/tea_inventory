@@ -192,6 +192,7 @@ input {
     background: #fff;
     padding-left: .4rem;
     position: relative;
+    overflow: hidden;
     &>span {
         line-height: 1rem;
     }

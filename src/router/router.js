@@ -14,6 +14,9 @@ const basic = r => require.ensure([], () => r(require('../page/home/children/bas
 const store = r => require.ensure([], () => r(require('../page/storeManage/store')), 'store')
 const storeOption = r => require.ensure([], () => r(require('../page/storeManage/storeOption')), 'storeOption')
 
+const worker = r => require.ensure([], () => r(require('../page/workerManage/worker')), 'worker')
+const workerOption = r => require.ensure([], () => r(require('../page/workerManage/workerOption')), 'workerOption')
+
 
 
 
@@ -82,6 +85,16 @@ export default [{
             path: '/storeOption',
             name: 'storeOption',
             component: storeOption
+        },
+        {
+            path: '/worker',
+            name: 'worker',
+            component: worker
+        },
+        {
+            path: '/workerOption',
+            name: 'workerOption',
+            component: workerOption
         }
     ]
 }]

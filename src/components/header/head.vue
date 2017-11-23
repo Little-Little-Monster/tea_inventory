@@ -90,7 +90,7 @@
         }
     }
     .right{
-        right: 0;
+        right: .2rem;
         @include ct;
         @include wh(10%,100%);
         

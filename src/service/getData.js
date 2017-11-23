@@ -43,6 +43,26 @@ export const getStoreDetail = (userId) => fetch('/api/invoicing/store/query/list
     userId
 });
 
+/**
+ * 获取员工列表
+ */
+
+export const getWorkerList = (userId) => fetch('/api/invoicing/' + userId + '/employee/query/list');
+
+/**
+ * 添加/保存员工
+ */
+
+export const workerhandel = (userId, worker) => fetch('/api/invoicing/' + userId + '/employee/handler', worker, 'POST');
+
+
+
+/**
+ * 获取角色列表
+ */
+
+export const getrolelist = (userId) => fetch('/api/invoicing/role/query/list', { userId });
+
 
 /**
  * 账号密码登录
