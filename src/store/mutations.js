@@ -12,8 +12,8 @@ export default {
         state.headTitle = headTitle;
     },
     [RECORD_USERINFO](state, userInfo) {
-        setStore('userInfo', userInfo);
-        setStore('token', userInfo.token);
+        setStore('userInfo', userInfo.user);
+        setStore('token', userInfo.user.token);
         setStore('menu', userInfo.menus);
     }
 }
