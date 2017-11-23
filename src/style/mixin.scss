@@ -72,3 +72,22 @@ $fc:#F1F1F1;
     display: flex;
     justify-content: $type;
 }
+@mixin same_ul_style{
+  li{
+    height: 1.4rem;
+    background: #fff;
+    margin-bottom: 0.1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0.22rem 0 0.45rem;
+    .li_left{
+      font-size: 0.3rem;
+      color: #444;
+    }
+    .li_right{
+      font-size: 0.26rem;
+      color: #ccc;
+    }
+  }
+}
