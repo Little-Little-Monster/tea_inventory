@@ -1,11 +1,13 @@
 <template>
     <div>
-    	<head-top signin-up='msite' :headTitle="'添加门店'">
+    	<head-top goBack="true" :headTitle="'添加门店'">
 
     	</head-top>
 
-        <div class="cneter-con">
-            <router-view></router-view>
+        <div class="cneter-con paddingTop">
+            <div class="list">
+                
+            </div>
         </div>
 
     </div>    

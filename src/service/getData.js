@@ -34,7 +34,9 @@ var sendLogin = (code, mobile, validate_token) => fetch('/v1/login/app_mobile', 
  * 获取门店列表
  */
 
-export const getStoreDetail = (userId) => fetch('/api/invoicing/store/query/list');
+export const getStoreDetail = (userId) => fetch('/api/invoicing/store/query/list', {
+    userId
+});
 
 
 /**

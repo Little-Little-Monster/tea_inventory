@@ -1,11 +1,15 @@
 <template>
     <div>
     	<head-top signin-up='msite' goBack="true" head-title="门店管理">
-            <span slot="right" class="iconfont icon-jia" @click="addStore"></span>
+            <router-link slot="right" class="iconfont icon-jia" :to="{name:'storeOption'}"></router-link>
+            <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     	</head-top>
 
-        <div class="cneter-con">
-            
+        <div class="cneter-con paddingTop">
+            <div class="store-list list" v-for="list in storeList">
+                <span>{{list.storeName}}</span>
+                <em class="list-option iconfont icon-bianji"> &nbsp;编辑</em>
+            </div>
         </div>
 
     </div>    
@@ -20,12 +24,13 @@ import headTop from 'src/components/header/head'
 export default {
 	data(){
         return {
-            userId:getStore('userInfo').id
+            userId:getStore('userInfo').id,
+            storeList:null
         }
     },
     created(){
         getStoreDetail(this.userId).then((res)=>{
-            console.log(res)
+            this.storeList = res.data;
         }).catch((err)=>{
             console.log(err)
         })
@@ -45,11 +50,6 @@ export default {
     	...mapMutations([
 
         ]),
-        addStore(){
-            console.log('333')
-        }
-    },
-    watch: {
 
     }
 }
@@ -58,8 +58,4 @@ export default {
 
 <style lang="scss" scoped>
     @import 'src/style/mixin';
-    .cneter-con{
-        margin-bottom:0.9rem;
-    }
-
 </style>

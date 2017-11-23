@@ -176,6 +176,23 @@ input {
     right: .1rem;
 }
 
+//列表样式
+.list {
+    @include wh(100%, 1rem);
+    margin-bottom: .02rem;
+    background: #fff;
+    padding-left: .4rem;
+    position: relative;
+    span {
+        line-height: 1rem;
+    }
+    .list-option {
+        @include ct;
+        right: .2rem;
+        @include sc(.28rem, $text_light)
+    }
+}
+
 @keyframes backOpacity {
     0% {
         opacity: 1
