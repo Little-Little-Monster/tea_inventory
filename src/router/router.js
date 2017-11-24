@@ -14,74 +14,103 @@ const basic = r => require.ensure([], () => r(require('../page/home/children/bas
 const store = r => require.ensure([], () => r(require('../page/storeManage/store')), 'store')
 const storeOption = r => require.ensure([], () => r(require('../page/storeManage/storeOption')), 'storeOption')
 
+const supplierList = r => require.ensure([], () => r(require('../page/supplierManage/supplier-list')), 'supplierList')
+const addEditUpplier = r => require.ensure([], () => r(require('../page/supplierManage/add-edit-upplier')), 'addEditUpplier')
+const supplierDetail = r => require.ensure([], () => r(require('../page/supplierManage/supplier-detail')), 'supplierDetail')
 
-
+const storehouseList = r => require.ensure([], () => r(require('../page/storehouseManage/storehouse-list')), 'storehouseList')
+const addEditStorehouse = r => require.ensure([], () => r(require('../page/storehouseManage/add-edit-storehouse')), 'addEditStorehouse')
 
 export default [{
-    path: '/',
-    component: App, //顶层路由，对应index.html
-    children: [ //二级路由。对应App.vue
-        //地址为空时跳转login页面
+  path: '/',
+  component: App, //顶层路由，对应index.html
+  children: [ //二级路由。对应App.vue
+    //地址为空时跳转login页面
+    {
+      path: '',
+      redirect: '/login'
+    },
+    //登录注册页
+    {
+      path: '/login',
+      component: login
+    },
+    //修改密码页
+    {
+      path: '/forget',
+      component: forget
+    },
+    //主界面
+    {
+      path: '/home',
+      component: home,
+      children: [
+        //首页（主菜单）
         {
-            path: '',
-            redirect: '/login'
+          name: 'msite',
+          path: 'msite',
+          component: msite
         },
-        //登录注册页
+        //库存查看（主菜单）
         {
-            path: '/login',
-            component: login
+          name: 'wirehouse',
+          path: 'wirehouse',
+          component: wirehouse
         },
-        //修改密码页
+        //统计查看（主菜单）
         {
-            path: '/forget',
-            component: forget
+          name: 'sensus',
+          path: 'sensus',
+          component: sensus
         },
-        //主界面
+        //销售查看（主菜单）
         {
-            path: '/home',
-            component: home,
-            children: [
-                //首页（主菜单）
-                {
-                    name: 'msite',
-                    path: 'msite',
-                    component: msite
-                },
-                //库存查看（主菜单）
-                {
-                    name: 'wirehouse',
-                    path: 'wirehouse',
-                    component: wirehouse
-                },
-                //统计查看（主菜单）
-                {
-                    name: 'sensus',
-                    path: 'sensus',
-                    component: sensus
-                },
-                //销售查看（主菜单）
-                {
-                    name: 'sale',
-                    path: 'sale',
-                    component: sale
-                },
-                //基础查看（主菜单）
-                {
-                    name: 'basic',
-                    path: 'basic',
-                    component: basic
-                }
-            ]
+          name: 'sale',
+          path: 'sale',
+          component: sale
         },
+        //基础查看（主菜单）
         {
-            path: '/store',
-            name: 'store',
-            component: store
-        },
-        {
-            path: '/storeOption',
-            name: 'storeOption',
-            component: storeOption
+          name: 'basic',
+          path: 'basic',
+          component: basic
         }
-    ]
+      ]
+    },
+    {
+      path: '/store',
+      name: 'store',
+      component: store
+    },
+    {
+      path: '/storeOption',
+      name: 'storeOption',
+      component: storeOption
+    },
+    {
+      path: '/supplierList',
+      name: 'supplierList',
+      component: supplierList
+    },
+    {
+      path: '/addEditUpplier',
+      name: 'addEditUpplier',
+      component: addEditUpplier
+    },
+    {
+      path: '/supplierDetail',
+      name: 'supplierDetail',
+      component: supplierDetail
+    },
+    {
+      path: '/storehouseList',
+      name: 'storehouseList',
+      component: storehouseList
+    },
+    {
+      path: '/addEditStorehouse',
+      name: 'addEditStorehouse',
+      component: addEditStorehouse
+    }
+  ]
 }]

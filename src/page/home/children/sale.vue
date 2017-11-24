@@ -13,6 +13,34 @@
         <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>销售单</div>
         <div class="li_right">卖货、出库 <i class="iconfont icon-qianjin"></i></div>
       </li>
+      <li>
+        <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>销售单</div>
+        <div class="li_right">卖货、出库 <i class="iconfont icon-qianjin"></i></div>
+      </li>
+      <li>
+        <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>销售单</div>
+        <div class="li_right">卖货、出库 <i class="iconfont icon-qianjin"></i></div>
+      </li>
+      <li>
+        <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>销售单</div>
+        <div class="li_right">卖货、出库 <i class="iconfont icon-qianjin"></i></div>
+      </li>
+      <li>
+        <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>销售单</div>
+        <div class="li_right">卖货、出库 <i class="iconfont icon-qianjin"></i></div>
+      </li>
+      <li>
+        <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>销售单</div>
+        <div class="li_right">卖货、出库 <i class="iconfont icon-qianjin"></i></div>
+      </li>
+      <li>
+        <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>销售单</div>
+        <div class="li_right">卖货、出库 <i class="iconfont icon-qianjin"></i></div>
+      </li>
+      <li>
+        <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>销售单</div>
+        <div class="li_right">卖货、出库 <i class="iconfont icon-qianjin"></i></div>
+      </li>
     </ul>
   </div>
 </template>
@@ -49,18 +77,19 @@
 </script>
 <style lang="scss" scoped>
   @import '../../../style/mixin';
-  .sale{
-    .sale_ul{
+
+  .sale {
+    .sale_ul {
       @include same_ul_style;
-      li{
-        padding-left:0.4rem;
-        .li_left{
-          i{
+      li {
+        padding-left: 0.4rem;
+        .li_left {
+          i {
             margin-right: 0.38rem;
           }
         }
-        .li_right{
-          i{
+        .li_right {
+          i {
             margin-left: 0.15rem;
           }
         }
