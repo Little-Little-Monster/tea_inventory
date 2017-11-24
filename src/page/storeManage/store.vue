@@ -11,7 +11,7 @@
             <div class="store-list list" v-for="list in storeList">
                 <span>{{list.storeName}}</span>
                 <em v-if="!$route.query.getStore" class="list-option iconfont icon-bianji" @click="$router.push({name:'storeOption',query:list})"> &nbsp;编辑</em>
-                <em v-if="$route.query.getStore" class="list-option iconfont check-icon" :class="{'icon-radio-checked':list.checked,'icon-danxuanweizhong':!list.checked}" @click="list.checked?list.checked=false:list.checked=true"></em>
+                <em v-if="$route.query.getStore" class="list-option iconfont check-icon" :class="{'icon-radio-checked':list.selected,'icon-danxuanweizhong':!list.selected}" @click="list.selected?list.selected=false:list.selected=true"></em>
             </div>
         </div>
 
@@ -38,18 +38,21 @@ export default {
             if(this.$route.query.getStore){
                 this.storeIdList = JSON.parse(this.$route.query.worker).storeIds;
                 this.storeList.forEach(element => {
-                this.$set(element,'checked',false);
+                this.$set(element,'selected',false);
                     
                     if(this.storeIdList){
                         this.storeIdList.forEach(el=>{
                             if(el.id==element.id){
-                                this.$set(element,'checked',true);
+                                this.$set(element,'selected',true);
                             }
                         })
                     }
                    
                 });
             }
+            // if(this.$route.query.storeList){
+            //      this.storeList = JSON.parse(this.$route.query.storeList);
+            // }
         }).catch((err)=>{
             console.log(err)
         })
@@ -72,14 +75,22 @@ export default {
         pushStore(){
             this.storeIds=[];
             this.storeList.forEach(el=>{
-               if(el.checked){
+               if(el.selected){
                    this.storeIds.push({
                        id:el.id,
                        storeName:el.storeName
                    })
                }
            }) 
-           this.$router.push({name:'workerOption',query:{worker:this.$route.query.worker,storeIds:JSON.stringify(this.storeIds)}})
+           this.$router.push(
+               {
+                name:'workerOption',
+                query:{
+                    worker:this.$route.query.worker,
+                    storeIds:JSON.stringify(this.storeIds),
+                    employeeId:this.$route.query.employeeId
+                }
+             })
         }
 
     }

@@ -17,6 +17,11 @@ const storeOption = r => require.ensure([], () => r(require('../page/storeManage
 const worker = r => require.ensure([], () => r(require('../page/workerManage/worker')), 'worker')
 const workerOption = r => require.ensure([], () => r(require('../page/workerManage/workerOption')), 'workerOption')
 
+const addGoods = r => require.ensure([], () => r(require('../page/goods/addGoods')), 'addGoods')
+const goodsList = r => require.ensure([], () => r(require('../page/goods/goodsList')), 'goodsList')
+const goodsAttrList = r => require.ensure([], () => r(require('../page/goods/goodsAttrList')), 'goodsAttrList')
+const goodsAddAttr = r => require.ensure([], () => r(require('../page/goods/addAttr')), 'goodsAddAttr')
+
 
 
 
@@ -95,6 +100,27 @@ export default [{
             path: '/workerOption',
             name: 'workerOption',
             component: workerOption
+        },
+        {
+            path: '/goods',
+            name: 'goodsManage',
+            component: goodsList
+        },
+        {
+            path: '/addGoods',
+            name: 'addGoods',
+            component: addGoods
+        },
+        {
+            path: '/goods/attr',
+            name: 'goodsAttrList',
+            component: goodsAttrList
+        },
+        {
+            path: '/goods/addAttr',
+            name: 'goodsAddAttr',
+            component: goodsAddAttr
         }
+
     ]
 }]

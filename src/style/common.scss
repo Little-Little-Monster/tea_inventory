@@ -185,6 +185,11 @@ input {
     @include wh(100%, 1rem);
 }
 
+.goback {
+    @include wh(.6rem, 100%);
+    text-align: center;
+}
+
 //列表样式
 .list {
     @include wh(100%, 1rem);

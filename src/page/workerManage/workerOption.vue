@@ -1,8 +1,11 @@
 <template>
     <div>
-    	<head-top goBack="true" :headTitle="$route.query.employeeId?'编辑员工':'添加员工'">
+    	<head-top goBack="" :headTitle="$route.query.employeeId?'编辑员工':'添加员工'">
             <div slot="right" >
                 <span class="save" @click="saveWorker">保存</span>
+            </div>
+            <div slot="back" class="goback" @click="$router.push({name:'worker'})" >
+                <span class="iconfont icon-fanhui title_text"></span>
             </div>
     	</head-top>
 
@@ -10,7 +13,7 @@
             <div class="list">
                 <em class="required">*</em>
                 <span>账号</span>
-                <input type="text" placeholder="由数字或字母组成，用于员工登录" v-model="worker.account">
+                <input type="text" maxlength="16" placeholder="由数字或字母组成，用于员工登录" v-model="worker.account">
             </div>
             <div class="list">
                 <em class="required">*</em>
@@ -19,6 +22,10 @@
             </div>
             <div class="list">
                 <em class="required">*</em>
+                <span>电话</span>
+                <input type="text" placeholder="请输入联系电话" v-model="worker.mobile">
+            </div>
+            <div class="list">
                 <span>性别</span>
                 <em class='list-option sex-con'>
                     <i class="iconfont " :class="{'icon-radio-checked':worker.sex==1,'icon-danxuanweizhong':worker.sex==0}" @click="worker.sex=1">男</i>
@@ -26,23 +33,24 @@
                 </em>
             </div>
             <div class="list worker-name">
-                <em class="required">*</em>
                 <span>年龄</span>
                 <input type="number" placeholder="请输入年龄" v-model="worker.age">
             </div>
-            <div class="list">
+            <div class="list" v-if="!employeeId">
+                <em class="required">*</em>
                 <span>密码</span>
-                <input type="text" placeholder="请输入密码" v-model="worker.password">
+                <input type="password" placeholder="请输入密码" v-model="worker.password">
             </div>
-            <div class="list">
+            <div class="list" v-if="!employeeId">
+                <em class="required">*</em>
                 <span>确认密码</span>
-                <input type="text" placeholder="请输入确认密码" v-model="secondAccount">
+                <input type="password" placeholder="请输入确认密码" v-model="secondPwd">
             </div>
-            <div class="list">
+            <div class="list" @click="worker.status==0?worker.status=1:worker.status=0">
                 <span>账户是否启用</span>
-                <em class="user-satus list-option iconfont " :class="{'icon-radio-checked':worker.status==1,'icon-danxuanweizhong':worker.status==0}" @click="worker.status==0?worker.status=1:worker.status=0"></em>
+                <em class="user-satus list-option iconfont " :class="{'icon-radio-checked':worker.status==1,'icon-danxuanweizhong':worker.status==0}"></em>
             </div>
-            <div class="list" @click="$router.push({name:'store',query:{'getStore':true,'worker':JSON.stringify(worker)}})">
+            <div class="list" @click="goStore">
                 <span>门店</span>
                 <em class="store-name ellipsis">
                     <i v-for="store in worker.storeIds">{{store.storeName}}，</i> 
@@ -51,12 +59,12 @@
             </div>
             <div class=" memo">
                 <span>备注</span><br>
-                <textarea placeholder="请输入备注信息" ></textarea>
+                <textarea placeholder="请输入备注信息" v-model="worker.memo"></textarea>
             </div>
             <p class="role-tit">所属角色</p>
             <div class="role-list">
-                <div class="role" v-for="role in roleList">
-                    <em class="iconfont" :class="{'icon-radio-checked':role.checked,'icon-danxuanweizhong':!role.checked}" @click="role.checked?role.checked=false:role.checked=true"></em>
+                <div class="role" v-for="role in roleList" @click="role.selected?role.selected=false:role.selected=true">
+                    <em class="iconfont" :class="{'icon-radio-checked':role.selected,'icon-danxuanweizhong':!role.selected}"></em>
                     <span>{{role.roleName}}</span>
                 </div>
             </div>
@@ -69,9 +77,10 @@
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
 import alertTip from '../../components/common/alertTip'
-import {workerhandel,getrolelist} from 'src/service/getData'
+import {workerhandel,getrolelist,getemployee} from 'src/service/getData'
 import headTop from 'src/components/header/head';
 import {omit} from 'lodash'
+import md5 from "blueimp-md5"
 
 export default {
 	data(){
@@ -80,23 +89,26 @@ export default {
             userId:getStore('userInfo').id,
             alertText:null,
             showAlert:false,
-            secondAccount:null,
-            roleList:null
+            secondPwd:null,
+            roleList:null,
+            employeeId:null
         }
     },
     created(){
         this.$set(this.worker,'status',1)
         this.$set(this.worker,'sex',1)
-        // this.worker.status = 1;
-        if(this.$route.query.employeeId){
-            //编辑门店，获取门店信息
-            this.worker = this.$route.query;
-        }
-        if(this.$route.query.worker){
-            //编辑门店，获取门店信息
+        if(this.$route.query.employeeId &&!this.$route.query.worker){
+            //编辑员工，获取员工信息
+            this.employeeId = this.$route.query.employeeId;
+            this.getEmployee()
+        }else if(this.$route.query.employeeId && this.$route.query.worker){
+            //编辑员工
+            this.employeeId = this.$route.query.employeeId;
             this.worker = JSON.parse(this.$route.query.worker);
             this.$set(this.worker,'storeIds', JSON.parse(this.$route.query.storeIds))
             // this.worker = this.$route.query.worker;
+        }else if(!this.$route.query.employeeId && this.$route.query.worker){
+            this.$set(this.worker,'storeIds', JSON.parse(this.$route.query.storeIds))
         }
         //获取员工角色列表
         this.getRoleList();
@@ -116,13 +128,84 @@ export default {
     	...mapMutations([
             
     	]),
-        saveWorker(){
-            // this.store.status=1;
-            // if(this.$route.query.employeeId){
-            //     this.worker = omit(this.store,['createTime','updateTime','type']);
-            // }
+        showTip(text){
+            this.showAlert = true;
+            this.alertText = text
+        },
+        getEmployee(){
+            getemployee(this.userId,this.employeeId).then((res)=>{
+                this.worker = res.data;
+                this.worker.storeIds = [];
+                this.worker.storeVos.forEach(el=>{
+                    if(el.selected){
+                        this.worker.storeIds.push({
+                            id:el.storeId,
+                            storeName:el.storeName
+                        })
+                    }
+                })
+                // this.worker.storeIds = this.worker.storeVos;
+            }).catch((err)=>{
+
+            })
+        },
+        goStore(){
+            this.$router.push(
+                {
+                    name:'store',
+                    query:{
+                        'getStore':true,
+                        'worker':JSON.stringify(this.worker),
+                        'employeeId':this.employeeId
+                    }
+                })
+        },
+        async saveWorker(){
+            if(!this.worker.account){
+               this.showTip('请输入账号！');
+               return;
+            }else{
+                let reg = new RegExp(/^[a-z0-9]{6,16}$/);
+                if(!reg.test(this.worker.account)){
+                    this.showTip('账号为6-16位的数字或字母');
+                    return;
+                }
+            }
+            if(!this.worker.employeeName){
+               this.showTip('请输入姓名！');
+               return;
+            }
+            if(!this.worker.password){
+               this.showTip('请输入密码！');
+               return;
+            }
+            if(!this.employeeId){
+                if(!this.secondPwd){
+                    this.showTip('请输入确认密码！');
+                    return;
+                }
+                if(this.worker.password!==this.secondPwd){
+                    this.showTip('两次输入密码不一致！');
+                    return;
+                }else{
+                    this.worker.password = md5(this.secondPwd)
+                }
+            }
+            
+            let newsStore = []
+            this.worker.storeIds.forEach(el=>{
+                newsStore.push(el.id)
+            });
+            this.worker.storeIds = newsStore;
+
+            // this.worker.roles = [];
+            // this.roleList.forEach(el=>{
+            //     if(el.selected){
+            //         this.worker.roles.push(el.id)
+            //     }
+            // });
             workerhandel(this.userId,this.worker).then((res)=>{
-                this.$router.go(-1)
+                this.$router.push({name:"worker"})
             }).catch((err)=>{
                 this.alertText = err.message;
                 this.showAlert = true;
@@ -152,7 +235,7 @@ export default {
                 };
                 this.roleList = res.data;
                 this.roleList.forEach(element => {
-                    this.$set(element,'checked',false)
+                    this.$set(element,'selected',false)
                 });
             }).catch((err)=>{
 
@@ -249,6 +332,16 @@ export default {
                 @include sc(.35rem,$green)
             }
         }
+    }
+    .head_goback{
+        left: 0.359rem;
+        @include wh(0.6rem, 0.88rem);
+        line-height: 0.88rem;
+        margin-left: .4rem;
+    }
+    .goback{
+        @include wh(.6rem,100%);
+        text-align:center;
     }
     
 

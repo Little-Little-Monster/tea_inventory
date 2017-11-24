@@ -4,6 +4,7 @@
         <section class="head_goback" v-if="goBack" @click="$router.go(-1)">
             <span class="iconfont icon-fanhui title_text"></span>
         </section>
+        <slot name="back"></slot>
         <section class="title_head ellipsis" v-if="headTitle">
             <span class="title_text">{{headTitle}}</span>
         </section>

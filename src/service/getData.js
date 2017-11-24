@@ -55,6 +55,12 @@ export const getWorkerList = (userId) => fetch('/api/invoicing/' + userId + '/em
 
 export const workerhandel = (userId, worker) => fetch('/api/invoicing/' + userId + '/employee/handler', worker, 'POST');
 
+/**
+ * 获取员工详细信息
+ */
+
+export const getemployee = (userId, id) => fetch('/api/invoicing/' + userId + '/employee/query/edit', { id });
+
 
 
 /**
@@ -62,6 +68,24 @@ export const workerhandel = (userId, worker) => fetch('/api/invoicing/' + userId
  */
 
 export const getrolelist = (userId) => fetch('/api/invoicing/role/query/list', { userId });
+
+/**
+ * 获取商品类别
+ */
+
+export const getgoodstype = (userId) => fetch('/api/invoicing/goods/brand/query/list', { userId });
+
+/**
+ * 获取商品列表
+ */
+
+export const getgoodslist = (userId, goodsClassId, priceFlag, page, pageSize) => fetch('/api/invoicing/goods/query/list', {
+    userId,
+    goodsClassId,
+    priceFlag,
+    page,
+    pageSize
+});
 
 
 /**
