@@ -19,11 +19,11 @@
                 <span>员工管理</span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
-            <div class="option-list">
+            <div class="option-list" @click="toAddress({name:'supplierList'})">
                 <span>供应商管理</span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
-            <div class="option-list">
+            <div class="option-list" @click="toAddress({name: 'storehouseList'})">
                 <span>仓库管理</span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
@@ -36,7 +36,7 @@
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
         </section>
-    </div>    
+    </div>
 </template>
 
 <script>
@@ -87,7 +87,7 @@ export default {
         margin-bottom:.2rem;
         background: #fff;
         display: flex;
-        
+
         .user-head{
             @include wh(27%,100%);
             img{
@@ -109,7 +109,7 @@ export default {
                     font-weight:800;
                 }
             }
-            
+
         }
     }
     .option-list{

@@ -17,7 +17,6 @@
 
     </div>    
 </template>
-
 <script>
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
@@ -58,15 +57,15 @@ export default {
         })
     },
     mounted(){
-        
+
     },
     components: {
-    	headTop,
+      headTop,
     },
     computed: {
-		...mapState([
-			'headTitle'
-		])
+      ...mapState([
+        'headTitle'
+      ])
     },
     methods: {
     	...mapMutations([
@@ -94,10 +93,8 @@ export default {
         }
 
     }
-}
-
+  }
 </script>
-
 <style lang="scss" scoped>
     @import 'src/style/mixin';
     .check-icon{
@@ -110,4 +107,5 @@ export default {
             font-size:.28rem;
         }
     }
+
 </style>

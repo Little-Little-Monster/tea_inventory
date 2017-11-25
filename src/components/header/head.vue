@@ -1,6 +1,5 @@
 <template>
     <header id='head_top'>
-        
         <section class="head_goback" v-if="goBack" @click="$router.go(-1)">
             <span class="iconfont icon-fanhui title_text"></span>
         </section>
@@ -93,8 +92,7 @@
     .right{
         right: .2rem;
         @include ct;
-        @include wh(10%,100%);
-        
+        height: 100%;
         text-align: center;
         span{
             @include sc(0.34rem, #fff);

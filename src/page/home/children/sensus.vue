@@ -82,7 +82,7 @@
 </script>
 <style lang="scss" scoped>
   @import '../../../style/mixin';
-  
+
   .sensus{
     .sensus_ul{
       @include same_ul_style;
