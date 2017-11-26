@@ -1,71 +1,187 @@
 <template>
     <div>
-    	<head-top signin-up='msite' goBack="" head-title="员工管理">
-            <router-link slot="right" class="iconfont icon-jia" :to="{name:'workerOption'}"></router-link>
-            <div slot="back" class="goback" @click="$router.push({name:'basic'})" >
+    	<head-top signin-up='msite' goBack="" :headTitle="title">
+            <div slot="right" v-if="queryType!='storeGoodsNum'" class="iconfont icon-jia" @click="toAddAttr"></div>
+            <div slot="back" class="goback" @click="$router.push({name:'addGoods'})" >
                 <span class="iconfont icon-fanhui title_text"></span>
             </div>
     	</head-top>
 
         <div class="cneter-con paddingTop">
-             <section class="title-choose">
-                <div class="login-tit" @click="!isOn?isOn=!isOn:''">
-                    <span>已启用</span>
-                    <em v-if="isOn"></em>
-                </div>
-                <div class="regist-tit" @click="isOn?isOn=!isOn:''">
-                    <span>已停用</span>
-                    <em v-if="!isOn"></em>
-                </div>
+            <section v-if="queryType!='storeGoodsNum'" class="title-tip">
+                向左滑动,选项可编辑
             </section>
-            <div class="worker-list list" v-for="list in workerList" @click="$router.push({name:'workerOption',query:{employeeId:list.employeeId}})">
-                <span>{{list.employeeName}}</span>
-                <p>所属门店：<em>{{list.storeName}}</em></p>
-                <p>最后登陆时间：<em>{{list.loginTime}}</em></p>
-                <p>创建时间：<em>{{list.createDate}}</em></p>
-                <em class="list-option iconfont icon-qianjin"></em>
+            <v-touch v-if="queryType!='storeGoodsNum'" @swipeleft="inputIndex=index;singleId=null" class="list" v-for="(list,index) in attrList">
+                <span v-show="inputIndex!=index">{{list.name}}</span>
+                <input type="text" class="input-attr" v-model="list.name" v-show="inputIndex==index">
+                <em v-show="inputIndex!=index" class="list-option iconfont check-icon" :class="{'icon-radio-checked':singleId==list.id,'icon-danxuanweizhong':singleId!=list.id}" @click="singleId=list.id;singleName=list.name"></em>
+                <em class="list-option edit-option" v-show="inputIndex==index">
+                    <i class="iconfont icon-gou" @click="editAttr(list)"></i>
+                    <i class="iconfont icon-cha" @click="inputIndex=-1"></i>
+                </em>
+            </v-touch>
+            <div v-if="queryType=='storeGoodsNum'" class="list" v-for="storehouse in storehouseList">
+                <span>{{storehouse.storeName}}</span>
+                <div class="list-option">
+                    <input type="number" min="0" step="1" placeholder="0" v-model="storehouse.quantity">
+                </div>
             </div>
         </div>
-
+        <div @click="saveAttr" class="bottom">
+            保存
+        </div>
+        <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
     </div>    
 </template>
 
 <script>
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
-import {getWorkerList} from 'src/service/getData'
+import { 
+    getgoodstype,
+    getgoodsbrand,
+    getgoodsunit,
+    savegoodstype,
+    savegoodsbrand,
+    savegoodsunit,
+    getstorehouse
+    } from 'src/service/getData'
 import headTop from 'src/components/header/head'
+import alertTip from '../../components/common/alertTip'
 
 export default {
 	data(){
         return {
             userId:getStore('userInfo').id,
-            workerList:null,
-            isOn:true//是否启用
+            attrList:null,
+            title:null,
+            showAlert:false,
+            alertText:null,
+            singleId:null,
+            singleName:null,
+            inputIndex:-1,
+            storehouseList:{}//仓库列表
         }
     },
     created(){
-        getWorkerList(this.userId).then((res)=>{
-            this.workerList = res.data;
-        }).catch((err)=>{
-
-        })
+        this.singleId = this.storeGoodsInfo
+        this.queryType = this.$route.query.type;
+        if(this.queryType=='goodsBrand'){
+            //选择品牌
+            this.title = "选择品牌";
+            this.singleId = this.storeGoodsInfo.goodsBrandId;
+            getgoodsbrand(this.userId).then((res)=>{
+                this.attrList = res.data;
+            }).catch((err)=>{
+                this.showTip(res.message)
+            })
+        }else if(this.queryType=='goodsType'){
+            //选择分类
+             this.title = "选择分类"
+             this.singleId = this.storeGoodsInfo.goodsClassificationId;
+             getgoodstype(this.userId).then((res)=>{
+                this.attrList = res.data;
+            }).catch((err)=>{
+                this.showTip(res.message)
+            })
+        }else if(this.queryType=='storeGoodsNum'){
+            //设置初始库存数量
+             this.title = "设置初始库存数量";
+             getstorehouse(this.userId).then((res)=>{
+                 this.storehouseList = res.data;
+             }).catch((err)=>{
+                 this.showTip(err.message)
+             })
+        }else if(this.queryType=='unit'){
+            //选择单位
+            this.title = "选择单位"
+            this.singleId = this.storeGoodsInfo.goodsUnitId;
+            getgoodsunit(this.userId).then((res)=>{
+                this.attrList = res.data;
+            }).catch((err)=>{
+                this.showTip(res.message)
+            })
+        }
     },
     mounted(){
-        
+
     },
     components: {
-    	headTop,
+        headTop,
+        alertTip
     },
     computed: {
 		...mapState([
-			'headTitle'
+			'headTitle','storeGoodsInfo'
 		])
     },
     methods: {
     	...mapMutations([
-
+            'RECORD_GOODSINFO'
         ]),
+        showTip(tip){
+            this.showAlert = true;
+            this.alertText = tip;
+        },
+        editAttr(list){
+            if(this.queryType=='goodsBrand'){
+                //选择品牌
+                savegoodsbrand(this.userId,list).then((res)=>{
+                    this.showTip('修改成功！');
+                }).catch((err)=>{
+                    this.showTip(err.message);
+                })
+            }else if(this.queryType=='goodsType'){
+                //选择分类
+                savegoodstype(this.userId,list).then((res)=>{
+                    this.showTip('修改成功！');
+                }).catch((err)=>{
+                    this.showTip(err.message);
+                })
+            }else if(this.queryType=='unit'){
+                //选择单位
+                savegoodsunit(this.userId,list).then((res)=>{
+                    this.showTip('修改成功！');
+                }).catch((err)=>{
+                    this.showTip(err.message);
+                })
+            }
+            this.inputIndex = -1;
+        },
+        async saveAttr(){
+            this.goodsInfo = this.storeGoodsInfo;
+            if(this.queryType=='goodsBrand'){
+                //选择品牌
+                this.goodsInfo.goodsBrandId = this.singleId
+                this.goodsInfo.goodsBrandName = this.singleName
+            }else if(this.queryType=='goodsType'){
+                //选择分类
+                this.goodsInfo.goodsClassificationId = this.singleId
+                this.goodsInfo.goodsClassificationName = this.singleName
+            }else if(this.queryType=='unit'){
+                //选择单位
+                this.goodsInfo.goodsUnitId = this.singleId
+                this.goodsInfo.goodsUnitName = this.singleName
+            }else{
+                //仓库初始数量
+                this.storehouseList.forEach(element => {
+                    if(Number(element.quantity)<0){
+                        this.showTip("库存不能为负数！");
+                        return;
+                    }
+                    this.goodsInfo.warehouseStocks.push({
+                        quantity:element.quantity,
+                        warehouseId:element.storeId
+                    })
+                });
+            }
+            this.RECORD_GOODSINFO(this.goodsInfo);
+            this.$router.push({name:"addGoods"})
+        },
+        toAddAttr(){
+            //跳转到添加页面
+            this.$router.push({name:'goodsAddAttr',query:{type:this.queryType}})
+        }
 
     }
 }
@@ -74,52 +190,34 @@ export default {
 
 <style lang="scss" scoped>
     @import 'src/style/mixin';
-    .title-choose{
-        width:100%;
-        height:.8rem;
-        margin-bottom: 0.1rem;
+    .title-tip{
+        @include wh(100%,.8rem);
+        line-height: .8rem;
+        @include sc(.28rem,#bbb);
+        padding-left:.4rem;
+    }
+    .input-attr{
+        @include ct;
         background: #fff;
-        &>div{
-            width:50%;
-            float: left;
-            text-align: center;
-            position: relative;
-            line-height: .8rem;
-            font-size:.32rem;
-            em{
-                display: inline-block;
-                @include wh(0.3rem,0.06rem);
-                background:$green;
-                position: absolute;
-                bottom: 0;
-                left:45%;
+        height:.5rem;
+    }
+    .check-icon{
+        @include sc(.4rem,$green)
+    }
+    .list{
+        .edit-option{
+            i{
+                @include sc(.4rem,$green);
+                margin-left: .2rem;
             }
         }
     }
-    .worker-list{
-        @include wh(100%,2.2rem);
-        span{
-            @include sc(.32rem,#444);
-            line-height:.9rem;
-        }
-        p{
-            @include sc(.24rem,$text_light);
-            line-height:.4rem;
-        };
-        p:nth-of-type(1){
-            em{
-                color:$text;
-            }
-        };
-        p:nth-of-type(2){
-            em{
-                color:$green;
-            }
-        };
-        p:nth-of-type(3){
-            em{
-                color:$green;
-            }
+    .list-option{
+        right:.4rem;
+        input{
+            background: #fff;
+            text-align: right;
+            height:.4rem;
         }
     }
 </style>

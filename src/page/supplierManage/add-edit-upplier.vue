@@ -10,7 +10,7 @@
           名称 <i>*</i>
         </div>
         <div class="list_right">
-          春秋茗茶
+          <input type="text" v-model="userInfo.name" placeholder="请输入负责人名称" style="width: 2.27rem;">
         </div>
       </li>
       <li>
@@ -18,7 +18,7 @@
           负责人
         </div>
         <div class="list_right">
-          <input type="text" placeholder="请输入负责人名称" style="width: 2.27rem;">
+          <input type="text" v-model="userInfo.personHead" placeholder="请输入负责人名称" style="width: 2.27rem;">
         </div>
       </li>
       <li>
@@ -26,7 +26,7 @@
           折扣(%)
         </div>
         <div class="list_right">
-          <input type="text" placeholder="请输入折扣" style="width: 1.42rem;">
+          <input type="number" v-model="userInfo.discount" placeholder="请输入折扣" style="width: 1.42rem;">
         </div>
       </li>
       <li>
@@ -42,7 +42,7 @@
           手机
         </div>
         <div class="list_right">
-          <input type="text" placeholder="请输入手机号码" style="width: 1.99rem;">
+          <input type="mobile" v-model="userInfo.mobile" placeholder="请输入手机号码" style="width: 1.99rem;">
         </div>
       </li>
       <li>
@@ -50,24 +50,38 @@
           电话
         </div>
         <div class="list_right">
-          <input type="text" placeholder="请输入座机号" style="width: 1.71rem;">
+          <input type="number" v-model="userInfo.telphone" placeholder="请输入座机号" style="width: 1.71rem;">
         </div>
       </li>
     </ul>
+    <div class="bottom" @click="addSupp">
+            保存
+    </div>
+    <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
 <script>
   import { mapMutations } from 'vuex'
   import { getStore } from 'src/config/mUtils'
+  import { supphandel } from 'src/service/getData'
   import headTop from 'src/components/header/head'
   import footGuide from 'src/components/footer/footGuide'
+  import alertTip from '../../components/common/alertTip'
   import kswitch from 'src/components/common/kswitch'
 
   export default {
     data(){
       return {
         enable: true,
-        imgPath: 'static/images/head.png'
+        imgPath: 'static/images/head.png',
+        userId:getStore("userInfo").id,
+        userInfo:{},
+        showAlert:false
+      }
+    },
+    created(){
+      if(this.$route.query.id){
+        this.userInfo = this.$route.query;
       }
     },
     mounted(){
@@ -77,6 +91,7 @@
       headTop,
       footGuide,
       kswitch,
+      alertTip
     },
     computed: {},
     methods: {
@@ -85,7 +100,32 @@
       ]),
       toAddress(name){
         this.$router.push(name)
-      }
+      },
+      async addSupp(){
+            if(!this.userInfo.name){
+              this.alertText = "请输入供应商名称";
+              this.showAlert = true;
+              return;
+            }
+            let reg = new RegExp(/^((13|14|15|17|18|10)[0-9]{1}\d{8})$/);
+            if(!reg.test(this.userInfo.mobile)){
+              this.alertText = "请输入11位手机号码";
+              this.showAlert = true;
+              return;
+            }
+            if(!this.userInfo.name){
+              this.alertText = "请输入供应商名称";
+              this.showAlert = true;
+              return;
+            }
+            this.enable?this.userInfo.status=1:this.userInfo.status=0;
+            supphandel(this.userId,this.userInfo).then((res)=>{
+                this.$router.push({name:"supplierList"})
+            }).catch((err)=>{
+                this.alertText = err.message;
+                this.showAlert = true;
+            })
+        }
     },
     watch: {}
   }
@@ -95,6 +135,9 @@
 
   .add-edit-upplier {
     @include same_ul_style;
+    input{
+      text-align: right;
+    }
     li {
       height: 1rem;
       padding: 0 0.4rem;
@@ -121,5 +164,11 @@
         }
       }
     }
+  }
+  .bottom{
+      background: $green;
+      text-align: center;
+      line-height:1rem;
+      color:#fff;
   }
 </style>

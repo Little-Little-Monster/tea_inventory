@@ -1,7 +1,10 @@
 <template>
   <div class="storehouse_list">
-    <head-top signin-up='msite' goBack="true" head-title="仓库管理">
+    <head-top signin-up='msite' goBack="" head-title="仓库管理">
       <router-link slot="right" class="iconfont icon-jia" :to="{name:'addEditStorehouse'}"></router-link>
+      <div slot="back" class="goback" @click="goBack" >
+          <span class="iconfont icon-fanhui title_text"></span>
+      </div>
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
     <div class="storehouse-header paddingTop">
@@ -9,7 +12,7 @@
       <div class="right_button">已停用 <span v-show="!enable"></span></div>
     </div>
     <ul class="storehouse_content">
-      <li class="supplier_info_list" v-for="list in 5">
+      <li class="supplier_info_list" v-for="list in storeHousList">
         <div class="list_left">
           <h4>环球中心</h4>
           <p>负责人：<span>张琪伦</span></p>
@@ -26,22 +29,25 @@
   import { mapMutations } from 'vuex'
   import { getStore } from 'src/config/mUtils'
   import headTop from 'src/components/header/head'
-  import footGuide from 'src/components/footer/footGuide'
+  import { getstorehouse } from 'src/service/getData';
 
   export default {
     data(){
       return {
-        enable: true,
-        imgPath: 'static/images/head.png'
+        imgPath: 'static/images/head.png',
+        storeHousList:null,
+        enable:true,
+        userId:getStore('userInfo').id
       }
     },
-
+    created(){
+      this.getStoreHouse()
+    },
     mounted(){
 
     },
     components: {
       headTop,
-      footGuide,
     },
     computed: {},
     methods: {
@@ -50,6 +56,16 @@
       ]),
       toAddress(name){
         this.$router.push(name)
+      },
+      getStoreHouse(){
+        getstorehouse(this.userId).then((res)=>{
+          this.storeHousList=res.data;
+        }).catch((err)=>{
+
+        })
+      },
+      goBack(){
+        this.$router.push({name:'basic'})
       }
     },
     watch: {}
