@@ -1,14 +1,14 @@
 <template>
     <div>
     	<head-top signin-up='msite' goBack="" :headTitle="headTit">
-            <router-link slot="right" class="iconfont icon-jia" :to="{name:'workerOption'}"></router-link>
-            <div slot="back" class="goback" @click="$router.push({name:'basic'})" >
+            <router-link slot="right" class="iconfont icon-jia" :to="{name:'addGoods'}"></router-link>
+            <div slot="back" class="goback" @click="$router.push({name:'msite'})" >
                 <span class="iconfont icon-fanhui title_text"></span>
             </div>
     	</head-top>
 
         <div class="cneter-con paddingTop">
-            <div class="list goods-con" v-for="goods in goodsList">
+            <div class="list goods-con" v-for="goods in goodsList" @click="editGoods(goods)">
                 <div class="header">
                     <img :src="goods.attachmentUrl" alt="">
                 </div>
@@ -164,103 +164,107 @@ export default {
     },
     methods: {
     	...mapMutations([
-
+            'RECORD_GOODSINFO'
         ]),
         getGoods(){
             getgoodslist(this.userId,this.goodsClassId,this.priceFlag,this.page,this.pageSize).then((res)=>{
-                res={
-                    "code":"200",
-                    "data":{
-                        "size":5,
-                        "info":[
-                            {
-                                "attachmentUrl":null,
-                                "buyAmount":0.5,
-                                "createTime":1504341649000,
-                                "goodsBrandId":0,
-                                "goodsClassificationId":6,
-                                "goodsUnitId":1,
-                                "id":1,
-                                "idCard":"123456",
-                                "memo":"这个是测试商品",
-                                "modelSize":null,
-                                "name":"毛峰180",
-                                "saleAmount":1.5,
-                                "status":0,
-                                "updateTime":1504341649000
-                            },
-                            {
-                                "attachmentUrl":null,
-                                "buyAmount":0.5,
-                                "createTime":1504341944000,
-                                "goodsBrandId":0,
-                                "goodsClassificationId":6,
-                                "goodsUnitId":1,
-                                "id":2,
-                                "idCard":"123456",
-                                "memo":"这个是测试商品",
-                                "modelSize":null,
-                                "name":"毛峰280",
-                                "saleAmount":1.5,
-                                "status":0,
-                                "updateTime":1504341944000
-                            },
-                            {
-                                "attachmentUrl":null,
-                                "buyAmount":0.8,
-                                "createTime":1507991070000,
-                                "goodsBrandId":0,
-                                "goodsClassificationId":6,
-                                "goodsUnitId":1,
-                                "id":8,
-                                "idCard":"123489",
-                                "memo":"这个是测试商品",
-                                "modelSize":null,
-                                "name":"毛峰680",
-                                "saleAmount":1.8,
-                                "status":0,
-                                "updateTime":1507991070000
-                            },
-                            {
-                                "attachmentUrl":null,
-                                "buyAmount":0.8,
-                                "createTime":1507991176000,
-                                "goodsBrandId":0,
-                                "goodsClassificationId":6,
-                                "goodsUnitId":1,
-                                "id":9,
-                                "idCard":"123489",
-                                "memo":"这个是测试商品",
-                                "modelSize":null,
-                                "name":"毛峰680",
-                                "saleAmount":1.8,
-                                "status":0,
-                                "updateTime":1507991176000
-                            },
-                            {
-                                "attachmentUrl":null,
-                                "buyAmount":0.8,
-                                "createTime":1504345402000,
-                                "goodsBrandId":0,
-                                "goodsClassificationId":6,
-                                "goodsUnitId":1,
-                                "id":7,
-                                "idCard":"123456",
-                                "memo":"这个是测试商品",
-                                "modelSize":null,
-                                "name":"毛峰380",
-                                "saleAmount":1.8,
-                                "status":0,
-                                "updateTime":1504345402000
-                            }
-                        ]
-                    },
-                    "message":"OK"
-                }
+                // res={
+                //     "code":"200",
+                //     "data":{
+                //         "size":5,
+                //         "info":[
+                //             {
+                //                 "attachmentUrl":null,
+                //                 "buyAmount":0.5,
+                //                 "createTime":1504341649000,
+                //                 "goodsBrandId":0,
+                //                 "goodsClassificationId":6,
+                //                 "goodsUnitId":1,
+                //                 "id":1,
+                //                 "idCard":"123456",
+                //                 "memo":"这个是测试商品",
+                //                 "modelSize":null,
+                //                 "name":"毛峰180",
+                //                 "saleAmount":1.5,
+                //                 "status":0,
+                //                 "updateTime":1504341649000
+                //             },
+                //             {
+                //                 "attachmentUrl":null,
+                //                 "buyAmount":0.5,
+                //                 "createTime":1504341944000,
+                //                 "goodsBrandId":0,
+                //                 "goodsClassificationId":6,
+                //                 "goodsUnitId":1,
+                //                 "id":2,
+                //                 "idCard":"123456",
+                //                 "memo":"这个是测试商品",
+                //                 "modelSize":null,
+                //                 "name":"毛峰280",
+                //                 "saleAmount":1.5,
+                //                 "status":0,
+                //                 "updateTime":1504341944000
+                //             },
+                //             {
+                //                 "attachmentUrl":null,
+                //                 "buyAmount":0.8,
+                //                 "createTime":1507991070000,
+                //                 "goodsBrandId":0,
+                //                 "goodsClassificationId":6,
+                //                 "goodsUnitId":1,
+                //                 "id":8,
+                //                 "idCard":"123489",
+                //                 "memo":"这个是测试商品",
+                //                 "modelSize":null,
+                //                 "name":"毛峰680",
+                //                 "saleAmount":1.8,
+                //                 "status":0,
+                //                 "updateTime":1507991070000
+                //             },
+                //             {
+                //                 "attachmentUrl":null,
+                //                 "buyAmount":0.8,
+                //                 "createTime":1507991176000,
+                //                 "goodsBrandId":0,
+                //                 "goodsClassificationId":6,
+                //                 "goodsUnitId":1,
+                //                 "id":9,
+                //                 "idCard":"123489",
+                //                 "memo":"这个是测试商品",
+                //                 "modelSize":null,
+                //                 "name":"毛峰680",
+                //                 "saleAmount":1.8,
+                //                 "status":0,
+                //                 "updateTime":1507991176000
+                //             },
+                //             {
+                //                 "attachmentUrl":null,
+                //                 "buyAmount":0.8,
+                //                 "createTime":1504345402000,
+                //                 "goodsBrandId":0,
+                //                 "goodsClassificationId":6,
+                //                 "goodsUnitId":1,
+                //                 "id":7,
+                //                 "idCard":"123456",
+                //                 "memo":"这个是测试商品",
+                //                 "modelSize":null,
+                //                 "name":"毛峰380",
+                //                 "saleAmount":1.8,
+                //                 "status":0,
+                //                 "updateTime":1504345402000
+                //             }
+                //         ]
+                //     },
+                //     "message":"OK"
+                // }
                 this.goodsList = res.data.info;
             }).catch((err)=>{
 
             })
+        },
+        editGoods(list){
+            this.RECORD_GOODSINFO(list)
+            this.$router.push({name:"addGoods"});
         }
 
     }
@@ -283,8 +287,20 @@ export default {
         }
     }
     .goods-detail{
-        &:nth-child(1){
+        p:nth-of-type(1){
             @include sc(.32rem,$text);
+        }
+        p:nth-of-type(2){
+            @include sc(.24rem,$text_light);
+            line-height: .44rem;
+        }
+        p:nth-of-type(3){
+            line-height: .44rem;
+            @include sc(.24rem,$text_light);
+        }
+        p:nth-of-type(4){
+            line-height: .44rem;
+            @include sc(.24rem,$text_light);
         }
     }
     .title-choose{

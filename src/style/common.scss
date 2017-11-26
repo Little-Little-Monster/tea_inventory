@@ -125,6 +125,13 @@ input {
     }
 }
 
+.bottom {
+    background: $green;
+    text-align: center;
+    line-height: 1rem;
+    color: #fff;
+}
+
 .clear:after {
     content: '';
     display: block;

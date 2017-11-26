@@ -1,6 +1,7 @@
 import {
     CHANGE_HEADER,
-    RECORD_USERINFO
+    RECORD_USERINFO,
+    RECORD_GOODSINFO
 } from './mutation-types.js'
 
 import { setStore, getStore } from '../config/mUtils'
@@ -15,5 +16,8 @@ export default {
         setStore('userInfo', userInfo.user);
         setStore('token', userInfo.user.token);
         setStore('menu', userInfo.menus);
+    },
+    [RECORD_GOODSINFO](state, goodsInfo) {
+        state.storeGoodsInfo = goodsInfo;
     }
 }

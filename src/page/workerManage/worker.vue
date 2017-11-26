@@ -1,8 +1,8 @@
 <template>
     <div>
     	<head-top signin-up='msite' goBack="" head-title="员工管理">
-            <router-link slot="right" class="iconfont icon-jia" :to="{name:'workerOption'}"></router-link>
-            <div slot="back" class="goback" @click="$router.push({name:'basic'})" >
+            <router-link v-if="!$route.query.getWorker" slot="right" class="iconfont icon-jia" :to="{name:'workerOption'}"></router-link>
+            <div slot="back" class="goback" @click="goBack" >
                 <span class="iconfont icon-fanhui title_text"></span>
             </div>
     	</head-top>
@@ -18,12 +18,14 @@
                     <em v-if="!isOn"></em>
                 </div>
             </section>
-            <div class="worker-list list" v-for="list in workerList" @click="$router.push({name:'workerOption',query:{employeeId:list.employeeId}})">
+            <div class="worker-list list" v-for="list in workerList" @click="editWorker">
                 <span>{{list.employeeName}}</span>
                 <p>所属门店：<em>{{list.storeName}}</em></p>
                 <p>最后登陆时间：<em>{{list.loginTime}}</em></p>
                 <p>创建时间：<em>{{list.createDate}}</em></p>
-                <em class="list-option iconfont icon-qianjin"></em>
+                <em v-if="!$route.query.getWorker" class="list-option iconfont icon-qianjin"></em>
+                <em v-if="$route.query.from=='wireHouse'" class="list-option iconfont check-icon" :class="{'icon-radio-checked':workerId==list.employeeId,'icon-danxuanweizhong':workerId!=list.employeeId}" @click="workerId=list.employeeId;workerName=list.employeeName"></em>
+                <!-- <em v-if="!$route.query.single" class="list-option iconfont check-icon" :class="{'icon-radio-checked':list.selected,'icon-danxuanweizhong':!list.selected}" @click="list.selected?list.selected=false:list.selected=true"></em> -->
             </div>
         </div>
 
@@ -41,10 +43,16 @@ export default {
         return {
             userId:getStore('userInfo').id,
             workerList:null,
-            isOn:true//是否启用
+            isOn:true,//是否启用,
+            workerId:null,
+            workerName:null
         }
     },
     created(){
+        if(this.$route.query.workerId){
+            this.workerId = this.$route.query.workerId
+            this.workerName = this.$route.query.workerName
+        }
         getWorkerList(this.userId).then((res)=>{
             this.workerList = res.data;
         }).catch((err)=>{
@@ -66,6 +74,29 @@ export default {
     	...mapMutations([
 
         ]),
+        goBack(){
+            if(this.$route.query.getWorker){
+                if(this.$route.query.from=='wireHouse'){
+                    this.$router.push({name:'addEditStorehouse',
+                        query:{
+                            workerId:this.workerId,
+                            workerName:this.workerName,
+                            singleId:this.$route.query.singleId,
+                            singleName:this.$route.query.singleName,
+                            warehouseName:this.$route.query.warehouseName,
+                            memo:this.$route.query.memo,
+                        }
+                    })
+                }
+            }else{
+                this.$router.push({name:'basic'})
+            }
+        },
+        editWorker(){
+            if(!this.$route.query.getWorker){
+                this.$router.push({name:'workerOption',query:{employeeId:list.employeeId}})
+            }
+        }
 
     }
 }
@@ -122,4 +153,8 @@ export default {
             }
         }
     }
+    .check-icon{
+        @include sc(.4rem,$green);
+    }
+    
 </style>

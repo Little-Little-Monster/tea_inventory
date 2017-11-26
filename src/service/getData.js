@@ -70,10 +70,36 @@ export const getemployee = (userId, id) => fetch('/api/invoicing/' + userId + '/
 export const getrolelist = (userId) => fetch('/api/invoicing/role/query/list', { userId });
 
 /**
+ * 获取供应商列表
+ */
+
+export const getsupplier = (userId, params) => fetch('/api/invoicing/supplier/query/list', {
+    userId,
+    params
+});
+
+/**
+ * 添加/更新供应商
+ */
+
+export const supphandel = (userId, suppInfo) => fetch('/api/invoicing/supplier/' + userId + '/handler', suppInfo, 'POST');
+
+/**
+ * 获取仓库列表
+ */
+
+export const getstorehouse = (userId) => fetch('/api/invoicing/warehouse/query/list', { userId });
+/**
+ * 添加或更新仓库
+ */
+
+export const savewirehouse = (wirehouse) => fetch('/api/invoicing/warehouse/handler', wirehouse, "POST");
+
+/**
  * 获取商品类别
  */
 
-export const getgoodstype = (userId) => fetch('/api/invoicing/goods/brand/query/list', { userId });
+export const getgoodstype = (userId) => fetch('/api/invoicing/goods/classification/query/list', { userId });
 
 /**
  * 获取商品列表
@@ -86,6 +112,43 @@ export const getgoodslist = (userId, goodsClassId, priceFlag, page, pageSize) =>
     page,
     pageSize
 });
+
+/**
+ * 创建/更新商品
+ */
+
+export const savegoods = (userId, goodsInfo) => fetch('/api/invoicing/goods/handler/' + userId, goodsInfo, "POST");
+/**
+ * 创建/更新商品类别
+ */
+
+export const savegoodstype = (userId, info) => fetch('/api/invoicing/goods/classification/handler/' + userId, info, "POST");
+
+/**
+ * 创建/更新商品单位
+ */
+
+export const savegoodsunit = (userId, info) => fetch('/api/invoicing/goods/unit/handler/' + userId, info, "POST");
+
+/**
+ * 创建/更新商品品牌
+ */
+
+export const savegoodsbrand = (userId, info) => fetch('/api/invoicing/goods/brand/handler/' + userId, info, "POST");
+
+
+/**
+ * 获取商品单位
+ */
+
+export const getgoodsunit = (userId) => fetch('/api/invoicing/goods/unit/query/list', { userId });
+
+/**
+ * 获取商品品牌
+ */
+
+export const getgoodsbrand = (userId) => fetch('/api/invoicing/goods/brand/query/list', { userId });
+
 
 
 /**
