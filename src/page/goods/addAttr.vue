@@ -1,7 +1,7 @@
 <template>
     <div>
     	<head-top signin-up='msite' goBack="" :headTitle="title">
-            <div slot="back" class="goback" @click="$router.go(-1)" >
+            <div slot="back" class="goback" @click="goBackRoute" >
                 <span class="iconfont icon-fanhui title_text"></span>
             </div>
     	</head-top>
@@ -13,9 +13,9 @@
                 <input class="list-option" type="text" :placeholder="placeholder" v-model="attr.name">
             </div>
             <div class="list" v-if="this.queryType=='goodsType'">
-                <em class="required">*</em>
                 <span>上级分类</span>
-                <input class="list-option" type="text" placeholder="请输入上级分类" v-model="attr.parentId">
+                <em class="list-option" v-if="!attr.parentName" @click="toType">请输入上级分类</em>
+                <em class="list-option" v-if="attr.parentName" @click="toType">{{attr.parentName}}</em>
             </div>
             <div class="list memo">
                 <em class="required">&nbsp;</em>
@@ -61,7 +61,12 @@ export default {
         }else if(this.queryType=='goodsType'){
             //添加分类
             this.title="添加分类"
-            this.placeholder = '请输入分类名称'
+            this.placeholder = '请输入分类名称';
+            if(this.$route.query.attr){
+                this.attr = JSON.parse(this.$route.query.attr)
+                // this.$set(this.attr,"parentName",this.$route.query.parentName);
+                // this.$set(this.attr,"parentId",this.$route.query.parentId);
+            }
         }else if(this.queryType=='unit'){
             //添加单位
             this.title="添加单位"
@@ -87,6 +92,9 @@ export default {
             this.showAlert = true;
             this.alertText = tip;
         },
+        toType(){
+            this.$router.push({name:'goodsAttrList',query:{type:'goodsType',getParent:true,attr:JSON.stringify(this.attr)}})
+        },
         async saveAttr(){
             if(!this.attr.name){
                 this.showTip(this.placeholder);
@@ -95,29 +103,28 @@ export default {
             if(this.queryType=='goodsBrand'){
                 //添加品牌
                 savegoodsbrand(this.userId,this.attr).then((res)=>{
-                    this.$router.go(-1)
+                    this.$router.push({name:"goodsAttrList",query:{type:this.queryType}})
                 }).catch((err)=>{
                     this.showTip(err.message)
                 })
             }else if(this.queryType=='goodsType'){
                 //添加分类
-                if(!this.attr.parentId){
-                    this.showTip("请输入上级分类名称");
-                    return;
-                }
                 savegoodstype(this.userId,this.attr).then((res)=>{
-                    this.$router.go(-1)
+                    this.$router.push({name:"goodsAttrList",query:{type:this.queryType}})
                 }).catch((err)=>{
                     this.showTip(err.message)
                 })
             }else if(this.queryType=='unit'){
                 //添加单位
                 savegoodsunit(this.userId,this.attr).then((res)=>{
-                    this.$router.go(-1)
+                    this.$router.push({name:"goodsAttrList",query:{type:this.queryType}})
                 }).catch((err)=>{
                     this.showTip(err.message)
                 })
             }
+        },
+        goBackRoute(){
+            this.$router.push({name:"goodsAttrList",query:{type:this.queryType}})
         }
 
     }
