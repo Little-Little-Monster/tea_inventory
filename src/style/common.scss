@@ -125,6 +125,13 @@ input {
     }
 }
 
+.bottom {
+    background: $green;
+    text-align: center;
+    line-height: 1rem;
+    color: #fff;
+}
+
 .clear:after {
     content: '';
     display: block;
@@ -185,6 +192,11 @@ input {
     @include wh(100%, 1rem);
 }
 
+.goback {
+    @include wh(.6rem, 100%);
+    text-align: center;
+}
+
 //列表样式
 .list {
     @include wh(100%, 1rem);
@@ -192,6 +204,7 @@ input {
     background: #fff;
     padding-left: .4rem;
     position: relative;
+    overflow: hidden;
     &>span {
         line-height: 1rem;
     }

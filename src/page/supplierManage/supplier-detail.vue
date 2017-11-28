@@ -1,8 +1,8 @@
 <template>
   <div class="supplier_detail">
-    <head-top signin-up='msite' goBack="true" head-title="王供应商">
-      <button slot="right" style="background: none;color: #fff;font-size: 0.28rem;margin-right: 0.36rem"
-        @click="$router.push({name:'addEditUpplier',query:{id: true}})">编辑</button>
+    <head-top signin-up='msite' goBack="true" :headTitle="userInfo.name">
+      <button slot="right" style="background: none;color: #fff;font-size: 0.28rem;margin-right: 0.16rem"
+        @click="$router.push({name:'addEditUpplier',query:userInfo})">编辑</button>
     </head-top>
     <ul class="supplier_detail_header paddingTop">
       <li>
@@ -10,7 +10,7 @@
           手机
         </div>
         <div class="list_right">
-          15682565540
+          {{userInfo.name}}
         </div>
       </li>
       <li>
@@ -18,7 +18,7 @@
           折扣(%)
         </div>
         <div class="list_right">
-          100
+          {{userInfo.discount}}
         </div>
       </li>
     </ul>
@@ -28,8 +28,7 @@
           欠供应商款
         </div>
         <div class="list_right">
-          ￥0.00
-          <i class="iconfont icon-qianjin"></i>
+          ￥{{userInfo.balance}}
         </div>
       </li>
     </ul>
@@ -39,7 +38,7 @@
           电话
         </div>
         <div class="list_right">
-          <i class="iconfont icon-qianjin"></i>
+         {{userInfo.mobile}}
         </div>
       </li>
     </ul>
@@ -47,31 +46,20 @@
 </template>
 <script>
   import { mapMutations, mapState } from 'vuex'
-  import { getStore } from 'src/config/mUtils'
-  import alertTip from '../../components/common/alertTip'
-  import { storehandel } from 'src/service/getData'
   import headTop from 'src/components/header/head';
-  import { omit } from 'lodash'
 
   export default {
     data(){
       return {
-        store: {},
-        userId: getStore('userInfo').id,
-        alertText: null,
-        showAlert: false
+        userInfo:this.$route.query
       }
     },
     created(){
-      if (this.$route.query.id) {
-        //编辑门店，获取门店信息
-        this.store = this.$route.query;
-      }
     },
     mounted(){
     },
     components: {
-      headTop, alertTip
+      headTop
     },
     computed: {
       ...mapState([

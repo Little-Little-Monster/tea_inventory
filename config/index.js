@@ -37,7 +37,7 @@ module.exports = {
             // '/eus',
             // '/payapi',
         ],
-        proxypath: 'http://47.96.19.71:8080',
+        proxypath: 'http://localhost:8081',
         // CSS Sourcemaps off by default because relative paths are "buggy"
         // with this option, according to the CSS-Loader README
         // (https://github.com/webpack/css-loader#sourcemaps)

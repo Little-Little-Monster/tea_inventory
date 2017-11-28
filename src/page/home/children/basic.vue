@@ -15,7 +15,7 @@
                 <span>门店管理</span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
-            <div class="option-list">
+            <div class="option-list" @click="toAddress({name:'worker'})">
                 <span>员工管理</span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>

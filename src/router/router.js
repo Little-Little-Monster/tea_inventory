@@ -14,9 +14,19 @@ const basic = r => require.ensure([], () => r(require('../page/home/children/bas
 const store = r => require.ensure([], () => r(require('../page/storeManage/store')), 'store')
 const storeOption = r => require.ensure([], () => r(require('../page/storeManage/storeOption')), 'storeOption')
 
+const worker = r => require.ensure([], () => r(require('../page/workerManage/worker')), 'worker')
+const workerOption = r => require.ensure([], () => r(require('../page/workerManage/workerOption')), 'workerOption')
+
+const addGoods = r => require.ensure([], () => r(require('../page/goods/addGoods')), 'addGoods')
+const goodsList = r => require.ensure([], () => r(require('../page/goods/goodsList')), 'goodsList')
+const goodsAttrList = r => require.ensure([], () => r(require('../page/goods/goodsAttrList')), 'goodsAttrList')
+const goodsAddAttr = r => require.ensure([], () => r(require('../page/goods/addAttr')), 'goodsAddAttr')
+
+
 const supplierList = r => require.ensure([], () => r(require('../page/supplierManage/supplier-list')), 'supplierList')
 const addEditUpplier = r => require.ensure([], () => r(require('../page/supplierManage/add-edit-upplier')), 'addEditUpplier')
 const supplierDetail = r => require.ensure([], () => r(require('../page/supplierManage/supplier-detail')), 'supplierDetail')
+
 
 const storehouseList = r => require.ensure([], () => r(require('../page/storehouseManage/storehouse-list')), 'storehouseList')
 const addEditStorehouse = r => require.ensure([], () => r(require('../page/storehouseManage/add-edit-storehouse')), 'addEditStorehouse')
@@ -27,7 +37,8 @@ const choosegoods = r => require.ensure([], () => r(require('../page/purchase/ch
 export default [{
   path: '/',
   component: App, //顶层路由，对应index.html
-  children: [ //二级路由。对应App.vue
+  children: [
+    //二级路由。对应App.vue
     //地址为空时跳转login页面
     {
       path: '',
@@ -86,9 +97,39 @@ export default [{
       component: store
     },
     {
+      path: '/worker',
+      name: 'worker',
+      component: worker
+    },
+    {
+      path: '/workerOption',
+      name: 'workerOption',
+      component: workerOption
+    },
+    {
       path: '/storeOption',
       name: 'storeOption',
       component: storeOption
+    },
+    {
+      path: '/addGoods',
+      name: 'addGoods',
+      component: addGoods
+    },
+    {
+      path: '/goods',
+      name: 'goodsManage',
+      component: goodsList
+    },
+    {
+      path: '/goods/attr',
+      name: 'goodsAttrList',
+      component: goodsAttrList
+    },
+    {
+      path: '/goods/addAttr',
+      name: 'goodsAddAttr',
+      component: goodsAddAttr
     },
     {
       path: '/supplierList',
@@ -130,5 +171,5 @@ export default [{
       name: 'choosegoods',
       component: choosegoods
     }
-  ]
-}]
+  ],
+}];

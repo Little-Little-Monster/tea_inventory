@@ -3,6 +3,7 @@
         <section class="head_goback" v-if="goBack" @click="$router.go(-1)">
             <span class="iconfont icon-fanhui title_text"></span>
         </section>
+        <slot name="back"></slot>
         <section class="title_head ellipsis" v-if="headTitle">
             <span class="title_text">{{headTitle}}</span>
         </section>
@@ -89,7 +90,7 @@
         }
     }
     .right{
-        right: 0;
+        right: .2rem;
         @include ct;
         height: 100%;
         text-align: center;

@@ -5,14 +5,14 @@
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
     <ul class="supplier_list paddingTop">
-      <li class="supplier_info_list" v-for="list in 5">
+      <li class="supplier_info_list" v-for="list in suppList" @click="$router.push({name:'supplierDetail',query:list})">
         <div class="list_left">
-          <h4>春秋茗茶</h4>
-          <p>欠供应商欠款 <span>￥100.00</span></p>
-          <p>联系电话 <span>1856954325</span></p>
-          <p>负责人 <span>陈总</span></p>
+          <h4>{{list.name}}</h4>
+          <p>欠供应商欠款 <span>￥{{list.balance}}</span></p>
+          <p>联系电话 <span>{{list.mobile}}</span></p>
+          <p>负责人 <span>{{list.personHead}}</span></p>
         </div>
-        <div class="list_right" @click="$router.push({name:'supplierDetail'})">
+        <div class="list_right" >
           <i class="iconfont icon-qianjin"></i>
         </div>
       </li>
@@ -22,17 +22,24 @@
 <script>
   import { mapMutations } from 'vuex'
   import { getStore } from 'src/config/mUtils'
+  import { getsupplier } from 'src/service/getData'
   import headTop from 'src/components/header/head'
   import footGuide from 'src/components/footer/footGuide'
 
   export default {
     data(){
       return {
-        imgPath: 'static/images/head.png'
+        imgPath: 'static/images/head.png',
+        userId:getStore('userInfo').id,
+        parama:'',
+        suppList:null
       }
     },
+    created(){
+      this.getSupplier()
+    },
     mounted(){
-
+      
     },
     components: {
       headTop,
@@ -42,6 +49,13 @@
     methods: {
       toAddress(name){
         this.$router.push(name)
+      },
+      getSupplier(){
+        getsupplier(this.userId,this.parama).then((res)=>{
+          this.suppList=res.data;
+        }).catch((err)=>{
+
+        })
       }
     },
     watch: {}
