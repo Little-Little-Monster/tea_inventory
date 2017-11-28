@@ -20,6 +20,9 @@ const supplierDetail = r => require.ensure([], () => r(require('../page/supplier
 
 const storehouseList = r => require.ensure([], () => r(require('../page/storehouseManage/storehouse-list')), 'storehouseList')
 const addEditStorehouse = r => require.ensure([], () => r(require('../page/storehouseManage/add-edit-storehouse')), 'addEditStorehouse')
+const addPurchase = r => require.ensure([], () => r(require('../page/purchase/add-purchase')), 'addPurchase')
+const purchasedetail = r => require.ensure([], () => r(require('../page/purchase/purchase-detail')), 'purchasedetail')
+const choosegoods = r => require.ensure([], () => r(require('../page/purchase/choose-goods')), 'choosegoods')
 
 export default [{
   path: '/',
@@ -111,6 +114,21 @@ export default [{
       path: '/addEditStorehouse',
       name: 'addEditStorehouse',
       component: addEditStorehouse
+    },
+    {
+      path: '/addPurchase',
+      name: 'addPurchase',
+      component: addPurchase
+    },
+    {
+      path: '/purchasedetail',
+      name: 'purchasedetail',
+      component: purchasedetail
+    },
+    {
+      path: '/choosegoods',
+      name: 'choosegoods',
+      component: choosegoods
     }
   ]
 }]
