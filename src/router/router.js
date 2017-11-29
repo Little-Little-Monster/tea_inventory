@@ -30,170 +30,147 @@ const supplierDetail = r => require.ensure([], () => r(require('../page/supplier
 
 const storehouseList = r => require.ensure([], () => r(require('../page/storehouseManage/storehouse-list')), 'storehouseList')
 const addEditStorehouse = r => require.ensure([], () => r(require('../page/storehouseManage/add-edit-storehouse')), 'addEditStorehouse')
+
 const addPurchase = r => require.ensure([], () => r(require('../page/purchase/add-purchase')), 'addPurchase')
 const purchasedetail = r => require.ensure([], () => r(require('../page/purchase/purchase-detail')), 'purchasedetail')
 const choosegoods = r => require.ensure([], () => r(require('../page/purchase/choose-goods')), 'choosegoods')
 
-const customerlist = r => require.ensure([], () => r(require('../page/customer/customer-list')), 'customerlist')
-const addcustomer = r => require.ensure([], () => r(require('../page/customer/add-customer')), 'addcustomer')
-const addcustomertype = r => require.ensure([], () => r(require('../page/customer/add-customer-type')), 'addcustomertype')
-const choosecustomertype = r => require.ensure([], () => r(require('../page/customer/choose-customer-type')), 'choosecustomertype')
-
 export default [{
-  path: '/',
-  component: App, //顶层路由，对应index.html
-  children: [
-    //二级路由。对应App.vue
-    //地址为空时跳转login页面
-    {
-      path: '',
-      redirect: '/login'
-    },
-    //登录注册页
-    {
-      path: '/login',
-      component: login
-    },
-    //修改密码页
-    {
-      path: '/forget',
-      component: forget
-    },
-    //主界面
-    {
-      path: '/home',
-      component: home,
-      children: [
-        //首页（主菜单）
+    path: '/',
+    component: App, //顶层路由，对应index.html
+    children: [
+        //二级路由。对应App.vue
+        //地址为空时跳转login页面
         {
-          name: 'msite',
-          path: 'msite',
-          component: msite
+            path: '',
+            redirect: '/login'
         },
-        //库存查看（主菜单）
+        //登录注册页
         {
-          name: 'wirehouse',
-          path: 'wirehouse',
-          component: wirehouse
+            path: '/login',
+            component: login
         },
-        //统计查看（主菜单）
+        //修改密码页
         {
-          name: 'sensus',
-          path: 'sensus',
-          component: sensus
+            path: '/forget',
+            component: forget
         },
-        //销售查看（主菜单）
+        //主界面
         {
-          name: 'sale',
-          path: 'sale',
-          component: sale
+            path: '/home',
+            component: home,
+            children: [
+                //首页（主菜单）
+                {
+                    name: 'msite',
+                    path: 'msite',
+                    component: msite
+                },
+                //库存查看（主菜单）
+                {
+                    name: 'wirehouse',
+                    path: 'wirehouse',
+                    component: wirehouse
+                },
+                //统计查看（主菜单）
+                {
+                    name: 'sensus',
+                    path: 'sensus',
+                    component: sensus
+                },
+                //销售查看（主菜单）
+                {
+                    name: 'sale',
+                    path: 'sale',
+                    component: sale
+                },
+                //基础查看（主菜单）
+                {
+                    name: 'basic',
+                    path: 'basic',
+                    component: basic
+                }
+            ]
         },
-        //基础查看（主菜单）
         {
-          name: 'basic',
-          path: 'basic',
-          component: basic
+            path: '/store',
+            name: 'store',
+            component: store
+        },
+        {
+            path: '/worker',
+            name: 'worker',
+            component: worker
+        },
+        {
+            path: '/workerOption',
+            name: 'workerOption',
+            component: workerOption
+        },
+        {
+            path: '/storeOption',
+            name: 'storeOption',
+            component: storeOption
+        },
+        {
+            path: '/addGoods',
+            name: 'addGoods',
+            component: addGoods
+        },
+        {
+            path: '/goods',
+            name: 'goodsManage',
+            component: goodsList
+        },
+        {
+            path: '/goods/attr',
+            name: 'goodsAttrList',
+            component: goodsAttrList
+        },
+        {
+            path: '/goods/addAttr',
+            name: 'goodsAddAttr',
+            component: goodsAddAttr
+        },
+        {
+            path: '/supplierList',
+            name: 'supplierList',
+            component: supplierList
+        },
+        {
+            path: '/addEditUpplier',
+            name: 'addEditUpplier',
+            component: addEditUpplier
+        },
+        {
+            path: '/supplierDetail',
+            name: 'supplierDetail',
+            component: supplierDetail
+        },
+        {
+            path: '/storehouseList',
+            name: 'storehouseList',
+            component: storehouseList
+        },
+        {
+            path: '/addEditStorehouse',
+            name: 'addEditStorehouse',
+            component: addEditStorehouse
+        },
+        {
+            path: '/addPurchase',
+            name: 'buyTrade',
+            component: addPurchase
+        },
+        {
+            path: '/purchasedetail',
+            name: 'purchasedetail',
+            component: purchasedetail
+        },
+        {
+            path: '/choosegoods',
+            name: 'choosegoods',
+            component: choosegoods
         }
-      ]
-    },
-    {
-      path: '/store',
-      name: 'store',
-      component: store
-    },
-    {
-      path: '/worker',
-      name: 'worker',
-      component: worker
-    },
-    {
-      path: '/workerOption',
-      name: 'workerOption',
-      component: workerOption
-    },
-    {
-      path: '/storeOption',
-      name: 'storeOption',
-      component: storeOption
-    },
-    {
-      path: '/addGoods',
-      name: 'addGoods',
-      component: addGoods
-    },
-    {
-      path: '/goods',
-      name: 'goodsManage',
-      component: goodsList
-    },
-    {
-      path: '/goods/attr',
-      name: 'goodsAttrList',
-      component: goodsAttrList
-    },
-    {
-      path: '/goods/addAttr',
-      name: 'goodsAddAttr',
-      component: goodsAddAttr
-    },
-    {
-      path: '/supplierList',
-      name: 'supplierList',
-      component: supplierList
-    },
-    {
-      path: '/addEditUpplier',
-      name: 'addEditUpplier',
-      component: addEditUpplier
-    },
-    {
-      path: '/supplierDetail',
-      name: 'supplierDetail',
-      component: supplierDetail
-    },
-    {
-      path: '/storehouseList',
-      name: 'storehouseList',
-      component: storehouseList
-    },
-    {
-      path: '/addEditStorehouse',
-      name: 'addEditStorehouse',
-      component: addEditStorehouse
-    },
-    {
-      path: '/addPurchase',
-      name: 'addPurchase',
-      component: addPurchase
-    },
-    {
-      path: '/purchasedetail',
-      name: 'purchasedetail',
-      component: purchasedetail
-    },
-    {
-      path: '/choosegoods',
-      name: 'choosegoods',
-      component: choosegoods
-    },
-    {
-      path: '/customerlist',
-      name: 'customerlist',
-      component: customerlist
-    },
-    {
-      path: '/addcustomer',
-      name: 'addcustomer',
-      component: addcustomer
-    },
-    {
-      path: '/addcustomertype',
-      name: 'addcustomertype',
-      component: addcustomertype
-    }, {
-      path: '/choosecustomertype',
-      name: 'choosecustomertype',
-      component: choosecustomertype
-    },
-  ],
+    ],
 }];

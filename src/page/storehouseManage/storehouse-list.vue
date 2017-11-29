@@ -12,21 +12,22 @@
       <div class="right_button">已停用 <span v-show="!enable"></span></div>
     </div>
     <ul class="storehouse_content">
-      <li class="supplier_info_list" v-for="list in storeHousList">
+      <li class="supplier_info_list" v-for="list in storeHousList" @click="editHouse(list)">
         <div class="list_left">
-          <h4>环球中心</h4>
-          <p>负责人：<span>张琪伦</span></p>
-          <p>门店：环球中心一楼茶点</p>
+         <h4>{{list.warehouseName}}</h4>
+          <p>负责人：<span>{{list.warehouseHeadName}}</span></p>
+          <p>门店：{{list.storeName}}</p>
         </div>
-        <div class="list_right" @click="$router.push({name:'addEditStorehouse',query:{id: true}})">
-          <i class="iconfont icon-qianjin"></i>
+        <div class="list_right">
+         <i class="iconfont icon-qianjin" v-if="!chooseWareHouse"></i>
+          <em v-if="chooseWareHouse" class="iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.warehouseId,'icon-danxuanweizhong':chooseId!=list.warehouseId}" @click="chooseId=list.warehouseId;chooseName=list.warehouseName"></em>
         </div>
       </li>
     </ul>
   </div>
 </template>
 <script>
-  import { mapMutations } from 'vuex'
+  import { mapMutations,mapState } from 'vuex'
   import { getStore } from 'src/config/mUtils'
   import headTop from 'src/components/header/head'
   import { getstorehouse } from 'src/service/getData';
@@ -37,11 +38,26 @@
         imgPath: 'static/images/head.png',
         storeHousList:null,
         enable:true,
+        chooseWareHouse:this.$route.query.chooseWareHouse,
+        fromPage:this.$route.query.fromPage,
+        chooseId:-1,
+        chooseName:'',
         userId:getStore('userInfo').id
       }
     },
     created(){
       this.getStoreHouse()
+      if(this.chooseWareHouse){
+        switch (this.fromPage) {
+          case 'buyOrder':
+            this.chooseId = this.buyOrder.warehouseId
+            this.chooseName = this.buyOrder.warehouseName
+            break;
+        
+          default:
+            break;
+        }
+      }
     },
     mounted(){
 
@@ -49,10 +65,14 @@
     components: {
       headTop,
     },
-    computed: {},
+    computed: {
+      ...mapState([
+        "buyOrder"
+      ])
+    },
     methods: {
       ...mapMutations([
-        'CHANGE_HEADER'
+        'CHANGE_HEADER','RECORD_BUYORDER'
       ]),
       toAddress(name){
         this.$router.push(name)
@@ -64,8 +84,36 @@
 
         })
       },
+      editHouse(list){
+        if(!this.chooseWareHouse){
+          this.$router.push({name:'addEditStorehouse',
+            query:{
+              edit: true,
+              storeInfo:JSON.stringify(list)
+            }
+          })
+        }
+      },
       goBack(){
-        this.$router.push({name:'basic'})
+        if(!this.chooseWareHouse){
+          this.$router.push({name:'basic'})
+        }else{
+          switch (this.fromPage) {
+            case 'buyOrder':
+              this.$router.push({
+                name:"buyTrade"
+              });
+              let order = Object.assign({},this.buyOrder,{
+                warehouseId:this.chooseId==-1?'':this.chooseId,
+                warehouseName:this.chooseName
+              })
+              this.RECORD_BUYORDER(order)
+              break;
+          
+            default:
+              break;
+          }
+        }
       }
     },
     watch: {}
@@ -122,5 +170,8 @@
         }
       }
     }
+  }
+  .check-icon {
+    @include sc(.4rem, $green)
   }
 </style>

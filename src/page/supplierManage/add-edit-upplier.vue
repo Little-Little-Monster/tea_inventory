@@ -1,7 +1,6 @@
 <template>
   <div>
     <head-top signin-up='msite' goBack="true" :head-title="$route.query.id?'编辑供应商':'新增供应商'">
-      <router-link slot="right" class="iconfont icon-jia" :to="{name:'storeOption'}"></router-link>
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
     <ul class="add-edit-upplier paddingTop">

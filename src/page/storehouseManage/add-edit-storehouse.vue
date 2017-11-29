@@ -1,6 +1,6 @@
 <template>
   <div class="add_edit_storehouse">
-    <head-top goBack="" :head-title="$route.query.id?'编辑仓库':'新增仓库'">
+    <head-top goBack="" :head-title="$route.query.edit?'编辑仓库':'新增仓库'">
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
       <span  slot="back" @click="$router.push({name:'storehouseList'})">
           <span class="back iconfont icon-fanhui"></span>
@@ -30,7 +30,7 @@
           启用
         </div>
         <div class="list_right">
-          <kswitch :checked="enable" @click.native="enable=!enable"></kswitch>
+          <kswitch :checked="Boolean(storeHouse.status)" @click.native="storeHouse.status==0?storeHouse.status=1:storeHouse.status=0"></kswitch>
         </div>
       </li>
     </ul>
@@ -77,21 +77,31 @@
       }
     },
     created(){
+      this.$set(this.storeHouse,'status',1);
       if(this.$route.query.singleId){
         this.$set(this.storeHouse,'storeName',this.$route.query.singleName)
         this.$set(this.storeHouse,'storeId',this.$route.query.singleId)
         this.$set(this.storeHouse,'workerId',this.$route.query.workerId)
         this.$set(this.storeHouse,'workerName',this.$route.query.workerName)
         this.$set(this.storeHouse,'memo',this.$route.query.memo)
+        this.$set(this.storeHouse,'status',this.$route.query.status)
         this.$set(this.storeHouse,'warehouseName',this.$route.query.warehouseName)
       }
       if(this.$route.query.workerId){
+        
         this.$set(this.storeHouse,'storeName',this.$route.query.singleName)
         this.$set(this.storeHouse,'storeId',this.$route.query.singleId)
         this.$set(this.storeHouse,'workerId',this.$route.query.workerId)
         this.$set(this.storeHouse,'workerName',this.$route.query.workerName);
         this.$set(this.storeHouse,'memo',this.$route.query.memo)
         this.$set(this.storeHouse,'warehouseName',this.$route.query.warehouseName)
+        this.$set(this.storeHouse,'status',this.$route.query.status)
+      }
+      if(this.$route.query.edit){
+        //编辑门店
+        this.storeHouse = JSON.parse(this.$route.query.storeInfo);
+        this.storeHouse.workerId = this.storeHouse.warehouseHead
+        this.storeHouse.workerName = this.storeHouse.warehouseHeadName
       }
     },
     mounted(){
@@ -123,6 +133,8 @@
               workerName:this.storeHouse.workerName,
               warehouseName:this.storeHouse.warehouseName,
               memo:this.storeHouse.memo,
+              status:this.storeHouse.status,
+              edit:this.$route.query.edit
             }
           }
         )
@@ -140,6 +152,8 @@
               singleName:this.storeHouse.storeName,
               warehouseName:this.storeHouse.warehouseName,
               memo:this.storeHouse.memo,
+              status:this.storeHouse.status,
+              edit:this.$route.query.edit
             }
           }
         )
@@ -152,9 +166,10 @@
         }
         this.storeHouse.warehouseHead = this.storeHouse.workerId
         savewirehouse(this.storeHouse).then((res)=>{
-
+          this.$router.push({name:"storehouseList"})
         }).catch((err)=>{
-          
+          this.showAlert = true;
+          this.alertText=err.message
         })
       }
 

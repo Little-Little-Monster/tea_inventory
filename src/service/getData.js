@@ -114,6 +114,14 @@ export const getgoodslist = (userId, goodsClassId, priceFlag, page, pageSize) =>
 });
 
 /**
+ * 获取商品详情
+ */
+
+export const getgoodsinfo = (id) => fetch('/api/invoicing/goods/edit', {
+    id
+});
+
+/**
  * 创建/更新商品
  */
 
@@ -148,6 +156,12 @@ export const getgoodsunit = (userId) => fetch('/api/invoicing/goods/unit/query/l
  */
 
 export const getgoodsbrand = (userId) => fetch('/api/invoicing/goods/brand/query/list', { userId });
+
+/**
+ * 添加/更新采购单
+ */
+
+export const savebuyorder = (userId, buyOrder) => fetch('/api/invoicing/' + userId + '/buy/trade/handler', buyOrder, 'POST');
 
 
 

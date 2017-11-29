@@ -1,23 +1,28 @@
 <template>
   <div class="add_purchase">
-    <head-top goBack="true" head-title="采购单">
+    <head-top goBack="" head-title="采购单">
+      <div slot="back" class="goback" @click="toAddress({name:'msite'});RECORD_BUYORDER({})" >
+          <span class="iconfont icon-fanhui title_text"></span>
+      </div>
     </head-top>
     <ul class="add_purchase_header paddingTop">
-      <li>
-        <div class="list_left">
+      <li @click="goSupplier">
+        <div class="list_left" >
           供应商 <i>*</i>
         </div>
         <div class="list_right">
-          <span>陈老板</span>
+          <span v-if="buyOrderInfo.supplierName">{{buyOrderInfo.supplierName}}</span>
+          <span v-if="!buyOrderInfo.supplierName">请选择供应商</span>
           <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
         </div>
       </li>
-      <li>
+      <li @click="goStore">
         <div class="list_left">
           仓库
         </div>
-        <div class="list_right">
-          <span>环球中心店</span>
+        <div class="list_right" >
+          <span v-if="buyOrderInfo.warehouseName">{{buyOrderInfo.warehouseName}}</span>
+          <span v-if="!buyOrderInfo.warehouseName">请选择供仓库</span>
           <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
         </div>
       </li>
@@ -85,7 +90,7 @@
   </div>
 </template>
 <script>
-  import { mapMutations } from 'vuex'
+  import { mapMutations,mapState } from 'vuex'
   import { getStore } from 'src/config/mUtils'
   import headTop from 'src/components/header/head'
   import footGuide from 'src/components/footer/footGuide'
@@ -95,7 +100,11 @@
       return {
         imgPath: 'static/images/head.png',
         enable: true,
+        buyOrderInfo:{}
       }
+    },
+    created(){
+      this.buyOrderInfo = this.buyOrder
     },
     mounted(){
 
@@ -104,13 +113,31 @@
       headTop,
       footGuide,
     },
-    computed: {},
+    computed: {
+      ...mapState([
+        'buyOrder'
+      ])
+    },
     methods: {
       ...mapMutations([
-        'CHANGE_HEADER'
+        'CHANGE_HEADER','RECORD_BUYORDER'
       ]),
       toAddress(name){
         this.$router.push(name)
+      },
+      goSupplier(){
+        //跳转到供应商
+        this.$router.push({name:"supplierList",query:{
+          chooseSupplier:true,
+          fromPage:'buyOrder'
+        }})
+      },
+      goStore(){
+        //跳转到仓库
+        this.$router.push({name:"storehouseList",query:{
+          chooseWareHouse:true,
+          fromPage:'buyOrder'
+        }})
       }
     },
     watch: {}

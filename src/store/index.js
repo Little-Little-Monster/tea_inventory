@@ -9,7 +9,8 @@ Vue.use(Vuex)
 const state = {
     userInfo: null, //用户信息
     headTitle: "茶叶进销存管理系统",
-    storeGoodsInfo: {}
+    storeGoodsInfo: {},
+    buyOrder: {}
 }
 
 export default new Vuex.Store({

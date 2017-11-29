@@ -1,7 +1,7 @@
 <template>
     <div>
     	<head-top signin-up='msite' goBack="" :headTitle="goodsInfo.id?'编辑商品':'添加商品'">
-            <div slot="back" class="goback" @click="$router.push({name:'goodsManage'})" >
+            <div slot="back" class="goback" @click="returnBack" >
                 <span class="iconfont icon-fanhui title_text"></span>
             </div>
     	</head-top>
@@ -58,7 +58,7 @@
                         <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
                     </div>
                 </li>
-                <li class="margin-bot"  @click="getAttr({name:'goodsAttrList',query:{type:'storeGoodsNum'}})">
+                <!-- <li class="margin-bot"  @click="getAttr({name:'goodsAttrList',query:{type:'storeGoodsNum'}})">
                     <div class="list_left">
                     初始库存数量 <i></i>
                     </div>
@@ -67,7 +67,7 @@
                         <span v-else="!goodsInfo.goodsUnitId">{{goodsInfo.goodsUnitName}}</span>
                         <i class="iconfont icon-qianjin" style="position: relative;top: 1px;"></i>
                     </div>
-                </li>
+                </li> -->
                 <li class="margin-bot" style="min-height:1.4rem">
                     <div class="list_left">
                     商品图片 <i></i>
@@ -97,7 +97,7 @@
                         <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
                     </div>
                 </li>
-                 <li class="limit">
+                <!-- <li class="limit">
                     <div class="list-con" @click="isShow=!isShow">
                         <div class="list_left">
                         库存预警
@@ -123,7 +123,7 @@
                              <input type="number" step="0.01" v-model="downLimit" placeholder="0" style="width: 2.99rem;">
                         </div>
                     </div>
-                </li>
+                </li> -->
                  <li>
                     <div class="list_left">
                     状态(启用商品)
@@ -149,7 +149,7 @@
 <script>
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
-import {savegoods} from 'src/service/getData'
+import {savegoods,getgoodsinfo} from 'src/service/getData'
 import headTop from 'src/components/header/head'
 import kswitch from 'src/components/common/kswitch'
 import alertTip from '../../components/common/alertTip'
@@ -172,6 +172,9 @@ export default {
         this.$set(this.goodsInfo,"status",1);
         if(this.storeGoodsInfo){
             this.goodsInfo = this.storeGoodsInfo;
+        }
+        if(this.$route.query.edit){
+            this.getGoodsInfo()
         }
         
     },
@@ -196,6 +199,12 @@ export default {
             this.$router.push(router)
             this.RECORD_GOODSINFO(this.goodsInfo);
         },
+        getGoodsInfo(){
+            //编辑商品获取信息
+            getgoodsinfo(this.$route.query.goodsId).then((res)=>{
+                 this.goodsInfo = res.data;
+            })
+        },
         async saveGoods(){
             if(!this.goodsInfo.name){
                 this.showTip("请输入商品名称");
@@ -212,7 +221,8 @@ export default {
                 });
             }
             savegoods(this.userId,this.goodsInfo).then((res)=>{
-                this.$router.push({name:"goodsManage"})
+                this.$router.push({name:"goodsManage"});
+                this.RECORD_GOODSINFO({})
             }).catch((err)=>{
                 this.showTip(err.message);
             })
@@ -238,6 +248,10 @@ export default {
                     this.showTip(this.file.name)
                 }
             }
+        },
+        returnBack(){
+            this.$router.push({name:"goodsManage"});
+            this.RECORD_GOODSINFO({})
         }
       },
 }

@@ -1,26 +1,30 @@
 <template>
   <div>
-    <head-top signin-up='msite' goBack="true" head-title="供应商列表">
-      <router-link slot="right" class="iconfont icon-jia" :to="{name:'addEditUpplier'}"></router-link>
+    <head-top signin-up='msite' goBack="" head-title="供应商列表">
+      <span slot="right" class="iconfont icon-jia" @click="$router.push({name:'addEditUpplier'})" ></span>
+      <div slot="back" class="goback" @click="goBack" >
+          <span class="iconfont icon-fanhui title_text"></span>
+      </div>
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
     <ul class="supplier_list paddingTop">
-      <li class="supplier_info_list" v-for="list in suppList" @click="$router.push({name:'supplierDetail',query:list})">
+      <li class="supplier_info_list" v-for="list in suppList" @click="editSupp(list)">
         <div class="list_left">
           <h4>{{list.name}}</h4>
           <p>欠供应商欠款 <span>￥{{list.balance}}</span></p>
           <p>联系电话 <span>{{list.mobile}}</span></p>
           <p>负责人 <span>{{list.personHead}}</span></p>
         </div>
-        <div class="list_right" >
-          <i class="iconfont icon-qianjin"></i>
+        <div class="list_right">
+          <i class="iconfont icon-qianjin" v-if="!chooseSupplier"></i>
+          <em v-if="chooseSupplier" class="iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click="chooseId=list.id;chooseName=list.name"></em>
         </div>
       </li>
     </ul>
   </div>
 </template>
 <script>
-  import { mapMutations } from 'vuex'
+  import { mapMutations,mapState } from 'vuex'
   import { getStore } from 'src/config/mUtils'
   import { getsupplier } from 'src/service/getData'
   import headTop from 'src/components/header/head'
@@ -32,11 +36,26 @@
         imgPath: 'static/images/head.png',
         userId:getStore('userInfo').id,
         parama:'',
-        suppList:null
+        chooseSupplier:this.$route.query.chooseSupplier,
+        fromPage:this.$route.query.fromPage,
+        suppList:null,
+        chooseId:-1,
+        chooseName:null
       }
     },
     created(){
-      this.getSupplier()
+      this.getSupplier();
+      if(this.chooseSupplier){
+          switch (this.fromPage) {
+            case 'buyOrder':
+              this.chooseId = this.buyOrder.supplierId
+              this.chooseName = this.buyOrder.supplierName
+              break;
+          
+            default:
+              break;
+        }
+      }
     },
     mounted(){
       
@@ -45,10 +64,38 @@
       headTop,
       footGuide,
     },
-    computed: {},
+    computed: {
+      ...mapState([
+        'buyOrder'
+      ])
+    },
     methods: {
+      ...mapMutations([
+        "RECORD_BUYORDER"
+      ]),
       toAddress(name){
         this.$router.push(name)
+      },
+      goBack(){
+        if(!this.chooseSupplier){
+          this.$router.go(-1)
+        }else{
+          switch (this.fromPage) {
+            case 'buyOrder':
+              this.$router.push({
+                name:"buyTrade",
+              })
+              let order = Object.assign({},this.buyOrder,{
+                supplierId:this.chooseId==-1?'':this.chooseId,
+                supplierName:this.chooseName
+              })
+              this.RECORD_BUYORDER(order)
+              break;
+          
+            default:
+              break;
+          }
+        }
       },
       getSupplier(){
         getsupplier(this.userId,this.parama).then((res)=>{
@@ -56,6 +103,11 @@
         }).catch((err)=>{
 
         })
+      },
+      editSupp(list){
+        if(!this.chooseSupplier){
+          this.$router.push({name:'supplierDetail',query:list})
+        }
       }
     },
     watch: {}
@@ -92,5 +144,8 @@
         }
       }
     }
+  }
+  .check-icon{
+    @include sc(.4rem,$green)
   }
 </style>

@@ -8,7 +8,7 @@
     	</head-top>
 
         <div class="cneter-con paddingTop">
-            <div class="list goods-con" v-for="goods in goodsList" @click="editGoods(goods)">
+            <div class="list goods-con" v-for="goods in goodsList" @click="editGoods(goods.id)">
                 <div class="header">
                     <img :src="goods.attachmentUrl" alt="">
                 </div>
@@ -262,9 +262,9 @@ export default {
 
             })
         },
-        editGoods(list){
-            this.RECORD_GOODSINFO(list)
-            this.$router.push({name:"addGoods"});
+        editGoods(goodsId){
+            // this.RECORD_GOODSINFO(list)
+            this.$router.push({name:"addGoods",query:{edit:true,goodsId:goodsId}});
         }
 
     }

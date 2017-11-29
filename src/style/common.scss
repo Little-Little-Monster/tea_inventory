@@ -197,6 +197,10 @@ input {
     text-align: center;
 }
 
+.check-icon {
+    @include sc(.4rem, $green)
+}
+
 //列表样式
 .list {
     @include wh(100%, 1rem);

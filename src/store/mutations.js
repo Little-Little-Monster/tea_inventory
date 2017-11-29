@@ -1,7 +1,8 @@
 import {
     CHANGE_HEADER,
     RECORD_USERINFO,
-    RECORD_GOODSINFO
+    RECORD_GOODSINFO,
+    RECORD_BUYORDER
 } from './mutation-types.js'
 
 import { setStore, getStore } from '../config/mUtils'
@@ -19,5 +20,8 @@ export default {
     },
     [RECORD_GOODSINFO](state, goodsInfo) {
         state.storeGoodsInfo = goodsInfo;
+    },
+    [RECORD_BUYORDER](state, buyorder) {
+        state.buyOrder = buyorder;
     }
 }

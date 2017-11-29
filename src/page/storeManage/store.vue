@@ -91,6 +91,8 @@ export default {
                             workerName:this.$route.query.workerName,
                             warehouseName:this.$route.query.warehouseName,
                             memo:this.$route.query.memo,
+                            edit:this.$route.query.edit,
+                            status:this.$route.query.status,
                         }
                     }
                 )

@@ -18,7 +18,7 @@
                     <em v-if="!isOn"></em>
                 </div>
             </section>
-            <div class="worker-list list" v-for="list in workerList" @click="editWorker">
+            <div class="worker-list list" v-for="list in workerList" @click="editWorker(list)">
                 <span>{{list.employeeName}}</span>
                 <p>所属门店：<em>{{list.storeName}}</em></p>
                 <p>最后登陆时间：<em>{{list.loginTime}}</em></p>
@@ -85,6 +85,8 @@ export default {
                             singleName:this.$route.query.singleName,
                             warehouseName:this.$route.query.warehouseName,
                             memo:this.$route.query.memo,
+                            edit:this.$route.query.edit,
+                            status:this.$route.query.status,
                         }
                     })
                 }
@@ -92,7 +94,7 @@ export default {
                 this.$router.push({name:'basic'})
             }
         },
-        editWorker(){
+        editWorker(list){
             if(!this.$route.query.getWorker){
                 this.$router.push({name:'workerOption',query:{employeeId:list.employeeId}})
             }
