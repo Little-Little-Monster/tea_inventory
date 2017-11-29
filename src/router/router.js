@@ -34,6 +34,11 @@ const addPurchase = r => require.ensure([], () => r(require('../page/purchase/ad
 const purchasedetail = r => require.ensure([], () => r(require('../page/purchase/purchase-detail')), 'purchasedetail')
 const choosegoods = r => require.ensure([], () => r(require('../page/purchase/choose-goods')), 'choosegoods')
 
+const customerlist = r => require.ensure([], () => r(require('../page/customer/customer-list')), 'customerlist')
+const addcustomer = r => require.ensure([], () => r(require('../page/customer/add-customer')), 'addcustomer')
+const addcustomertype = r => require.ensure([], () => r(require('../page/customer/add-customer-type')), 'addcustomertype')
+const choosecustomertype = r => require.ensure([], () => r(require('../page/customer/choose-customer-type')), 'choosecustomertype')
+
 export default [{
   path: '/',
   component: App, //顶层路由，对应index.html
@@ -170,6 +175,25 @@ export default [{
       path: '/choosegoods',
       name: 'choosegoods',
       component: choosegoods
-    }
+    },
+    {
+      path: '/customerlist',
+      name: 'customerlist',
+      component: customerlist
+    },
+    {
+      path: '/addcustomer',
+      name: 'addcustomer',
+      component: addcustomer
+    },
+    {
+      path: '/addcustomertype',
+      name: 'addcustomertype',
+      component: addcustomertype
+    }, {
+      path: '/choosecustomertype',
+      name: 'choosecustomertype',
+      component: choosecustomertype
+    },
   ],
 }];
