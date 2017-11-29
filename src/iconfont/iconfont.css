@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'iconfont';  /* project id 479894 */
-  src: url('//at.alicdn.com/t/font_479894_6qpy36fdk7k138fr.eot');
-  src: url('//at.alicdn.com/t/font_479894_6qpy36fdk7k138fr.eot?#iefix') format('embedded-opentype'),
-  url('//at.alicdn.com/t/font_479894_6qpy36fdk7k138fr.woff') format('woff'),
-  url('//at.alicdn.com/t/font_479894_6qpy36fdk7k138fr.ttf') format('truetype'),
-  url('//at.alicdn.com/t/font_479894_6qpy36fdk7k138fr.svg#iconfont') format('svg');
+  src: url('//at.alicdn.com/t/font_479894_aoyddrqxy6lp7gb9.eot');
+  src: url('//at.alicdn.com/t/font_479894_aoyddrqxy6lp7gb9.eot?#iefix') format('embedded-opentype'),
+  url('//at.alicdn.com/t/font_479894_aoyddrqxy6lp7gb9.woff') format('woff'),
+  url('//at.alicdn.com/t/font_479894_aoyddrqxy6lp7gb9.ttf') format('truetype'),
+  url('//at.alicdn.com/t/font_479894_aoyddrqxy6lp7gb9.svg#iconfont') format('svg');
 }
 
 .iconfont {
@@ -159,3 +159,6 @@
   content: "\e600";
 }
 
+.icon-bianji:before {
+  content: "\e6f5";
+}
