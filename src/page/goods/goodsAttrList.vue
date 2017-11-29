@@ -2,7 +2,7 @@
     <div>
     	<head-top signin-up='msite' goBack="" :headTitle="title">
             <div slot="right" v-if="queryType!='storeGoodsNum'" class="iconfont icon-jia" @click="toAddAttr"></div>
-            <div slot="back" class="goback" @click="$router.push({name:'addGoods'})" >
+            <div slot="back" class="goback" @click="goBackRoute" >
                 <span class="iconfont icon-fanhui title_text"></span>
             </div>
     	</head-top>
@@ -11,15 +11,52 @@
             <section v-if="queryType!='storeGoodsNum'" class="title-tip">
                 向左滑动,选项可编辑
             </section>
-            <v-touch v-if="queryType!='storeGoodsNum'" @swipeleft="inputIndex=index;singleId=null" class="list" v-for="(list,index) in attrList">
-                <span v-show="inputIndex!=index">{{list.name}}</span>
-                <input type="text" class="input-attr" v-model="list.name" v-show="inputIndex==index">
-                <em v-show="inputIndex!=index" class="list-option iconfont check-icon" :class="{'icon-radio-checked':singleId==list.id,'icon-danxuanweizhong':singleId!=list.id}" @click="singleId=list.id;singleName=list.name"></em>
-                <em class="list-option edit-option" v-show="inputIndex==index">
-                    <i class="iconfont icon-gou" @click="editAttr(list)"></i>
-                    <i class="iconfont icon-cha" @click="inputIndex=-1"></i>
-                </em>
-            </v-touch>
+            <div v-if="queryType!='storeGoodsNum'" class="list" v-for="(list,index) in attrList">
+                <v-touch class="parentType" @swipeleft="inputIndex=list.id;singleId=null">
+                    <span v-show="inputIndex!=list.id">{{list.name}}</span>
+                    <input type="text" class="input-attr" v-model="list.name" v-show="inputIndex==list.id">
+                    <em v-show="inputIndex!=list.id" class="list-option iconfont check-icon" :class="{'icon-radio-checked':singleId==list.id,'icon-danxuanweizhong':singleId!=list.id}" @click="singleId=list.id;singleName=list.name"></em>
+                    <em class="list-option edit-option" v-show="inputIndex==list.id">
+                        <i class="iconfont icon-gou" @click="editAttr(sublist)"></i>
+                        <i class="iconfont icon-cha" @click="inputIndex=-1"></i>
+                    </em>
+                </v-touch>
+
+                <div class="sub-type" v-if="queryType=='goodsType'&&list.children" v-for="sublist in list.children">
+                    <v-touch @swipeleft="inputIndex=sublist.id;singleId=null" style="height:1rem;min-height:1rem;position:relative">
+                        <span v-show="inputIndex!=sublist.id">{{sublist.name}}</span>
+                        <input type="text" class="input-attr" v-model="sublist.name" v-show="inputIndex==sublist.id">   
+                        <em v-show="inputIndex!=sublist.id" class="list-option iconfont check-icon" :class="{'icon-radio-checked':singleId==sublist.id,'icon-danxuanweizhong':singleId!=sublist.id}" @click="singleId=sublist.id;singleName=sublist.name"></em>
+                        <em class="list-option edit-option" v-show="inputIndex==sublist.id">
+                            <i class="iconfont icon-gou" @click="editAttr(sublist)"></i>
+                            <i class="iconfont icon-cha" @click="inputIndex=-1"></i>
+                        </em>
+                    </v-touch>
+                    <div v-if="queryType=='goodsType'&&sublist.children" v-for="sublist2 in sublist.children">
+                        <v-touch  @swipeleft="inputIndex=sublist2.id;singleId=null" style="height:1rem;min-height:1rem;position:relative;padding-left:5%">
+                            <span v-show="inputIndex!=sublist2.id">{{sublist2.name}}</span>
+                            <input type="text" class="input-attr" v-model="sublist2.name" v-show="inputIndex==sublist2.id">   
+                            <em v-show="inputIndex!=sublist2.id" class="list-option iconfont check-icon" :class="{'icon-radio-checked':singleId==sublist2.id,'icon-danxuanweizhong':singleId!=sublist2.id}" @click="singleId=sublist2.id;singleName=sublist2.name"></em>
+                            <em class="list-option edit-option" v-show="inputIndex==sublist2.id">
+                                <i class="iconfont icon-gou" @click="editAttr(sublist2)"></i>
+                                <i class="iconfont icon-cha" @click="inputIndex=-1"></i>
+                            </em>
+                        </v-touch>
+                        <div v-if="queryType=='goodsType'&&sublist2.children" v-for="sublist3 in sublist2.children">
+                            <v-touch class="sub-type2" @swipeleft="inputIndex=sublist3.id;singleId=null" style="height:1rem;min-height:1rem;position:relative;padding-left:15%">
+                                <span v-show="inputIndex!=sublist3.id">{{sublist3.name}}</span>
+                                <input type="text" class="input-attr" v-model="sublist3.name" v-show="inputIndex==sublist3.id">   
+                                <em v-show="inputIndex!=sublist3.id" class="list-option iconfont check-icon" :class="{'icon-radio-checked':singleId==sublist3.id,'icon-danxuanweizhong':singleId!=sublist3.id}" @click="singleId=sublist3.id;singleName=sublist3.name"></em>
+                                <em class="list-option edit-option" v-show="inputIndex==sublist3.id">
+                                    <i class="iconfont icon-gou" @click="editAttr(sublist3)"></i>
+                                    <i class="iconfont icon-cha" @click="inputIndex=-1"></i>
+                                </em>
+                            </v-touch>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
             <div v-if="queryType=='storeGoodsNum'" class="list" v-for="storehouse in storehouseList">
                 <span>{{storehouse.storeName}}</span>
                 <div class="list-option">
@@ -154,7 +191,7 @@ export default {
                 //选择品牌
                 this.goodsInfo.goodsBrandId = this.singleId
                 this.goodsInfo.goodsBrandName = this.singleName
-            }else if(this.queryType=='goodsType'){
+            }else if(this.queryType=='goodsType' && !this.$route.query.getParent){
                 //选择分类
                 this.goodsInfo.goodsClassificationId = this.singleId
                 this.goodsInfo.goodsClassificationName = this.singleName
@@ -162,7 +199,7 @@ export default {
                 //选择单位
                 this.goodsInfo.goodsUnitId = this.singleId
                 this.goodsInfo.goodsUnitName = this.singleName
-            }else{
+            }else if(this.queryType=='storeGoodsNum'){
                 //仓库初始数量
                 this.storehouseList.forEach(element => {
                     if(Number(element.quantity)<0){
@@ -176,11 +213,29 @@ export default {
                 });
             }
             this.RECORD_GOODSINFO(this.goodsInfo);
-            this.$router.push({name:"addGoods"})
+            if(!this.$route.query.getParent){
+                this.$router.push({name:"addGoods"})
+            }else{
+                this.attr = JSON.parse(this.$route.query.attr);
+                this.attr.parentId = this.singleId;
+                this.attr.parentName = this.singleName;
+                this.$router.push({name:'goodsAddAttr',query:{
+                    type:this.queryType,
+                    attr:JSON.stringify(this.attr)
+                    }
+                })
+            } 
         },
         toAddAttr(){
             //跳转到添加页面
             this.$router.push({name:'goodsAddAttr',query:{type:this.queryType}})
+        },
+        goBackRoute(){
+            if(this.$route.query.getParent){
+                this.$router.push({name:'goodsAddAttr',query:{type:this.queryType}})
+            }else{
+                this.$router.push({name:'addGoods'})
+            }
         }
 
     }
@@ -205,6 +260,32 @@ export default {
         @include sc(.4rem,$green)
     }
     .list{
+        min-height: 1rem;
+        height: auto;
+        &>div{
+            position: relative;
+            height: 1rem;
+            line-height:1rem;
+        }
+        .parentType{
+            padding-left:5%;
+        }
+        .sub-type{
+            padding-left:10%;
+            min-height: 1rem;
+            height: auto;
+            position: relative;
+            .list-option{
+                top:.4rem;
+            }
+            .sub-type2{
+                position: relative;
+                padding-left:15%;
+                min-height: 1rem;
+                height:1rem;
+                height: auto;
+            }
+        }
         .edit-option{
             i{
                 @include sc(.4rem,$green);
