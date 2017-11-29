@@ -30,11 +30,15 @@ const supplierDetail = r => require.ensure([], () => r(require('../page/supplier
 
 const storehouseList = r => require.ensure([], () => r(require('../page/storehouseManage/storehouse-list')), 'storehouseList')
 const addEditStorehouse = r => require.ensure([], () => r(require('../page/storehouseManage/add-edit-storehouse')), 'addEditStorehouse')
+const addPurchase = r => require.ensure([], () => r(require('../page/purchase/add-purchase')), 'addPurchase')
+const purchasedetail = r => require.ensure([], () => r(require('../page/purchase/purchase-detail')), 'purchasedetail')
+const choosegoods = r => require.ensure([], () => r(require('../page/purchase/choose-goods')), 'choosegoods')
 
 export default [{
   path: '/',
   component: App, //顶层路由，对应index.html
-  children: [ //二级路由。对应App.vue
+  children: [
+    //二级路由。对应App.vue
     //地址为空时跳转login页面
     {
       path: '',
@@ -86,71 +90,86 @@ export default [{
           component: basic
         }
       ]
-     },
-     {
-        path: '/store',
-        name: 'store',
-        component: store
-     },
-     {
-          path: '/storeOption',
-          name: 'storeOption',
-          component: storeOption
-      },
-      {
-          path: '/worker',
-          name: 'worker',
-          component: worker
-      },
-      {
-          path: '/workerOption',
-          name: 'workerOption',
-          component: workerOption
-      },
-      {
-          path: '/goods',
-          name: 'goodsManage',
-          component: goodsList
-      },
-      {
-          path: '/addGoods',
-          name: 'addGoods',
-          component: addGoods
-      },
-      {
-          path: '/goods/attr',
-          name: 'goodsAttrList',
-          component: goodsAttrList
-      },
-      {
-          path: '/goods/addAttr',
-          name: 'goodsAddAttr',
-          component: goodsAddAttr
-      },
-      {
-        path: '/supplierList',
-        name: 'supplierList',
-        component: supplierList
-      },
-      {
-        path: '/addEditUpplier',
-        name: 'addEditUpplier',
-        component: addEditUpplier
-      },
-      {
-        path: '/supplierDetail',
-        name: 'supplierDetail',
-        component: supplierDetail
-      },
-      {
-        path: '/storehouseList',
-        name: 'storehouseList',
-        component: storehouseList
-      },
-      {
-        path: '/addEditStorehouse',
-        name: 'addEditStorehouse',
-        component: addEditStorehouse
-      }
-    ]
-}]
+    },
+    {
+      path: '/store',
+      name: 'store',
+      component: store
+    },
+    {
+      path: '/worker',
+      name: 'worker',
+      component: worker
+    },
+    {
+      path: '/workerOption',
+      name: 'workerOption',
+      component: workerOption
+    },
+    {
+      path: '/storeOption',
+      name: 'storeOption',
+      component: storeOption
+    },
+    {
+      path: '/addGoods',
+      name: 'addGoods',
+      component: addGoods
+    },
+    {
+      path: '/goods',
+      name: 'goodsManage',
+      component: goodsList
+    },
+    {
+      path: '/goods/attr',
+      name: 'goodsAttrList',
+      component: goodsAttrList
+    },
+    {
+      path: '/goods/addAttr',
+      name: 'goodsAddAttr',
+      component: goodsAddAttr
+    },
+    {
+      path: '/supplierList',
+      name: 'supplierList',
+      component: supplierList
+    },
+    {
+      path: '/addEditUpplier',
+      name: 'addEditUpplier',
+      component: addEditUpplier
+    },
+    {
+      path: '/supplierDetail',
+      name: 'supplierDetail',
+      component: supplierDetail
+    },
+    {
+      path: '/storehouseList',
+      name: 'storehouseList',
+      component: storehouseList
+    },
+    {
+      path: '/addEditStorehouse',
+      name: 'addEditStorehouse',
+      component: addEditStorehouse
+    },
+    {
+      path: '/addPurchase',
+      name: 'addPurchase',
+      component: addPurchase
+    },
+    {
+      path: '/purchasedetail',
+      name: 'purchasedetail',
+      component: purchasedetail
+    },
+    {
+      path: '/choosegoods',
+      name: 'choosegoods',
+      component: choosegoods
+    }
+  ],
+}];
