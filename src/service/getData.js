@@ -114,6 +114,18 @@ export const getgoodslist = (userId, goodsClassId, priceFlag, page, pageSize) =>
 });
 
 /**
+ * 采购时根据仓库以及分类获取商品列表
+ */
+
+export const getwarehousegoodslist = (userId, goodsClassId, warehouseId, page, pageSize) => fetch('/api/invoicing/goods/class/query/list', {
+    userId,
+    goodsClassId,
+    warehouseId,
+    page,
+    pageSize
+});
+
+/**
  * 获取商品详情
  */
 
@@ -162,6 +174,39 @@ export const getgoodsbrand = (userId) => fetch('/api/invoicing/goods/brand/query
  */
 
 export const savebuyorder = (userId, buyOrder) => fetch('/api/invoicing/' + userId + '/buy/trade/handler', buyOrder, 'POST');
+
+/**
+ * 采购历史查询
+ */
+
+export const getbuyhistory = (userId, page, pageSize, status, type) => fetch('/api/invoicing/' + userId + '/buy/trade/query/list', {
+    page,
+    pageSize,
+    status,
+    type
+});
+
+/**
+ * 编辑采购单，获取采购单详细信息
+ */
+
+export const getbuyorder = (id) => fetch('/api/invoicing/buy/trade/query/edit', {
+    id
+});
+/**
+ * 删除采购单（草稿）
+ */
+
+export const deletebuyorder = (id) => fetch('/api/invoicing/buy/trade/query/delete', {
+    id
+});
+/**
+ * 撤销采购单（已采购）
+ */
+
+export const cancelbuyorder = (userId, id) => fetch('/api/invoicing/cancel/goods/buy/' + userId, {
+    id
+});
 
 
 

@@ -1,40 +1,53 @@
 <template>
   <div class="choose_goods">
-    <head-top signin-up='msite' goBack="true" head-title="选择商品">
-      <router-link slot="right" class="iconfont icon-jia" :to="{name:'addEditStorehouse'}"></router-link>
+    <head-top signin-up='msite' goBack="" head-title="选择商品">
+      <div slot="back" class="goback" @click="toAddress({name:'buyTrade'})" >
+          <span class="iconfont icon-fanhui title_text"></span>
+      </div>
     </head-top>
     <div class="goods_classify paddingTop">
       <div class="goods_classify_button">
-        <ul>
-          <li>未分类</li>
-          <li>绿茶</li>
-          <li class="active">茶叶</li>
+        <ul v-for="(goodstype,index) in goodsList">
+          <li :class="{'active':typeShow==index}" @click="typeShow=index">{{goodstype.goodsClassficationName}}</li>
         </ul>
       </div>
       <div class="goods_classify_list">
-        <ul v-if="true">
-          <li v-for="item in 3">
+        <ul v-if="goodsList.length!=0">
+          <li v-for="goods in goodsList[typeShow].stockVos">
             <div class="goods_pic">
-              <img src="" alt="">
+              <img :src="goods.attachmentUrl" alt="">
             </div>
             <div class="goods_info">
-              <h3>竹叶青</h3>
-              <p>销售价：<span class="price">￥12.00/克</span></p>
-              <p>库存：29.00</p>
+              <h3>{{goods.name}}</h3>
+              <p>采购价：<span class="price">￥{{goods.buyAmount}}/{{goods.goodsUnitName}}</span></p>
+              <p>库存：{{goods.stockTotal}}</p>
+              <p>
+                <span class="iconfont icon-jian" @click="goods.quantity>0?goods.quantity--:''"></span>
+                <span>
+                  <input type="number" min="0" v-model="goods.quantity" class="quantity">
+                </span>
+                <span class="iconfont icon-icon02" @click="goods.quantity++"></span>
+              </p>
             </div>
           </li>
         </ul>
-        <div class="nothing" v-else="">
+        <div class="nothing" v-if="goodsList.length==0">
           <i class="iconfont icon-icon02"></i>
           <p>暂无商品，请前往添加</p>
         </div>
       </div>
     </div>
+    <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
+    <div @click="saveGoods" class="bottom">
+      选好了
+    </div>
   </div>
 </template>
 <script>
-  import { mapMutations } from 'vuex'
+  import { mapMutations,mapState } from 'vuex'
   import { getStore } from 'src/config/mUtils'
+  import alertTip from '../../components/common/alertTip'
+  import {getgoodstype,getwarehousegoodslist} from 'src/service/getData'
   import headTop from 'src/components/header/head'
   import footGuide from 'src/components/footer/footGuide'
 
@@ -42,24 +55,79 @@
     data(){
       return {
         enable: true,
-        imgPath: 'static/images/head.png'
+        typeList:[],
+        imgPath: 'static/images/head.png',
+        userId:getStore('userInfo').id,
+        typeShow:0,
+        goodsList:[],
+        showAlert:false,
+        alertText:''
       }
     },
-
+    created(){
+      if(this.buyOrder.buyGoods && this.buyOrder.buyGoods.length!=0){
+        this.goodsList = this.buyOrder.buyGoods;
+      }else{
+        this.getGoodsList();
+      }
+    },
     mounted(){
 
     },
     components: {
       headTop,
       footGuide,
+      alertTip
     },
-    computed: {},
+    computed: {
+      ...mapState([
+        'buyOrder'
+      ])
+    },
     methods: {
       ...mapMutations([
-        'CHANGE_HEADER'
+        'CHANGE_HEADER','RECORD_BUYORDER'
       ]),
       toAddress(name){
         this.$router.push(name)
+      },
+      showTip(msg){
+        this.showAlert = true;
+        this.alertText = msg
+      },
+      getGoodsList(){
+        getwarehousegoodslist(this.userId,0,this.buyOrder.warehouseId,0,1000).then((res)=>{
+          this.goodsList = res.data;
+          this.goodsList.forEach(element => {
+            element.stockVos.forEach(el=>{
+              this.$set(el,'quantity',0);
+            })
+          });
+          let orderInfo = this.buyOrder;
+          orderInfo.buyGoods = this.goodsList;
+
+          this.RECORD_BUYORDER(orderInfo);
+        }).catch((err)=>{
+          this.showTip(err.message)
+        })
+      },
+      saveGoods(){
+        let buyGoods = []
+        this.goodsList.forEach(element => {
+          element.stockVos.forEach(goods => {
+             buyGoods.push({
+              amount:Number(goods.buyAmount)*Number(goods.quantity),
+              goodsId:goods.goodsId,
+              goodsName:goods.name,
+              quantity:goods.quantity,
+              unitAmount:goods.buyAmount,
+            })
+          });
+        });
+        let orderInfo = this.buyOrder;
+        orderInfo.showGoodsList = buyGoods;
+        this.$router.push({name:"buyTrade"})
+        this.RECORD_BUYORDER(orderInfo);
       }
     },
     watch: {}
@@ -72,6 +140,7 @@
     .goods_classify {
       display: flex;
       justify-content: space-between;
+      margin-bottom: .99rem;
       .goods_classify_button {
         width: 1.8rem;
         ul{
@@ -85,6 +154,7 @@
               background: #fff;
               border-left: 4px solid #9FC894;
               border-bottom: none;
+              border-right:0;
             }
           }
         }
@@ -93,15 +163,15 @@
         width: 5.7rem;
         ul{
           li {
-            height: 2.2rem;
+            height: 2.4rem;
             background: #fff;
             margin-bottom: 1px;
             padding: 0.2rem 0 0.2rem 0.33rem;
             display: flex;
             justify-content: flex-start;
             .goods_pic {
-              width: 1.8rem;
-              height: 1.8rem;
+              width: 1.4rem;
+              height: 1.4rem;
               background: #D8D8D8;
               margin-right: 0.3rem;
             }
@@ -119,6 +189,17 @@
                 .price {
                   color: #E78787;
                 }
+                .iconfont{
+                  color:$green;
+                }
+              }
+              .quantity{
+                background: #ffffff;
+                border:1px solid #ccc;
+                @include borderRadius(.4rem);
+                text-align: center;
+                width:1rem;
+                margin:.1rem .2rem;
               }
             }
           }

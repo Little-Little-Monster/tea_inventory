@@ -1,7 +1,7 @@
 <template>
   <div class="storehouse_list">
     <head-top signin-up='msite' goBack="" head-title="仓库管理">
-      <router-link slot="right" class="iconfont icon-jia" :to="{name:'addEditStorehouse'}"></router-link>
+      <router-link v-if="!chooseWareHouse" slot="right" class="iconfont icon-jia" :to="{name:'addEditStorehouse'}"></router-link>
       <div slot="back" class="goback" @click="goBack" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
@@ -20,7 +20,7 @@
         </div>
         <div class="list_right">
          <i class="iconfont icon-qianjin" v-if="!chooseWareHouse"></i>
-          <em v-if="chooseWareHouse" class="iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.warehouseId,'icon-danxuanweizhong':chooseId!=list.warehouseId}" @click="chooseId=list.warehouseId;chooseName=list.warehouseName"></em>
+          <em v-if="chooseWareHouse" class="iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.warehouseId,'icon-danxuanweizhong':chooseId!=list.warehouseId}" @click="chooseId=list.warehouseId;chooseName=list.warehouseName;storeId=list.storeId"></em>
         </div>
       </li>
     </ul>
@@ -42,7 +42,8 @@
         fromPage:this.$route.query.fromPage,
         chooseId:-1,
         chooseName:'',
-        userId:getStore('userInfo').id
+        userId:getStore('userInfo').id,
+        storeId:-1
       }
     },
     created(){
@@ -52,6 +53,7 @@
           case 'buyOrder':
             this.chooseId = this.buyOrder.warehouseId
             this.chooseName = this.buyOrder.warehouseName
+            this.storeId = this.buyOrder.storeId
             break;
         
           default:
@@ -105,8 +107,13 @@
               });
               let order = Object.assign({},this.buyOrder,{
                 warehouseId:this.chooseId==-1?'':this.chooseId,
-                warehouseName:this.chooseName
+                warehouseName:this.chooseName,
+                storeId:this.storeId==-1?'':this.storeId
               })
+
+              if(this.buyOrder.warehouseId!=this.chooseId){
+                order.buyGoods=[]
+              }
               this.RECORD_BUYORDER(order)
               break;
           

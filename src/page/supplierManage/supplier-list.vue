@@ -1,7 +1,7 @@
 <template>
   <div>
     <head-top signin-up='msite' goBack="" head-title="供应商列表">
-      <span slot="right" class="iconfont icon-jia" @click="$router.push({name:'addEditUpplier'})" ></span>
+      <span v-if="!chooseSupplier" slot="right" class="iconfont icon-jia" @click="$router.push({name:'addEditUpplier'})" ></span>
       <div slot="back" class="goback" @click="goBack" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>

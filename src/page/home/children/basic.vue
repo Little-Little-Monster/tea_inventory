@@ -27,7 +27,7 @@
                 <span>仓库管理</span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
-            <div class="option-list">
+            <div class="option-list" @click="toAddress({name: 'accountManage'})">
                 <span>账户管理</span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>

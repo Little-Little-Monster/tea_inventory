@@ -1,7 +1,6 @@
 <template>
   <div class="purchase_detail">
-    <head-top signin-up='msite' goBack="true" head-title="仓库管理">
-      <router-link slot="right" class="iconfont icon-jia" :to="{name:'addEditStorehouse'}"></router-link>
+    <head-top signin-up='msite' goBack="true" head-title="采购明细">
     </head-top>
     <div class="purchase_detail_header paddingTop">
       <div class="left_button active">今日 <span></span></div>

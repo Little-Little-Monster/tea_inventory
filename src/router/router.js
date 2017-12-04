@@ -33,7 +33,12 @@ const addEditStorehouse = r => require.ensure([], () => r(require('../page/store
 
 const addPurchase = r => require.ensure([], () => r(require('../page/purchase/add-purchase')), 'addPurchase')
 const purchasedetail = r => require.ensure([], () => r(require('../page/purchase/purchase-detail')), 'purchasedetail')
+const purchasehistory = r => require.ensure([], () => r(require('../page/purchase/purchase-history')), 'purchasehistory')
 const choosegoods = r => require.ensure([], () => r(require('../page/purchase/choose-goods')), 'choosegoods')
+
+const accountManage = r => require.ensure([], () => r(require('../page/accountManage/accountManage')), 'accountManage')
+const balanceAccount = r => require.ensure([], () => r(require('../page/accountManage/balanceAccount')), 'balanceAccount')
+const accoutType = r => require.ensure([], () => r(require('../page/accountManage/accoutType')), 'accoutType')
 
 export default [{
     path: '/',
@@ -168,9 +173,20 @@ export default [{
             component: purchasedetail
         },
         {
+            path: '/purchasehistory',
+            name: 'buyHistory',
+            component: purchasehistory
+        },
+        {
             path: '/choosegoods',
             name: 'choosegoods',
             component: choosegoods
-        }
+        },
+        {
+            path: '/accountManage',
+            name: 'accountManage',
+            component: accountManage
+        },
+
     ],
 }];
