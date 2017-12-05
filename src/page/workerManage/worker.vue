@@ -24,7 +24,7 @@
                 <p>最后登陆时间：<em>{{list.loginTime}}</em></p>
                 <p>创建时间：<em>{{list.createDate}}</em></p>
                 <em v-if="!$route.query.getWorker" class="list-option iconfont icon-qianjin"></em>
-                <em v-if="$route.query.from=='wireHouse'" class="list-option iconfont check-icon" :class="{'icon-radio-checked':workerId==list.employeeId,'icon-danxuanweizhong':workerId!=list.employeeId}" @click="workerId=list.employeeId;workerName=list.employeeName"></em>
+                <em v-if="$route.query.getWorker" class="list-option iconfont check-icon" :class="{'icon-radio-checked':workerId==list.employeeId,'icon-danxuanweizhong':workerId!=list.employeeId}" @click="workerId=list.employeeId;workerName=list.employeeName"></em>
                 <!-- <em v-if="!$route.query.single" class="list-option iconfont check-icon" :class="{'icon-radio-checked':list.selected,'icon-danxuanweizhong':!list.selected}" @click="list.selected?list.selected=false:list.selected=true"></em> -->
             </div>
         </div>
@@ -35,7 +35,7 @@
 <script>
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
-import {getWorkerList} from 'src/service/getData'
+import {get_worker_list} from 'src/service/getData'
 import headTop from 'src/components/header/head'
 
 export default {
@@ -53,11 +53,20 @@ export default {
             this.workerId = this.$route.query.workerId
             this.workerName = this.$route.query.workerName
         }
-        getWorkerList(this.userId).then((res)=>{
+        get_worker_list(this.userId).then((res)=>{
             this.workerList = res.data;
         }).catch((err)=>{
 
         })
+    },
+    beoreRouteLeave(to,from,next){
+        if(to.name=='saleTrade'){
+            let saleOrder = this.buyOrder;
+            saleOrder.workerId = this.workerId;
+            saleOrder.workerName = this.workerName;
+            this.RECORD_BUYORDER(saleOrder)
+        }
+        next();
     },
     mounted(){
         
@@ -67,12 +76,12 @@ export default {
     },
     computed: {
 		...mapState([
-			'headTitle'
+			'headTitle','buyOrder'
 		])
     },
     methods: {
     	...mapMutations([
-
+            'RECORD_BUYORDER'
         ]),
         goBack(){
             if(this.$route.query.getWorker){
@@ -89,6 +98,12 @@ export default {
                             status:this.$route.query.status,
                         }
                     })
+                }else if(this.$route.query.fromPage){
+                    let saleOrder = this.buyOrder;
+                    saleOrder.saleId = this.workerId;
+                    saleOrder.saleName = this.workerName;
+                    this.RECORD_BUYORDER(saleOrder)
+                    this.$router.push({name:this.$route.query.fromPage})
                 }
             }else{
                 this.$router.push({name:'basic'})

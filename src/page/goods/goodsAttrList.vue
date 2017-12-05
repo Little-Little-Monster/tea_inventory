@@ -77,13 +77,13 @@
   import { mapMutations, mapState } from 'vuex'
   import { getStore } from 'src/config/mUtils'
   import {
-    getgoodstype,
-    getgoodsbrand,
-    getgoodsunit,
-    savegoodstype,
-    savegoodsbrand,
-    savegoodsunit,
-    getstorehouse
+    get_goods_type,
+    get_goods_brand,
+    get_goods_unit,
+    save_goods_type,
+    save_goods_brand,
+    save_goods_unit,
+    get_storehouse
   } from 'src/service/getData'
   import headTop from 'src/components/header/head'
   import alertTip from '../../components/common/alertTip'
@@ -109,7 +109,7 @@
         //选择品牌
         this.title = "选择品牌";
         this.singleId = this.storeGoodsInfo.goodsBrandId;
-        getgoodsbrand(this.userId).then((res) => {
+        get_goods_brand(this.userId).then((res) => {
           this.attrList = res.data;
         }).catch((err) => {
           this.showTip(res.message)
@@ -118,7 +118,7 @@
         //选择分类
         this.title = "选择分类"
         this.singleId = this.storeGoodsInfo.goodsClassificationId;
-        getgoodstype(this.userId).then((res) => {
+        get_goods_type(this.userId).then((res) => {
           this.attrList = res.data;
         }).catch((err) => {
           this.showTip(res.message)
@@ -126,7 +126,7 @@
       } else if (this.queryType == 'storeGoodsNum') {
         //设置初始库存数量
         this.title = "设置初始库存数量";
-        getstorehouse(this.userId).then((res) => {
+        get_storehouse(this.userId).then((res) => {
           this.storehouseList = res.data;
         }).catch((err) => {
           this.showTip(err.message)
@@ -135,7 +135,7 @@
         //选择单位
         this.title = "选择单位"
         this.singleId = this.storeGoodsInfo.goodsUnitId;
-        getgoodsunit(this.userId).then((res) => {
+        get_goods_unit(this.userId).then((res) => {
           this.attrList = res.data;
         }).catch((err) => {
           this.showTip(res.message)
@@ -165,21 +165,21 @@
       editAttr(list){
         if (this.queryType == 'goodsBrand') {
           //选择品牌
-          savegoodsbrand(this.userId, list).then((res) => {
+          save_goods_brand(this.userId, list).then((res) => {
             this.showTip('修改成功！');
           }).catch((err) => {
             this.showTip(err.message);
           })
         } else if (this.queryType == 'goodsType') {
           //选择分类
-          savegoodstype(this.userId, list).then((res) => {
+          save_goods_type(this.userId, list).then((res) => {
             this.showTip('修改成功！');
           }).catch((err) => {
             this.showTip(err.message);
           })
         } else if (this.queryType == 'unit') {
           //选择单位
-          savegoodsunit(this.userId, list).then((res) => {
+          save_goods_unit(this.userId, list).then((res) => {
             this.showTip('修改成功！');
           }).catch((err) => {
             this.showTip(err.message);

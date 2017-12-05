@@ -28,7 +28,7 @@
 <script>
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
-import {getgoodslist,getgoodstype} from 'src/service/getData'
+import {get_goods_list,get_goods_type} from 'src/service/getData'
 import headTop from 'src/components/header/head'
 
 export default {
@@ -45,7 +45,7 @@ export default {
     },
     created(){
         //获取商品列表
-        getgoodstype(this.userId).then((res)=>{
+        get_goods_type(this.userId).then((res)=>{
             res={
                 "code":"200",
                 "data":[
@@ -167,7 +167,7 @@ export default {
             'RECORD_GOODSINFO'
         ]),
         getGoods(){
-            getgoodslist(this.userId,this.goodsClassId,this.priceFlag,this.page,this.pageSize).then((res)=>{
+            get_goods_list(this.userId,this.goodsClassId,this.priceFlag,this.page,this.pageSize).then((res)=>{
                 // res={
                 //     "code":"200",
                 //     "data":{

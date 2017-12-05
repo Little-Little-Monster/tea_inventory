@@ -35,9 +35,9 @@
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
 import {
-    savegoodstype,
-    savegoodsbrand,
-    savegoodsunit
+    save_goods_type,
+    save_goods_brand,
+    save_goods_unit
     } from 'src/service/getData'
 import headTop from 'src/components/header/head'
 import alertTip from '../../components/common/alertTip'
@@ -102,21 +102,21 @@ export default {
             }
             if(this.queryType=='goodsBrand'){
                 //添加品牌
-                savegoodsbrand(this.userId,this.attr).then((res)=>{
+                save_goods_brand(this.userId,this.attr).then((res)=>{
                     this.$router.push({name:"goodsAttrList",query:{type:this.queryType}})
                 }).catch((err)=>{
                     this.showTip(err.message)
                 })
             }else if(this.queryType=='goodsType'){
                 //添加分类
-                savegoodstype(this.userId,this.attr).then((res)=>{
+                save_goods_type(this.userId,this.attr).then((res)=>{
                     this.$router.push({name:"goodsAttrList",query:{type:this.queryType}})
                 }).catch((err)=>{
                     this.showTip(err.message)
                 })
             }else if(this.queryType=='unit'){
                 //添加单位
-                savegoodsunit(this.userId,this.attr).then((res)=>{
+                save_goods_unit(this.userId,this.attr).then((res)=>{
                     this.$router.push({name:"goodsAttrList",query:{type:this.queryType}})
                 }).catch((err)=>{
                     this.showTip(err.message)

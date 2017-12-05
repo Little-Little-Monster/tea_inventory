@@ -149,7 +149,7 @@
 <script>
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
-import {savegoods,getgoodsinfo} from 'src/service/getData'
+import {save_goods,get_goods_info} from 'src/service/getData'
 import headTop from 'src/components/header/head'
 import kswitch from 'src/components/common/kswitch'
 import alertTip from '../../components/common/alertTip'
@@ -201,7 +201,7 @@ export default {
         },
         getGoodsInfo(){
             //编辑商品获取信息
-            getgoodsinfo(this.$route.query.goodsId).then((res)=>{
+            get_goods_info(this.$route.query.goodsId).then((res)=>{
                  this.goodsInfo = res.data;
             })
         },
@@ -220,7 +220,7 @@ export default {
                     element.downLimit = this.downLimit;
                 });
             }
-            savegoods(this.userId,this.goodsInfo).then((res)=>{
+            save_goods(this.userId,this.goodsInfo).then((res)=>{
                 this.$router.push({name:"goodsManage"});
                 this.RECORD_GOODSINFO({})
             }).catch((err)=>{

@@ -15,6 +15,9 @@ if ('addEventListener' in document) {
         FastClick.attach(document.body);
     }, false);
 }
+//引入地址插件
+import addressPicker from "vue-address-picker";
+Vue.use(addressPicker);
 
 Vue.use(VueRouter)
 const router = new VueRouter({

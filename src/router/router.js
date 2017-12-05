@@ -36,9 +36,19 @@ const purchasedetail = r => require.ensure([], () => r(require('../page/purchase
 const purchasehistory = r => require.ensure([], () => r(require('../page/purchase/purchase-history')), 'purchasehistory')
 const choosegoods = r => require.ensure([], () => r(require('../page/purchase/choose-goods')), 'choosegoods')
 
+const addSalePurchase = r => require.ensure([], () => r(require('../page/salePurchase/add-purchase')), 'addSalePurchase')
+const salePurchasedetail = r => require.ensure([], () => r(require('../page/salePurchase/purchase-detail')), 'purchasedetail')
+const salePurchasehistory = r => require.ensure([], () => r(require('../page/salePurchase/purchase-history')), 'purchasehistory')
+const saleChoosegoods = r => require.ensure([], () => r(require('../page/salePurchase/choose-goods')), 'saleChoosegoods')
+
 const accountManage = r => require.ensure([], () => r(require('../page/accountManage/accountManage')), 'accountManage')
 const balanceAccount = r => require.ensure([], () => r(require('../page/accountManage/balanceAccount')), 'balanceAccount')
 const accoutType = r => require.ensure([], () => r(require('../page/accountManage/accoutType')), 'accoutType')
+
+const customerManage = r => require.ensure([], () => r(require('../page/customer/customer-list')), 'customer')
+const addCustomer = r => require.ensure([], () => r(require('../page/customer/add-customer')), 'addCustomer')
+const customerType = r => require.ensure([], () => r(require('../page/customer/customer-type')), 'customerType')
+const addCustomerType = r => require.ensure([], () => r(require('../page/customer/add-customer-type')), 'addCustomerType')
 
 export default [{
     path: '/',
@@ -183,10 +193,63 @@ export default [{
             component: choosegoods
         },
         {
+            path: '/addSalePurchase',
+            name: 'saleTrade',
+            component: addSalePurchase
+        },
+        {
+            path: '/saleDetail',
+            name: 'salePurchasedetail',
+            component: salePurchasedetail
+        },
+        {
+            path: '/salehistory',
+            name: 'saleHistory',
+            component: salePurchasehistory
+        },
+        {
+            path: '/saleChoosegoods',
+            name: 'saleChoosegoods',
+            component: saleChoosegoods
+        },
+
+        {
             path: '/accountManage',
             name: 'accountManage',
             component: accountManage
         },
+        {
+            path: '/accoutType',
+            name: 'accoutType',
+            component: accoutType
+        },
+        {
+            path: '/balanceAccount',
+            name: 'balanceAccount',
+            component: balanceAccount
+        },
+
+        {
+            path: '/customer',
+            name: 'customerManage',
+            component: customerManage
+        },
+        {
+            path: '/add/customer',
+            name: 'addCustomer',
+            component: addCustomer
+        },
+        {
+            path: '/type/customer',
+            name: 'customerType',
+            component: customerType
+        },
+        {
+            path: '/type/add/customer',
+            name: 'addCustomerType',
+            component: addCustomerType
+        },
+
 
     ],
 }];

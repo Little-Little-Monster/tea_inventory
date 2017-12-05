@@ -30,7 +30,7 @@
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
 import alertTip from '../../components/common/alertTip'
-import {storehandel} from 'src/service/getData'
+import {store_handel} from 'src/service/getData'
 import headTop from 'src/components/header/head';
 import {omit} from 'lodash'
 
@@ -69,7 +69,7 @@ export default {
             if(this.$route.query.id){
                 this.store = omit(this.store,['createTime','updateTime','type']);
             }
-            storehandel(this.store,this.userId).then((res)=>{
+            store_handel(this.store,this.userId).then((res)=>{
                 this.$router.go(-1)
             }).catch((err)=>{
                 this.alertText = err.message;

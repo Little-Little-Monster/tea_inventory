@@ -21,7 +21,7 @@
 <script>
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
-import {getStoreDetail} from 'src/service/getData'
+import {get_store_detail} from 'src/service/getData'
 import headTop from 'src/components/header/head'
 
 export default {
@@ -35,7 +35,7 @@ export default {
         }
     },
     created(){
-        getStoreDetail(this.userId).then((res)=>{
+        get_store_detail(this.userId).then((res)=>{
             this.storeList = res.data;
             if(this.$route.query.getStore){
                 if(this.$route.query.worker){

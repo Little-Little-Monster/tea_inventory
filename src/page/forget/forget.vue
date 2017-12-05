@@ -35,7 +35,7 @@
 <script>
     import headTop from 'src/components/header/head'
     import alertTip from 'src/components/common/alertTip'
-    import {mobileCode, checkExsis, sendMobile, getcaptchas, changePassword} from 'src/service/getData'
+    import {mobile_code, checkExsis, sendMobile, get_captchas, change_password} from 'src/service/getData'
 
     export default {
         data(){
@@ -94,7 +94,7 @@
                         return
                     }
                     //获取验证信息
-                    let getCode = await mobileCode(this.phoneNumber);
+                    let getCode = await mobile_code(this.phoneNumber);
                     if (getCode.message) {
                         this.showAlert = true;
                         this.alertText = getCode.message;
@@ -104,7 +104,7 @@
                 }
             },
              async getCaptchaCode(){
-                let res = await getcaptchas();
+                let res = await get_captchas();
                 this.captchaCodeImg = res.code;
             },
             //重置密码
@@ -135,7 +135,7 @@
                     return
                 }
                 // 发送重置信息
-                let res = await changePassword(this.phoneNumber, this.oldPassWord, this.newPassWord, this.confirmPassWord, this.mobileCode);
+                let res = await change_password(this.phoneNumber, this.oldPassWord, this.newPassWord, this.confirmPassWord, this.mobileCode);
                 if (res.message) {
                     this.showAlert = true;
                     this.alertText = res.message;

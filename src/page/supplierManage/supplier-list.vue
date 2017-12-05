@@ -26,7 +26,7 @@
 <script>
   import { mapMutations,mapState } from 'vuex'
   import { getStore } from 'src/config/mUtils'
-  import { getsupplier } from 'src/service/getData'
+  import { get_supplier } from 'src/service/getData'
   import headTop from 'src/components/header/head'
   import footGuide from 'src/components/footer/footGuide'
 
@@ -98,7 +98,7 @@
         }
       },
       getSupplier(){
-        getsupplier(this.userId,this.parama).then((res)=>{
+        get_supplier(this.userId,this.parama).then((res)=>{
           this.suppList=res.data;
         }).catch((err)=>{
 

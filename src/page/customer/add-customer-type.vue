@@ -1,8 +1,8 @@
 <template>
   <div class="add_customer_type paddingTop">
-    <head-top goBack="" head-title="选择分类">
+    <head-top goBack="" :headTitle="$route.query.id?'编辑分类':'添加分类'">
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
-      <span slot="back" @click="$router.push({name:'storehouseList'})">
+      <span slot="back" @click="$router.push({name:'customerType'})">
           <span class="back iconfont icon-fanhui"></span>
       </span>
     </head-top>
@@ -13,13 +13,13 @@
             名称 <i>*</i>
           </div>
           <div class="list_right">
-            <input type="text" placeholder="请输入客户名称" style="width: 2.27rem;">
+            <input type="text" v-model="typeInfo.name" placeholder="请输入客户名称" style="width: 2.27rem;">
           </div>
         </li>
         <li class="describe">
           <div>
             描述<br>
-            <input type="text">
+            <textarea placeholder="请输入用户类型描述" v-model="typeInfo.memo"></textarea>
           </div>
         </li>
       </ul>
@@ -34,13 +34,17 @@
         </li>
       </ul>
     </div>
+    <div@click="saveCustomerType" class="bottom">
+      保存
+    </div>
+    <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
 <script>
   import { mapMutations } from 'vuex'
   import { getStore } from 'src/config/mUtils'
   import headTop from 'src/components/header/head'
-  import { savewirehouse } from 'src/service/getData';
+  import { save_customer_type,get_customer_type_detail } from 'src/service/getData';
   import kswitch from 'src/components/common/kswitch'
   import alertTip from '../../components/common/alertTip'
 
@@ -48,28 +52,16 @@
     data(){
       return {
         imgPath: 'static/images/head.png',
+        userId:getStore('userInfo').id,
         enable: true,
         showAlert: false,
         alertText: null,
-        storeHouse: {}
+        typeInfo: {}
       }
     },
     created(){
-      if (this.$route.query.singleId) {
-        this.$set(this.storeHouse, 'storeName', this.$route.query.singleName)
-        this.$set(this.storeHouse, 'storeId', this.$route.query.singleId)
-        this.$set(this.storeHouse, 'workerId', this.$route.query.workerId)
-        this.$set(this.storeHouse, 'workerName', this.$route.query.workerName)
-        this.$set(this.storeHouse, 'memo', this.$route.query.memo)
-        this.$set(this.storeHouse, 'warehouseName', this.$route.query.warehouseName)
-      }
-      if (this.$route.query.workerId) {
-        this.$set(this.storeHouse, 'storeName', this.$route.query.singleName)
-        this.$set(this.storeHouse, 'storeId', this.$route.query.singleId)
-        this.$set(this.storeHouse, 'workerId', this.$route.query.workerId)
-        this.$set(this.storeHouse, 'workerName', this.$route.query.workerName);
-        this.$set(this.storeHouse, 'memo', this.$route.query.memo)
-        this.$set(this.storeHouse, 'warehouseName', this.$route.query.warehouseName)
+      if(this.$route.query.id){
+        this.getCustomerType()
       }
     },
     mounted(){
@@ -88,51 +80,28 @@
       toAddress(name){
         this.$router.push(name)
       },
-      goStore(){
-        this.$router.push(
-          {
-            name: 'store',
-            query: {
-              getStore: true,
-              single: true,
-              id: this.storeHouse.storeId,
-              singleName: this.storeHouse.storeName,
-              workerId: this.storeHouse.workerId,
-              workerName: this.storeHouse.workerName,
-              warehouseName: this.storeHouse.warehouseName,
-              memo: this.storeHouse.memo,
-            }
-          }
-        )
-      },
-      goWorker(){
-        this.$router.push(
-          {
-            name: 'worker',
-            query: {
-              getWorker: true,
-              from: 'wireHouse',
-              workerId: this.storeHouse.workerId,
-              workerName: this.storeHouse.workerName,
-              singleId: this.storeHouse.storeId,
-              singleName: this.storeHouse.storeName,
-              warehouseName: this.storeHouse.warehouseName,
-              memo: this.storeHouse.memo,
-            }
-          }
-        )
-      },
-      async saveWireHouse(){
+      async saveCustomerType(){
         //保存
-        if (!this.storeHouse.warehouseName) {
+        if (!this.typeInfo.name) {
           this.showAlert = true;
-          this.alertText = "请输入仓库名称"
+          this.alertText = "请输入名称";
+          return;
         }
-        this.storeHouse.warehouseHead = this.storeHouse.workerId
-        savewirehouse(this.storeHouse).then((res) => {
-
+        this.typeInfo.status = this.enable?1:0;
+        save_customer_type(this.userId,this.typeInfo).then((res) => {
+          this.$router.replace({name:'customerType'})
         }).catch((err) => {
-
+          this.showAlert = true;
+          this.alertText = err.message
+        })
+      },
+      getCustomerType(){
+        get_customer_type_detail(this.$route.query.id).then((res)=>{
+          this.typeInfo = res.data;
+          this.enable = Boolean(this.typeInfo.status);
+        }).catch((err)=>{
+          this.showAlert = true;
+          this.alertText = err.message
         })
       }
 
@@ -188,10 +157,12 @@
               width: 100%;
 
             }
-            input{
+            textarea{
               background: none;
               width: 100%;
               text-align: left;
+              resize: none;
+              padding:.1rem .5rem
             }
           }
         }

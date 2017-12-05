@@ -30,7 +30,7 @@
   import { mapMutations,mapState } from 'vuex'
   import { getStore } from 'src/config/mUtils'
   import headTop from 'src/components/header/head'
-  import { getstorehouse } from 'src/service/getData';
+  import { get_storehouse } from 'src/service/getData';
 
   export default {
     data(){
@@ -80,7 +80,7 @@
         this.$router.push(name)
       },
       getStoreHouse(){
-        getstorehouse(this.userId).then((res)=>{
+        get_storehouse(this.userId).then((res)=>{
           this.storeHousList=res.data;
         }).catch((err)=>{
 
@@ -116,7 +116,21 @@
               }
               this.RECORD_BUYORDER(order)
               break;
-          
+            case 'saleTrade':
+              this.$router.push({
+                name:"saleTrade"
+              });
+              let saleOrder = Object.assign({},this.buyOrder,{
+                warehouseId:this.chooseId==-1?'':this.chooseId,
+                warehouseName:this.chooseName,
+                storeId:this.storeId==-1?'':this.storeId
+              })
+
+              if(this.buyOrder.warehouseId!=this.chooseId){
+                saleOrder.buyGoods=[]
+              }
+              this.RECORD_BUYORDER(saleOrder)
+              break;
             default:
               break;
           }

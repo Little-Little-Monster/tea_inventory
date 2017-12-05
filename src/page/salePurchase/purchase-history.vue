@@ -1,20 +1,20 @@
 <template>
   <div class="purchase_detail">
-    <head-top signin-up='msite' goBack="" head-title="采购历史">
+    <head-top signin-up='msite' goBack="" head-title="销售历史">
       <div slot="back" class="goback" @click="toAddress({name:'msite'});" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
     </head-top>
     <div class="purchase_detail_header paddingTop">
       <div class="left_button" :class="{'active':status==0}" @click="status=0">全部 <span></span></div>
-      <div class="left_button" :class="{'active':status==2}" @click="status=2">已采购 <span></span></div>
+      <div class="left_button" :class="{'active':status==2}" @click="status=2">已销售 <span></span></div>
       <div class="right_button" :class="{'active':status==1}" @click="status=1">草稿 <span></span></div>
       <div class="right_button" :class="{'active':status==3}" @click="status=3">撤销 <span></span></div>
     </div>
     <div class="cneter-con">
-      <div class="list buy-list" v-for="history in historyList" @click="editBuyOrder(history.id)">
-        <p>{{history.supplierName}}</p>
-        <p class="text-info">{{history.createDate}}</p>
+      <div class="list buy-list" v-for="history in historyList" @click="editSaleOrder(history.id)">
+        <p>{{history.customerName}}</p>
+        <p class="text-info">{{history.createDateStr}}</p>
         <div class="list-more">
           <em>￥{{history.totalAmount}}</em><br>
           <em>{{history.warehouseName}}</em>
@@ -30,7 +30,7 @@
   import { mapMutations } from 'vuex'
   import { getStore } from 'src/config/mUtils'
   import headTop from 'src/components/header/head'
-  import {get_buy_history} from 'src/service/getData'
+  import {get_sale_history} from 'src/service/getData'
   import footGuide from 'src/components/footer/footGuide'
 
   export default {
@@ -62,16 +62,16 @@
         this.$router.push(name)
       },
       getHistory(){
-        get_buy_history(this.userId,0,100,this.status,4).then((res)=>{
+        get_sale_history(this.userId,0,100,this.status,2).then((res)=>{
           this.historyList = res.data.info;
         }).catch((err)=>{
 
         })
       },
-      editBuyOrder(id){
-        this.$router.push({name:"buyTrade",query:{
+      editSaleOrder(id){
+        this.$router.push({name:"saleTrade",query:{
           edit:true,
-          fromPage:"buyHistory",
+          fromPage:"saleHistory",
           id:id
         }})
       }

@@ -55,7 +55,7 @@
     import {getStore, setStore, removeStore} from 'src/config/mUtils'
     import md5 from "blueimp-md5";
     import {mapState, mapMutations} from 'vuex'
-    import {mobileCode, checkExsis, sendLogin, getcaptchas, accountLogin} from '../../service/getData'
+    import {mobile_code, checkExsis, send_login, get_captchas, account_login} from '../../service/getData'
 
     export default {
         data(){
@@ -101,12 +101,12 @@
                 'RECORD_USERINFO'
             ]),
             //是否显示密码
-            changePassWordType(){
+            change_passwordType(){
                 this.showPassword = !this.showPassword;
             },
             //获取验证吗，线上环境使用固定的图片，生产环境使用真实的验证码
             async getCaptchaCode(){
-                let res = await getcaptchas();
+                let res = await get_captchas();
                 this.captchaCodeImg = res.code;
             },
             //获取短信验证码
@@ -120,7 +120,7 @@
                         }
                     }, 1000)
                     //发送短信验证码
-                    let res = await mobileCode(this.mobile);
+                    let res = await mobile_code(this.mobile);
                     if (res.message) {
                         this.showAlert = true;
                         this.alertText = res.message;
@@ -140,7 +140,7 @@
                     return
                 }
                 //用户名登录
-                this.userInfo = await accountLogin(this.userAccount, md5(this.passWord));
+                this.userInfo = await account_login(this.userAccount, md5(this.passWord));
                 //如果返回的值不正确，则弹出提示框，返回的值正确则返回上一页
                 if (this.userInfo.code!=200) {
                     this.showAlert = true;
@@ -162,7 +162,7 @@
                     return
                 }
                 //用户名登录
-                this.userInfo = await accountLogin(this.userAccount, this.passWord, this.codeNumber);
+                this.userInfo = await account_login(this.userAccount, this.passWord, this.codeNumber);
 
                 //如果返回的值不正确，则弹出提示框，返回的值正确则返回上一页
                 if (!this.userInfo.user_id) {

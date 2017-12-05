@@ -77,7 +77,7 @@
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
 import alertTip from '../../components/common/alertTip'
-import {workerhandel,getrolelist,getemployee} from 'src/service/getData'
+import {worker_handel,get_rolelist,get_employee} from 'src/service/getData'
 import headTop from 'src/components/header/head';
 import {omit} from 'lodash'
 import md5 from "blueimp-md5"
@@ -133,7 +133,7 @@ export default {
             this.alertText = text
         },
         getEmployee(){
-            getemployee(this.userId,this.employeeId).then((res)=>{
+            get_employee(this.userId,this.employeeId).then((res)=>{
                 this.worker = res.data;
                 this.worker.storeIds = [];
                 this.worker.storeVos.forEach(el=>{
@@ -204,7 +204,7 @@ export default {
             //         this.worker.roles.push(el.id)
             //     }
             // });
-            workerhandel(this.userId,this.worker).then((res)=>{
+            worker_handel(this.userId,this.worker).then((res)=>{
                 this.$router.push({name:"worker"})
             }).catch((err)=>{
                 this.alertText = err.message;
@@ -212,7 +212,7 @@ export default {
             })
         },
         getRoleList(){
-            getrolelist(this.userId).then((res)=>{
+            get_rolelist(this.userId).then((res)=>{
                 res={
                     "code":"200",
                     "data":[

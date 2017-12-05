@@ -1,7 +1,7 @@
 <template>
   <div class="choose_goods">
     <head-top signin-up='msite' goBack="" head-title="选择商品">
-      <div slot="back" class="goback" @click="toAddress({name:'buyTrade'})" >
+      <div slot="back" class="goback" @click="toAddress({name:fromPage})" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
     </head-top>
@@ -61,12 +61,13 @@
         typeShow:0,
         goodsList:[],
         showAlert:false,
-        alertText:''
+        alertText:'',
+        fromPage:this.$route.query.fromPage
       }
     },
     created(){
-      if(this.buyOrder.buyGoods && this.buyOrder.buyGoods.length!=0){
-        this.goodsList = this.buyOrder.buyGoods;
+      if(this.buyOrder.saleGoods && this.buyOrder.saleGoods.length!=0){
+        this.goodsList = this.buyOrder.saleGoods;
       }else{
         this.getGoodsList();
       }
@@ -104,7 +105,7 @@
             })
           });
           let orderInfo = this.buyOrder;
-          orderInfo.buyGoods = this.goodsList;
+          orderInfo.saleGoods = this.goodsList;
 
           this.RECORD_BUYORDER(orderInfo);
         }).catch((err)=>{
@@ -112,21 +113,23 @@
         })
       },
       saveGoods(){
-        let buyGoods = []
+        let saleGoods = []
         this.goodsList.forEach(element => {
           element.stockVos.forEach(goods => {
-             buyGoods.push({
-              amount:Number(goods.buyAmount)*Number(goods.quantity),
-              goodsId:goods.goodsId,
-              goodsName:goods.name,
-              quantity:goods.quantity,
-              unitAmount:goods.buyAmount,
-            })
+            if(goods.quantity!=0){
+              saleGoods.push({
+                amount:Number(goods.buyAmount)*Number(goods.quantity),
+                goodsId:goods.goodsId,
+                goodsName:goods.name,
+                quantity:goods.quantity,
+                unitAmount:goods.buyAmount,
+              })
+            }
           });
         });
         let orderInfo = this.buyOrder;
-        orderInfo.showGoodsList = buyGoods;
-        this.$router.push({name:"buyTrade"})
+        orderInfo.showGoodsList = saleGoods;
+        this.$router.push({name:this.fromPage})
         this.RECORD_BUYORDER(orderInfo);
       }
     },

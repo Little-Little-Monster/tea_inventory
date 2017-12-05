@@ -62,7 +62,7 @@
   import { mapMutations } from 'vuex'
   import { getStore } from 'src/config/mUtils'
   import headTop from 'src/components/header/head'  
-  import { savewirehouse } from 'src/service/getData';
+  import { save_wirehouse } from 'src/service/getData';
   import kswitch from 'src/components/common/kswitch'
   import alertTip from '../../components/common/alertTip'
 
@@ -165,7 +165,7 @@
           this.alertText="请输入仓库名称"
         }
         this.storeHouse.warehouseHead = this.storeHouse.workerId
-        savewirehouse(this.storeHouse).then((res)=>{
+        save_wirehouse(this.storeHouse).then((res)=>{
           this.$router.push({name:"storehouseList"})
         }).catch((err)=>{
           this.showAlert = true;

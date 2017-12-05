@@ -62,7 +62,7 @@
 <script>
   import { mapMutations } from 'vuex'
   import { getStore } from 'src/config/mUtils'
-  import { supphandel } from 'src/service/getData'
+  import { supplier_handel } from 'src/service/getData'
   import headTop from 'src/components/header/head'
   import footGuide from 'src/components/footer/footGuide'
   import alertTip from '../../components/common/alertTip'
@@ -118,7 +118,7 @@
               return;
             }
             this.enable?this.userInfo.status=1:this.userInfo.status=0;
-            supphandel(this.userId,this.userInfo).then((res)=>{
+            supplier_handel(this.userId,this.userInfo).then((res)=>{
                 this.$router.push({name:"supplierList"})
             }).catch((err)=>{
                 this.alertText = err.message;

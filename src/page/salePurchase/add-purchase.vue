@@ -1,18 +1,18 @@
 <template>
   <div class="add_purchase">
-    <head-top goBack="" head-title="采购单">
+    <head-top goBack="" head-title="销售单">
       <div slot="back" class="goback" @click="returnBack" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
     </head-top>
     <ul class="add_purchase_header paddingTop">
-      <li @click="goSupplier">
+      <li @click="goCustomer">
         <div class="list_left" >
-          供应商 <i>*</i>
+          客户 <i>*</i>
         </div>
         <div class="list_right">
-          <span v-if="buyOrderInfo.supplierName">{{buyOrderInfo.supplierName}}</span>
-          <span v-if="!buyOrderInfo.supplierName">请选择供应商</span>
+          <span v-if="saleOrderInfo.customerId||saleOrderInfo.customerId==0">{{saleOrderInfo.customerName}}</span>
+          <span v-if="!saleOrderInfo.customerId && saleOrderInfo.customerId!=0">请选择客户</span>
           <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
         </div>
       </li>
@@ -21,8 +21,8 @@
           仓库<i>*</i>
         </div>
         <div class="list_right" >
-          <span v-if="buyOrderInfo.warehouseName">{{buyOrderInfo.warehouseName}}</span>
-          <span v-if="!buyOrderInfo.warehouseName">请选择供仓库</span>
+          <span v-if="saleOrderInfo.warehouseName">{{saleOrderInfo.warehouseName}}</span>
+          <span v-if="!saleOrderInfo.warehouseName">请选择供仓库</span>
           <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
         </div>
       </li>
@@ -41,18 +41,18 @@
         <div class="list_left">
           选择商品
         </div>
-        <div class="list_right" v-if="buyOrderInfo.status!=2&&buyOrderInfo.status!=3">
+        <div class="list_right" v-if="saleOrderInfo.status!=2&&saleOrderInfo.status!=3">
           <i class="iconfont icon-iconjia" style="font-size: 20px;font-weight: 900"></i>
         </div>
       </li>
-      <li class="good-con" v-if="buyOrderInfo.showGoodsList&&buyOrderInfo.showGoodsList.length!=0">
+      <li class="good-con" v-if="saleOrderInfo.showGoodsList&&saleOrderInfo.showGoodsList.length!=0">
         <div class="good-list goods-tit">
           <span>名称</span>
           <span>单价</span>
           <span>数量</span>
           <span>总价</span>
         </div>
-        <!-- <div  v-for="(buyGoods,index2) in buyOrderInfo.buyGoods">
+        <!-- <div  v-for="(buyGoods,index2) in saleOrderInfo.buyGoods">
           <div class="good-list" v-for="(list,index) in buyGoods.stockVos.length" v-if="buyGoods.stockVos[index].quantity!=0">
             <span>{{buyGoods.stockVos[index].name}}</span>
             <span>￥<input type="number" v-model="buyGoods.stockVos[index].buyAmount" @input="getTotal"></span>
@@ -61,39 +61,81 @@
           </div>
         </div> -->
 
-        <div  class="good-list list" v-for="(buyGoods,index) in buyOrderInfo.showGoodsList" v-if="buyGoods.quantity!=0">
+        <div  class="good-list list" v-for="(buyGoods,index) in saleOrderInfo.showGoodsList" >
           <span>{{buyGoods.goodsName}}</span>
-          <span>￥<input type="number" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyGoods.unitAmount" @input="getTotal"></span>
-          <span><input type="number" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyGoods.quantity" @input="getTotal"></span>
+          <span>￥<input type="number" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.unitAmount" @input="getTotal"></span>
+          <span><input type="number" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.quantity" @input="getTotal"></span>
           <span>{{Number(buyGoods.unitAmount)*Number(buyGoods.quantity)}}</span>
-          <span class="list-option iconfont icon-jian jian-goods" v-if="buyOrderInfo.status!=2&&buyOrderInfo.status!=3" @click="buyOrderInfo.showGoodsList.splice(index,1);getTotal()"></span>
+          <span class="list-option iconfont icon-jian jian-goods" v-if="saleOrderInfo.status!=2&&saleOrderInfo.status!=3" @click="saleOrderInfo.showGoodsList.splice(index,1);getTotal()"></span>
         </div>
       </li>
     </ul>
     <ul>
       <li>
         <div class="list_left">
-          实付 <i>{{buyOrderInfo.realAmount}}</i>
+          折扣 <i>%</i>
         </div>
         <div class="list_right">
-          <input type="number" placeholder="未付" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyOrderInfo.realAmount" @input="getTotal">
+          <input type="number" placeholder="未付" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="saleOrderInfo.discount" @input="getTotal">
         </div>
       </li>
-      <!-- <li>
+      <li @click="goWorker" >
         <div class="list_left">
-          欠供应商款
+          销售员<i>*</i>
         </div>
-        <div class="list_right" style="color: #E78787">
-          ￥{{buyOrderInfo.debtAmount}}
+        <div class="list_right" >
+          <span v-if="saleOrderInfo.saleId">{{saleOrderInfo.saleName}}</span>
+          <span v-if="!saleOrderInfo.saleId">请选择销售员</span>
+          <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
         </div>
-      </li> -->
+      </li>
       <li>
         <div class="list_left">
           业务日期
         </div>
         <div class="list_right">
-          <input type="date" placeholder="请选择日期" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyOrderInfo.bizDateStr">
+          <input type="date" placeholder="请选择日期" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="saleOrderInfo.bizDateStr">
           <!-- <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i> -->
+        </div>
+      </li>
+      <li style="margin-bottom:0" @click="showPay = !showPay">
+        <div class="list_left">
+          支付方式
+        </div>
+        <div class="list_right">
+          <em class="iconfont icon-xiala2"></em>
+        </div>
+      </li>
+      <li style="margin-bottom:0" v-show="showPay">
+        <div class="list_left">
+          支付宝
+        </div>
+        <div class="list_right">
+          <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':saleOrderInfo.payType==0,'icon-danxuanweizhong':saleOrderInfo.payType!=0}" @click="(saleOrderInfo.status==1)?saleOrderInfo.payType=0:''"></em>
+        </div>
+      </li>
+      <li style="margin-bottom:0" v-show="showPay">
+        <div class="list_left">
+          微信
+        </div>
+        <div class="list_right">
+          <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':saleOrderInfo.payType==1,'icon-danxuanweizhong':saleOrderInfo.payType!=1}" @click="(saleOrderInfo.status==1)?saleOrderInfo.payType=1:''"></em>
+        </div>
+      </li>
+      <li style="margin-bottom:0" v-show="showPay">
+        <div class="list_left">
+          现金
+        </div>
+        <div class="list_right">
+          <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':saleOrderInfo.payType==2,'icon-danxuanweizhong':saleOrderInfo.payType!=2}" @click="(saleOrderInfo.status==1)?saleOrderInfo.payType=2:''"></em>
+        </div>
+      </li>
+      <li v-show="showPay">
+        <div class="list_left">
+          POS
+        </div>
+        <div class="list_right">
+          <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':saleOrderInfo.payType==3,'icon-danxuanweizhong':saleOrderInfo.payType!=3}" @click="(saleOrderInfo.status==1)?saleOrderInfo.payType=3:''"></em>
         </div>
       </li>
     </ul>
@@ -102,31 +144,31 @@
         <div class="list_left">
           <p>备注</p>
           <!-- <input type="text" placeholder="请输入备注信息"> -->
-          <textarea :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyOrderInfo.memo" placeholder="请输入备注信息"></textarea>
+          <textarea :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="saleOrderInfo.memo" placeholder="请输入备注信息"></textarea>
         </div>
       </li>
     </ul>
     <div class="bottom" v-if="edit">
-      <div class="bottom_left">合计：<span>￥{{buyOrderInfo.totalAmount}}</span></div>
-      <div class="bottom_right" v-if="buyOrderInfo.status!=3">
-        <span @click="submitOrder(1)" v-if="!buyOrderInfo.status||buyOrderInfo.status!=1" v-show="buyOrderInfo.status!=2">草稿</span> 
-        <span @click="submitOrder(2)" v-if="buyOrderInfo.status==1" >采购</span> 
-        <button :class="{returnGoods: false}" v-if="buyOrderInfo.status&&buyOrderInfo.status!=1" v-show="buyOrderInfo.status!=2" @click="submitOrder(2)">采购</button>
+      <div class="bottom_left">合计：<span>￥{{saleOrderInfo.totalAmount}}</span></div>
+      <div class="bottom_right" v-if="saleOrderInfo.status!=3">
+        <span @click="submitOrder(1)" v-if="!saleOrderInfo.status||saleOrderInfo.status!=1" v-show="saleOrderInfo.status!=2">草稿</span> 
+        <span @click="submitOrder(2)" v-if="saleOrderInfo.status==1" >采购</span> 
+        <button :class="{returnGoods: false}" v-if="saleOrderInfo.status&&saleOrderInfo.status!=1" v-show="saleOrderInfo.status!=2" @click="submitOrder(2)">采购</button>
       </div>
 
-      <div class="bottom_right" v-if="buyOrderInfo.status==2">
+      <div class="bottom_right" v-if="saleOrderInfo.status==2">
         <button :class="{returnGoods: false}" @click="cancel">撤销</button>
       </div>
 
-      <div class="bottom_right" v-if="buyOrderInfo.status==1">
+      <div class="bottom_right" v-if="saleOrderInfo.status==1">
         <button :class="{returnGoods: false}" @click="deleteOrder">删除</button>
       </div>
     </div>
     <div class="bottom" v-if="!edit">
-      <div class="bottom_left">合计：<span>￥{{buyOrderInfo.totalAmount}}</span></div>
+      <div class="bottom_left">合计：<span>￥{{saleOrderInfo.totalAmount}}</span></div>
       <div class="bottom_right" >
         <span @click="submitOrder(1)">草稿</span> 
-        <button :class="{returnGoods: false}"  v-show="buyOrderInfo.status!=2" @click="submitOrder(2)">采购</button>
+        <button :class="{returnGoods: false}"  v-show="saleOrderInfo.status!=1" @click="submitOrder(2)">销售</button>
       </div>
     </div>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
@@ -137,7 +179,7 @@
   import { getStore } from 'src/config/mUtils'
   import headTop from 'src/components/header/head'
   import alertTip from '../../components/common/alertTip'
-  import {save_buy_order,get_buy_order,delete_buy_order,cancel_buy_order} from 'src/service/getData'
+  import {save_sale_order,get_sale_order,delete_sale_order,cancel_sale_order} from 'src/service/getData'
   import footGuide from 'src/components/footer/footGuide'
 
   export default {
@@ -145,36 +187,48 @@
       return {
         imgPath: 'static/images/head.png',
         enable: true,
-        buyOrderInfo:{},
+        saleOrderInfo:{},
         showAlert:false,
         alertText:'',
         userId:getStore('userInfo').id,
         edit:this.$route.query.edit,
         fromPage:this.$route.query.fromPage,
+        showPay:false,
         status:null//采购单当前状态（1为草稿，2为已销售，3为撤销）
       }
     },
     created(){
       if(this.edit){//编辑采购单
         switch (this.fromPage) {
-          case 'buyHistory':
+          case 'saleHistory':
             //编辑采购单
-            this.getBuyOrder()
+            this.getSaleOrder()
             break;
         
           default:
             break;
         }
       }else{//添加采购单
-        this.buyOrderInfo = this.buyOrder;
-        if(!this.buyOrderInfo.totalAmount){
-          this.buyOrderInfo.totalAmount = 0;
+        this.saleOrderInfo = this.buyOrder;
+
+        if(!this.saleOrderInfo.customerId){
+          this.saleOrderInfo.customerId = 0;
+          this.saleOrderInfo.customerName = '匿名客户';
         }
-        if(!this.buyOrderInfo.realAmount){
-          this.buyOrderInfo.realAmount = 0;
+        if(!this.saleOrderInfo.totalAmount){
+          this.saleOrderInfo.totalAmount = 0;
         }
-        // this.buyOrderInfo.debtAmount = 0;
-        if(this.buyOrderInfo.showGoodsList&&this.buyOrderInfo.showGoodsList.length!=0){
+        if(!this.saleOrderInfo.realAmount){
+          this.saleOrderInfo.realAmount = 0;
+        }
+        if(!this.saleOrderInfo.discount){
+          this.saleOrderInfo.discount = 100;
+        }
+        if(!this.saleOrderInfo.payType){
+          this.$set(this.saleOrderInfo,'payType',0);
+        }
+        // this.saleOrderInfo.debtAmount = 0;
+        if(this.saleOrderInfo.showGoodsList&&this.saleOrderInfo.showGoodsList.length!=0){
           this.getTotal();
         }
       }
@@ -186,6 +240,12 @@
       headTop,
       footGuide,
       alertTip
+    },
+    beforeRouteLeave(to,form,next){
+      if(to.name=='msite'){
+        this.RECORD_BUYORDER({})
+      }
+      next();
     },
     computed: {
       ...mapState([
@@ -199,9 +259,19 @@
       toAddress(name){
         this.$router.push(name)
       },
+      goWorker(){
+        if(!this.saleOrderInfo.status || this.saleOrderInfo.status!=2&& this.saleOrderInfo.status!=3){
+          this.$router.replace({name:'worker',query:{
+            workerId:this.saleOrderInfo.saleId,
+            workerName:this.saleOrderInfo.saleName,
+            fromPage:this.$route.name,
+            getWorker:true
+          }})
+        }
+      },
       returnBack(){
         switch (this.fromPage) {
-          case 'buyHistory':
+          case 'saleHistory':
             this.toAddress({name:this.fromPage});
             break;
         
@@ -212,29 +282,29 @@
         
         this.RECORD_BUYORDER({})
       },
-      goSupplier(){
-        //跳转到供应商
-        if(!this.buyOrderInfo.status || this.buyOrderInfo.status!=2&& this.buyOrderInfo.status!=3){
-          this.$router.push({name:"supplierList",query:{
-            chooseSupplier:true,
-            fromPage:'buyOrder'
+      goCustomer(){
+        //跳转到客户管理
+        if(!this.saleOrderInfo.status || this.saleOrderInfo.status!=2&& this.saleOrderInfo.status!=3){
+          this.$router.push({name:"customerManage",query:{
+            chooseCustomer:true,
+            fromPage:'saleTrade'
           }})
         }
       },
       goStore(){
         //跳转到仓库
-        if(!this.buyOrderInfo.status || this.buyOrderInfo.status!=2&& this.buyOrderInfo.status!=3){
+        if(!this.saleOrderInfo.status || this.saleOrderInfo.status!=2&& this.saleOrderInfo.status!=3){
           this.$router.push({name:"storehouseList",query:{
             chooseWareHouse:true,
-            fromPage:'buyOrder'
+            fromPage:'saleTrade'
           }})
         }
       },
       goGoods(){
-        if(this.buyOrderInfo.warehouseId){
-          if(!this.buyOrderInfo.status || this.buyOrderInfo.status!=2&& this.buyOrderInfo.status!=3){
-            this.$router.push({name:'choosegoods',query:{
-              fromPage:'buyTrade'
+        if(this.saleOrderInfo.warehouseId){
+          if(!this.saleOrderInfo.status || this.saleOrderInfo.status!=2&& this.saleOrderInfo.status!=3){
+            this.$router.push({name:'saleChoosegoods',query:{
+              fromPage:'saleTrade'
             }})
           }
         }else{
@@ -245,49 +315,59 @@
         this.showAlert = true;
         this.alertText = msg
       },
-      getBuyOrder(){
+      getSaleOrder(){
         //编辑采购单时获取信息
-        get_buy_order(this.$route.query.id).then((res)=>{
-          this.buyOrderInfo = res.data;
-          this.buyOrderInfo.showGoodsList = res.data.buyGoods;
-          if(this.buyOrderInfo.status==1){
-             this.RECORD_BUYORDER(this.buyOrderInfo)
+        get_sale_order(this.$route.query.id).then((res)=>{
+          this.saleOrderInfo = res.data;
+          this.saleOrderInfo.showGoodsList = res.data.saleGoods;
+          if(this.saleOrderInfo.status==1){
+             this.RECORD_BUYORDER(this.saleOrderInfo)
           }
-          this.status = this.buyOrderInfo.status;
+          this.status = this.saleOrderInfo.status;
         }).catch((err)=>{
 
         })
       },
       async submitOrder(status){
-        if(!this.buyOrderInfo.supplierId){
-          this.showTip("请选择供应商！");
+        if(!this.saleOrderInfo.customerId&&this.saleOrderInfo.customerId!=0){
+          this.showTip("请选择客户！");
           return;
         }
-        if(!this.buyOrderInfo.warehouseId){
+        if(!this.saleOrderInfo.warehouseId){
           this.showTip("请先选择仓库！");
           return;
         }
-        this.buyOrderInfo.type=4//采购
-        // this.buyOrderInfo.type=5//采购回退
-        this.buyOrderInfo.status=status//1提交，0草稿
-        this.buyOrderInfo.settleAccountId=8//
-        this.buyOrderInfo.operatorId = this.userId;
-        let submitOrder = this.buyOrderInfo;
-        submitOrder.buyGoods = this.buyOrderInfo.showGoodsList;
-        save_buy_order(this.userId,submitOrder).then((res)=>{
+        if(!this.saleOrderInfo.saleId){
+          this.showTip("请先选择销售员！");
+          return;
+        }
+        if(!this.saleOrderInfo.saleGoods){
+          this.showTip("请先选择商品！");
+          return;
+        }
+        this.saleOrderInfo.type=2//销售
+        // this.saleOrderInfo.type=3//销售退货
+        this.saleOrderInfo.status=status//1提交，0草稿
+        this.saleOrderInfo.settleAccountId=8//
+
+        this.saleOrderInfo.operatorId = this.userId;
+        let submitOrder = this.saleOrderInfo;
+        submitOrder.saleGoods = this.saleOrderInfo.showGoodsList;
+        save_sale_order(this.userId,submitOrder).then((res)=>{
           if(res.code==600){
-            this.buyOrderInfo.status=this.status;
             this.showTip(res.message);
+            this.saleOrderInfo.status = this.status;
           }else{
             this.returnBack();
           }
         }).catch((err)=>{
+          console.log(err);
           this.showTip(err.message);
         })
       },
       cancel(){
         //撤销已采购订单
-        cancel_buy_order(this.userId,this.buyOrderInfo.id).then((res)=>{
+        cancel_sale_order(this.userId,this.saleOrderInfo.id).then((res)=>{
           this.returnBack()
         }).catch((err)=>{
            this.showTip(err.message)
@@ -295,21 +375,24 @@
       },
       deleteOrder(){
         //删除草稿订单
-        delete_buy_order(this.buyOrderInfo.id).then((res)=>{
+        delete_sale_order(this.saleOrderInfo.id).then((res)=>{
           this.returnBack()
         }).catch((err)=>{
           this.showTip(err.message)
         })
       },
       getTotal(){
-        this.buyOrderInfo.totalAmount = 0;
-        if(this.buyOrderInfo.showGoodsList&&this.buyOrderInfo.showGoodsList.length!=0){
-           this.buyOrderInfo.showGoodsList.forEach(element => {
-              this.buyOrderInfo.totalAmount = this.buyOrderInfo.totalAmount + Number(element.unitAmount)*Number(element.quantity)
+        this.saleOrderInfo.totalAmount = 0;
+        this.saleOrderInfo.realAmount = 0;
+        if(this.saleOrderInfo.showGoodsList&&this.saleOrderInfo.showGoodsList.length!=0){
+           this.saleOrderInfo.showGoodsList.forEach(element => {
+              this.saleOrderInfo.realAmount = (this.saleOrderInfo.realAmount + Number(element.unitAmount)*Number(element.quantity));
             }
           );
+          this.saleOrderInfo.realAmount = this.saleOrderInfo.realAmount.toFixed(2)
+          this.saleOrderInfo.totalAmount = Number(this.saleOrderInfo.realAmount*(this.saleOrderInfo.discount/100)).toFixed(2);
         }
-        // this.buyOrderInfo.debtAmount = Number(this.buyOrderInfo.totalAmount)-Number(this.buyOrderInfo.realAmount);
+        // this.saleOrderInfo.debtAmount = Number(this.saleOrderInfo.totalAmount)-Number(this.saleOrderInfo.realAmount);
       }
     },
     watch: {}
