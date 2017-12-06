@@ -11,7 +11,7 @@
       <div class="left_button">已启用 <span v-show="enable"></span></div>
       <div class="right_button">已停用 <span v-show="!enable"></span></div>
     </div>
-    <ul class="storehouse_content">
+    <ul class="storehouse_content" :style="{'margin-bottom':chooseWareHouse?'1rem':''}">
       <li class="supplier_info_list" v-for="list in storeHousList" @click="editHouse(list)">
         <div class="list_left">
          <h4>{{list.warehouseName}}</h4>
@@ -24,6 +24,9 @@
         </div>
       </li>
     </ul>
+    <div class="bottom" v-if="chooseWareHouse" @click="save">
+        保存
+    </div>
   </div>
 </template>
 <script>
@@ -97,6 +100,26 @@
         }
       },
       goBack(){
+          if(!this.chooseWareHouse){
+          this.$router.push({name:'basic'})
+        }else{
+          switch (this.fromPage) {
+            case 'buyOrder':
+              this.$router.push({
+                name:"buyTrade"
+              });
+              break;
+            case 'saleTrade':
+              this.$router.push({
+                name:"saleTrade"
+              });
+              break;
+            default:
+              break;
+          }
+        }
+      },
+      save(){
         if(!this.chooseWareHouse){
           this.$router.push({name:'basic'})
         }else{

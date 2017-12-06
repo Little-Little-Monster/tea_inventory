@@ -1,9 +1,9 @@
 <template>
     <div>
     	<head-top goBack="" :headTitle="$route.query.employeeId?'编辑员工':'添加员工'">
-            <div slot="right" >
+            <!-- <div slot="right" >
                 <span class="save" @click="saveWorker">保存</span>
-            </div>
+            </div> -->
             <div slot="back" class="goback" @click="$router.push({name:'worker'})" >
                 <span class="iconfont icon-fanhui title_text"></span>
             </div>
@@ -68,6 +68,9 @@
                     <span>{{role.roleName}}</span>
                 </div>
             </div>
+        </div>
+        <div class="bottom"  @click="saveWorker">
+            保存
         </div>
         <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
     </div>    
@@ -252,7 +255,7 @@ export default {
 <style lang="scss" scoped>
     @import 'src/style/mixin';
     .cneter-con{
-        margin-bottom:0.9rem;
+        margin-bottom:1rem;
         .list{
             span{
                 left:.4rem;
@@ -334,10 +337,10 @@ export default {
         }
     }
     .head_goback{
-        left: 0.359rem;
+        left: 0.259rem;
         @include wh(0.6rem, 0.88rem);
         line-height: 0.88rem;
-        margin-left: .4rem;
+        margin-left: .2rem;
     }
     .goback{
         @include wh(.6rem,100%);

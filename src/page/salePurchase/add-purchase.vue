@@ -26,12 +26,13 @@
           <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
         </div>
       </li>
-      <li>
+     <li @click="toAccount">
         <div class="list_left">
-          结算账户
+          结算账户<i>*</i>
         </div>
         <div class="list_right">
-          <span>默认账户</span>
+          <span v-if="!saleOrderInfo.settleAccountId">请选择结算账户</span>
+          <span v-if="saleOrderInfo.settleAccountId">{{saleOrderInfo.settleAccountName}}</span>
           <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
         </div>
       </li>
@@ -328,6 +329,14 @@
 
         })
       },
+      toAccount(){
+        if(!this.saleOrderInfo.status || this.saleOrderInfo.status!=2&& this.saleOrderInfo.status!=3){
+          this.$router.replace({name:"balanceAccount",query:{
+            getAccount:true,
+            fromPage:'saleTrade'
+          }})
+        }
+      },
       async submitOrder(status){
         if(!this.saleOrderInfo.customerId&&this.saleOrderInfo.customerId!=0){
           this.showTip("请选择客户！");
@@ -335,6 +344,10 @@
         }
         if(!this.saleOrderInfo.warehouseId){
           this.showTip("请先选择仓库！");
+          return;
+        }
+        if(!this.saleOrderInfo.settleAccountId){
+          this.showTip("请先选择结算账户！");
           return;
         }
         if(!this.saleOrderInfo.saleId){
@@ -348,7 +361,6 @@
         this.saleOrderInfo.type=2//销售
         // this.saleOrderInfo.type=3//销售退货
         this.saleOrderInfo.status=status//1提交，0草稿
-        this.saleOrderInfo.settleAccountId=8//
 
         this.saleOrderInfo.operatorId = this.userId;
         let submitOrder = this.saleOrderInfo;

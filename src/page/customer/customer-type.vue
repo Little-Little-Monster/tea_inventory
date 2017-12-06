@@ -90,13 +90,13 @@ export default {
         .save{
             font-size:.28rem;
             color:#fff;
-            margin-left:.3rem;
+            margin-left:.2rem;
         }
     }
     .save{
         font-size:.28rem;
         color:#fff;
-        margin-left:.3rem;
+        margin-left:.2rem;
     }
 
 </style>

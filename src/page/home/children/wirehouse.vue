@@ -6,12 +6,8 @@
           <div class="li_right">库存状况<i class="iconfont icon-qianjin"></i></div>
         </li>
         <li>
-          <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>库存查询</div>
-          <div class="li_right">库存状况<i class="iconfont icon-qianjin"></i></div>
-        </li>
-        <li>
-          <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>库存查询</div>
-          <div class="li_right">库存状况<i class="iconfont icon-qianjin"></i></div>
+          <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>库存流水</div>
+          <div class="li_right">商品库存变化<i class="iconfont icon-qianjin"></i></div>
         </li>
       </ul>
     </div>

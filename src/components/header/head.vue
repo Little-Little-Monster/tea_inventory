@@ -58,10 +58,10 @@
         line-height: 0.88rem;
     }
     .head_goback{
-        left: 0.359rem;
+        left: 0.259rem;
         @include wh(0.6rem, 0.88rem);
         line-height: 0.88rem;
-        margin-left: .4rem;
+        margin-left: .2rem;
     }
     .head_login{
         right: 0.55rem;

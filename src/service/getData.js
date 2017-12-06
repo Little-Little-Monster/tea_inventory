@@ -299,6 +299,54 @@ export const cancel_sale_order = (userId, id) => fetch('/api/invoicing/cancel/go
 export const get_balance_account_list = (userId) => fetch('/api/invoicing/settle/account/query/list', { userId });
 
 /**
+ * 编辑时查询结算账户详细信息
+ */
+export const get_balance_account_detail = (id) => fetch('/api/invoicing/settle/account/query/edit', { id });
+
+/**
+ * 添加/更新结算账户
+ */
+export const balance_account_handel = (account) => fetch('/api/invoicing/settle/account/handler', account, "POST");
+
+/**
+ * 删除结算账户
+ */
+export const balance_account_delete = (id) => fetch('/api/invoicing/settle/account/query/delete', { id });
+
+/**
+ * 获取今日销售量和金额接口
+ */
+export const get_sale_total_today = (userId) => fetch('/api/invoicing/sale/report/query/day', { userId });
+
+/**
+ * 获取今日采购量和金额接口
+ */
+export const get_buy_total_today = (userId) => fetch('/api/invoicing/buy/report/query/day', { userId });
+
+
+
+
+/**
+ * 销售报表查询
+ */
+export const get_sale_report = (userId, storeId, startDate, endDate) => fetch('/api/invoicing/sale/report/query', {
+    userId,
+    storeId,
+    startDate,
+    endDate
+});
+
+/**
+ * 采购报表查询
+ */
+export const get_buy_report = (userId, storeId, startDate, endDate) => fetch('/api/invoicing/buy/report/query', {
+    userId,
+    storeId,
+    startDate,
+    endDate
+});
+
+/**
  * 账号密码登录
  */
 export const account_login = (account, password) => fetch('/api/invoicing/user/login', { account, password }, 'POST');

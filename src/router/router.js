@@ -17,6 +17,9 @@ const storeOption = r => require.ensure([], () => r(require('../page/storeManage
 const worker = r => require.ensure([], () => r(require('../page/workerManage/worker')), 'worker')
 const workerOption = r => require.ensure([], () => r(require('../page/workerManage/workerOption')), 'workerOption')
 
+const saleReport = r => require.ensure([], () => r(require('../page/reportManage/saleReport')), 'saleReport')
+const buyReport = r => require.ensure([], () => r(require('../page/reportManage/buyReport')), 'buyReport')
+
 const addGoods = r => require.ensure([], () => r(require('../page/goods/addGoods')), 'addGoods')
 const goodsList = r => require.ensure([], () => r(require('../page/goods/goodsList')), 'goodsList')
 const goodsAttrList = r => require.ensure([], () => r(require('../page/goods/goodsAttrList')), 'goodsAttrList')
@@ -43,7 +46,8 @@ const saleChoosegoods = r => require.ensure([], () => r(require('../page/salePur
 
 const accountManage = r => require.ensure([], () => r(require('../page/accountManage/accountManage')), 'accountManage')
 const balanceAccount = r => require.ensure([], () => r(require('../page/accountManage/balanceAccount')), 'balanceAccount')
-const accoutType = r => require.ensure([], () => r(require('../page/accountManage/accoutType')), 'accoutType')
+const accountType = r => require.ensure([], () => r(require('../page/accountManage/accountType')), 'accountType')
+const addBalanceAccount = r => require.ensure([], () => r(require('../page/accountManage/addBalanceAccount')), 'addBalanceAccount')
 
 const customerManage = r => require.ensure([], () => r(require('../page/customer/customer-list')), 'customer')
 const addCustomer = r => require.ensure([], () => r(require('../page/customer/add-customer')), 'addCustomer')
@@ -219,14 +223,19 @@ export default [{
             component: accountManage
         },
         {
-            path: '/accoutType',
-            name: 'accoutType',
-            component: accoutType
+            path: '/accountType',
+            name: 'accountType',
+            component: accountType
         },
         {
             path: '/balanceAccount',
             name: 'balanceAccount',
             component: balanceAccount
+        },
+        {
+            path: '/balance/add',
+            name: 'addBalanceAccount',
+            component: addBalanceAccount
         },
 
         {
@@ -249,7 +258,16 @@ export default [{
             name: 'addCustomerType',
             component: addCustomerType
         },
-
-
+        //报表
+        {
+            path: '/sale/report',
+            name: 'saleReport',
+            component: saleReport
+        },
+        {
+            path: '/buy/report',
+            name: 'buyReport',
+            component: buyReport
+        }
     ],
 }];

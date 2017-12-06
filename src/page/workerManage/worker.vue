@@ -7,7 +7,7 @@
             </div>
     	</head-top>
 
-        <div class="cneter-con paddingTop">
+        <div class="cneter-con paddingTop" :style="{'margin-bottom':$route.query.getWorker?'1rem':''}">
              <section class="title-choose">
                 <div class="login-tit" @click="!isOn?isOn=!isOn:''">
                     <span>已启用</span>
@@ -28,7 +28,9 @@
                 <!-- <em v-if="!$route.query.single" class="list-option iconfont check-icon" :class="{'icon-radio-checked':list.selected,'icon-danxuanweizhong':!list.selected}" @click="list.selected?list.selected=false:list.selected=true"></em> -->
             </div>
         </div>
-
+        <div class="bottom" v-if="$route.query.getWorker" @click="save">
+            保存
+        </div>
     </div>    
 </template>
 
@@ -84,6 +86,17 @@ export default {
             'RECORD_BUYORDER'
         ]),
         goBack(){
+            if(this.$route.query.getWorker){
+                if(this.$route.query.from=='wireHouse'){
+                    this.$router.push({name:'addEditStorehouse'})
+                }else if(this.$route.query.fromPage){
+                    this.$router.push({name:this.$route.query.fromPage})
+                }
+            }else{
+                this.$router.push({name:'basic'})
+            }
+        },
+        save(){
             if(this.$route.query.getWorker){
                 if(this.$route.query.from=='wireHouse'){
                     this.$router.push({name:'addEditStorehouse',

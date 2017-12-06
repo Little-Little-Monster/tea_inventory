@@ -18,13 +18,13 @@
       </li>
     </ul>
     <ul class="sensus_ul sensus_content">
-      <li>
+      <li @click="$router.push({name:'saleReport'})">
         <div class="li_left">
           <p><i class="iconfont icon-pandiandanliebiao"></i>销售报表</p>
           <p>今日销售<span class="number"> 100</span> 笔<b></b>销售金额<span class="price"> ￥100.00</span></p>
         </div>
       </li>
-      <li class="sensus_ul_detail">
+      <li class="sensus_ul_detail" @click="$router.push({name:'buyReport'})">
         <div class="li_left">
           <p><i class="iconfont icon-pandiandanliebiao"></i>采购报表</p>
           <span>采购统计</span>
@@ -52,6 +52,7 @@
 <script>
   import { mapMutations } from 'vuex'
   import { getStore } from 'src/config/mUtils'
+  import { get_sale_total_today } from 'src/service/getData';
   import headTop from 'src/components/header/head'
   import footGuide from 'src/components/footer/footGuide'
 
@@ -59,10 +60,17 @@
     data(){
       return {
         menuList: null,//菜单列表
+        userId:getStore('userInfo').id,
+        saleInfo:null
       }
     },
     async beforeMount(){
       this.CHANGE_HEADER('统计')
+    },
+    created(){
+      get_sale_total_today(this.userId).then((res)=>{
+        this.saleInfo = res.data;
+      })
     },
     mounted(){
 
@@ -76,6 +84,7 @@
       ...mapMutations([
         'CHANGE_HEADER'
       ]),
+
     },
     watch: {}
   }

@@ -7,7 +7,7 @@
       </div>
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
-    <ul class="supplier_list paddingTop">
+    <ul class="supplier_list paddingTop" :style="{'margin-bottom':chooseSupplier?'1rem':''}">
       <li class="supplier_info_list" v-for="list in suppList" @click="editSupp(list)">
         <div class="list_left">
           <h4>{{list.name}}</h4>
@@ -21,6 +21,9 @@
         </div>
       </li>
     </ul>
+     <div class="bottom" v-if="chooseSupplier" @click="save">
+          保存
+      </div>
   </div>
 </template>
 <script>
@@ -77,8 +80,24 @@
         this.$router.push(name)
       },
       goBack(){
+          if(!this.chooseSupplier){
+          this.$router.push({name:"basic"})
+          }else{
+            switch (this.fromPage) {
+              case 'buyOrder':
+                this.$router.push({
+                  name:"buyTrade",
+                })
+                break;
+            
+              default:
+                break;
+            }
+          }
+      },
+      save(){
         if(!this.chooseSupplier){
-          this.$router.go(-1)
+          this.$router.push({name:"basic"})
         }else{
           switch (this.fromPage) {
             case 'buyOrder':

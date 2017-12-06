@@ -2,12 +2,12 @@
     <div>
     	<head-top signin-up='msite' goBack="" head-title="门店管理">
             <router-link v-if="!$route.query.getStore" slot="right" class="iconfont icon-jia" :to="{name:'storeOption'}"></router-link>
-            <span slot="back" @click="pushStore">
+            <span slot="back" @click="goBack">
                 <span class="save iconfont icon-fanhui"></span>
             </span>
     	</head-top>
 
-        <div class="cneter-con paddingTop">
+        <div class="cneter-con paddingTop" :style="{'margin-bottom':$route.query.getStore?'1rem':''}">
             <div class="store-list list" v-for="list in storeList">
                 <span>{{list.storeName}}</span>
                 <em v-if="!$route.query.getStore" class="list-option iconfont icon-bianji" @click="$router.push({name:'storeOption',query:list})"> &nbsp;编辑</em>
@@ -15,7 +15,9 @@
                 <em v-if="$route.query.single" class="list-option iconfont check-icon" :class="{'icon-radio-checked':singleId==list.id,'icon-danxuanweizhong':singleId!=list.id}" @click="singleId=list.id;singleName=list.storeName"></em>
             </div>
         </div>
-
+        <div class="bottom" v-if="$route.query.getStore" @click="pushStore">
+            保存
+        </div>
     </div>    
 </template>
 <script>
@@ -51,8 +53,14 @@ export default {
                         }
                     });
                 }else{
-                    this.singleId = this.$route.query.id
-                    this.singleName = this.$route.query.singleName
+                    if(this.$route.query.fromPage='addBalanceAccount'){
+                        //结算账户选择门店
+                        this.singleId = this.customer.storeId
+                        this.singleName = this.customer.storeName
+                    }else{
+                        this.singleId = this.$route.query.id
+                        this.singleName = this.$route.query.singleName
+                    }
                 }
                 
             }
@@ -71,31 +79,64 @@ export default {
     },
     computed: {
       ...mapState([
-        'headTitle'
+        'headTitle','customer'
       ])
     },
     methods: {
     	...mapMutations([
-
+            'RECORD_CUSTOMER'
         ]),
-        pushStore(){
+        goBack(){
             if(this.$route.query.single){
-                //仓库选择门店
+                if(this.$route.query.fromPage=='addBalanceAccount'){
+                    //结算账户选择门店
+                    this.$router.push({name:this.$route.query.fromPage})
+                }else{
+                    //仓库选择门店
+                    this.$router.push(
+                        {
+                            name:'addEditStorehouse',
+                        }
+                    )
+                }
+            }else if(!this.$route.query.single&&this.$route.query.getStore){
+                //员工选择门店
                 this.$router.push(
                     {
-                        name:'addEditStorehouse',
-                        query:{
-                            singleId:this.singleId,
-                            singleName:this.singleName,
-                            workerId:this.$route.query.workerId,
-                            workerName:this.$route.query.workerName,
-                            warehouseName:this.$route.query.warehouseName,
-                            memo:this.$route.query.memo,
-                            edit:this.$route.query.edit,
-                            status:this.$route.query.status,
-                        }
+                        name:'workerOption',
                     }
                 )
+            }else if(!this.$route.query.getStore){
+                this.$router.push({name:'basic'})
+            }
+        },
+        pushStore(){
+            if(this.$route.query.single){
+                if(this.$route.query.fromPage=='addBalanceAccount'){
+                    //结算账户选择门店
+                    let account = this.customer;
+                    account.storeId = this.singleId
+                    account.storeName = this.singleName
+                    this.RECORD_CUSTOMER(account);
+                    this.$router.push({name:this.$route.query.fromPage})
+                }else{
+                    //仓库选择门店
+                    this.$router.push(
+                        {
+                            name:'addEditStorehouse',
+                            query:{
+                                singleId:this.singleId,
+                                singleName:this.singleName,
+                                workerId:this.$route.query.workerId,
+                                workerName:this.$route.query.workerName,
+                                warehouseName:this.$route.query.warehouseName,
+                                memo:this.$route.query.memo,
+                                edit:this.$route.query.edit,
+                                status:this.$route.query.status,
+                            }
+                        }
+                    )
+                }
             }else if(!this.$route.query.single&&this.$route.query.getStore){
                 //员工选择门店
                 this.storeIds=[];
@@ -137,13 +178,13 @@ export default {
         .save{
             font-size:.28rem;
             color:#fff;
-            margin-left:.3rem;
+            margin-left:.2rem;
         }
     }
     .save{
         font-size:.28rem;
         color:#fff;
-        margin-left:.3rem;
+        margin-left:.2rem;
     }
 
 </style>

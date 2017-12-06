@@ -7,7 +7,7 @@
       </div>
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
-    <ul class="customer-content">
+    <ul class="customer-content" :style="{'margin-bottom':chooseCustomer?'1rem':''}">
       <li class="supplier_info_list" v-for="list in customerList">
         <div class="list_left">
           <h4>{{list.name}}</h4>
@@ -23,6 +23,9 @@
         </div>
       </li>
     </ul>
+    <div class="bottom" v-if="chooseCustomer" @click="save">
+        保存
+    </div>
   </div>
 </template>
 <script>
@@ -47,7 +50,7 @@
     },
     created(){
       this.getCustomer()
-      if(this.buyOrder.customerId){
+      if(this.buyOrder.customerId||this.buyOrder.customerId==0){
         this.chooseId = this.buyOrder.customerId
         this.chooseName = this.buyOrder.customerName
         this.balance = this.buyOrder.balance
@@ -64,12 +67,6 @@
         'buyOrder'
       ])
     },
-    beforeRouteLeave(to,from,next){
-      let buyorder = this.buyOrder;
-      buyorder.customerId = this.chooseId;
-      buyorder.customerName = this.chooseName;
-      next()
-    },
     methods: {
       ...mapMutations([
         'CHANGE_HEADER'
@@ -85,6 +82,13 @@
         })
       },
       goBack(){
+          if(this.chooseCustomer){
+              this.$router.replace({name:this.fromPage})
+          }else{
+              this.$router.push({name:'msite'})
+          }
+      },
+      save(){
         if(this.chooseCustomer){
           this.$router.push({name:this.fromPage});
           let buyorder = this.buyOrder;
