@@ -18,6 +18,12 @@ export const mobile_code = phone => fetch('/v4/mobile/verify_code/send', {
 
 export const get_captchas = () => fetch('/v1/captchas', {}, 'POST');
 
+/**
+ * 获取首页今日收益
+ */
+
+export const get_today_money = (userId) => fetch('/api/invoicing/settle/account/query/total', { userId });
+
 
 /**
  * 手机号登录
@@ -323,6 +329,63 @@ export const get_sale_total_today = (userId) => fetch('/api/invoicing/sale/repor
  */
 export const get_buy_total_today = (userId) => fetch('/api/invoicing/buy/report/query/day', { userId });
 
+/**
+ * 库存查询
+ */
+export const get_inventory_query = (searchInfo) => fetch('/api/invoicing/stock/query/list', searchInfo);
+
+/**
+ * 库存流水
+ */
+export const get_inventory_flow = (searchInfo) => fetch('/api/invoicing/stock/detail/query/list', searchInfo);
+
+
+/**
+ * 获取角色列表
+ */
+export const get_role_list = (userId) => fetch('/api/invoicing/role/query/list', { userId });
+
+/**
+ * 获取角色资源列表
+ */
+
+export const get_role_resource = (userId, roleId) => fetch('/api/invoicing/query/resource/' + userId + '/' + roleId);
+/**
+ * 创建或者更新角色
+ */
+
+export const role_handel = (userId, roleInfo) => fetch('/api/invoicing/role/' + userId + '/handler', roleInfo, "POST");
+/**
+ * 删除角色
+ */
+export const delete_role = (id) => fetch('/api/invoicing/role/delete/' + id);
+
+/**
+ * 获取盘点单详情
+ */
+export const get_stock_info = (id) => fetch('/api/invoicing/inventory/edit', { id });
+
+/**
+ * 删除草稿盘点单
+ */
+export const delete_stock = (id) => fetch('/api/invoicing/inventory/delete', { id });
+
+/**
+ * 获取盘点列表
+ */
+export const get_stock_list = (userId, status, page, pageSize) => fetch('/api/invoicing/inventory/list', {
+    userId,
+    status,
+    page,
+    pageSize
+});
+
+
+/**
+ * 添加更新盘点单
+ */
+export const stock_handel = (userId, stockInfo) => fetch('/api/invoicing/' + userId + '/inventory/handler', stockInfo, "POST");
+
 
 
 
@@ -349,7 +412,7 @@ export const get_buy_report = (userId, storeId, startDate, endDate) => fetch('/a
 /**
  * 账号密码登录
  */
-export const account_login = (account, password) => fetch('/api/invoicing/user/login', { account, password }, 'POST');
+export const account_login = (mobile, password) => fetch('/api/invoicing/user/login', { mobile, password }, 'POST');
 
 
 /**

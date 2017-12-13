@@ -62,7 +62,7 @@ export default {
         })
     },
     beoreRouteLeave(to,from,next){
-        if(to.name=='saleTrade'){
+        if(to.name=='saleTrade'||to.name=='saleBack'){
             let saleOrder = this.buyOrder;
             saleOrder.workerId = this.workerId;
             saleOrder.workerName = this.workerName;
@@ -92,6 +92,8 @@ export default {
                 }else if(this.$route.query.fromPage){
                     this.$router.push({name:this.$route.query.fromPage})
                 }
+            }else if(this.$route.query.fromPage&&!this.$route.query.getWorker){
+                this.$router.push({name:this.$route.query.fromPage})
             }else{
                 this.$router.push({name:'basic'})
             }

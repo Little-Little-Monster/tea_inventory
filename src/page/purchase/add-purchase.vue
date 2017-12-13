@@ -1,6 +1,6 @@
 <template>
   <div class="add_purchase">
-    <head-top goBack="" head-title="采购单">
+    <head-top goBack="" :headTitle="$route.name=='buyTrade'?'采购单':'采购退货单'">
       <div slot="back" class="goback" @click="returnBack" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
@@ -159,6 +159,7 @@
       if(this.edit){//编辑采购单
         switch (this.fromPage) {
           case 'buyHistory':
+          case 'buyBackHistory':
             //编辑采购单
             this.getBuyOrder()
             break;
@@ -203,6 +204,7 @@
       returnBack(){
         switch (this.fromPage) {
           case 'buyHistory':
+          case 'buyBackHistory':
             this.toAddress({name:this.fromPage});
             break;
         
@@ -218,7 +220,7 @@
         if(!this.buyOrderInfo.status || this.buyOrderInfo.status!=2&& this.buyOrderInfo.status!=3){
           this.$router.push({name:"supplierList",query:{
             chooseSupplier:true,
-            fromPage:'buyOrder'
+            fromPage:this.$route.name
           }})
         }
       },
@@ -227,7 +229,7 @@
         if(!this.buyOrderInfo.status || this.buyOrderInfo.status!=2&& this.buyOrderInfo.status!=3){
           this.$router.push({name:"storehouseList",query:{
             chooseWareHouse:true,
-            fromPage:'buyOrder'
+            fromPage:this.$route.name
           }})
         }
       },
@@ -235,7 +237,7 @@
         if(!this.buyOrderInfo.status || this.buyOrderInfo.status!=2&& this.buyOrderInfo.status!=3){
           this.$router.replace({name:"balanceAccount",query:{
             getAccount:true,
-            fromPage:'buyTrade'
+            fromPage:this.$route.name
           }})
         }
       },
@@ -243,7 +245,7 @@
         if(this.buyOrderInfo.warehouseId){
           if(!this.buyOrderInfo.status || this.buyOrderInfo.status!=2&& this.buyOrderInfo.status!=3){
             this.$router.push({name:'choosegoods',query:{
-              fromPage:'buyTrade'
+              fromPage:this.$route.name
             }})
           }
         }else{
@@ -280,12 +282,15 @@
           this.showTip("请先选择结算账户！");
           return;
         }
-        if(!this.saleOrderInfo.buyGoods){
+        if(!this.buyOrderInfo.buyGoods){
           this.showTip("请先选择商品！");
           return;
         }
-        this.buyOrderInfo.type=4//采购
-        // this.buyOrderInfo.type=5//采购回退
+        if(this.$route.name=='buyTrade'){
+          this.buyOrderInfo.type=4//采购
+        }else{
+          this.buyOrderInfo.type=5//采购回退
+        }
         this.buyOrderInfo.status=status//1提交，0草稿
         this.buyOrderInfo.operatorId = this.userId;
         let submitOrder = this.buyOrderInfo;

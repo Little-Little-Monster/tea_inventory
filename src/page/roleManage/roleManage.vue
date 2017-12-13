@@ -1,27 +1,25 @@
 <template>
   <div>
-    <head-top signin-up='msite' goBack="" head-title="供应商列表">
-      <span v-if="!chooseSupplier" slot="right" class="iconfont icon-jia" @click="$router.push({name:'addEditUpplier'})" ></span>
+    <head-top signin-up='msite' goBack="" head-title="角色管理">
+      <span v-if="!chooseRule" slot="right" class="iconfont icon-jia" @click="$router.push({name:'addRole'})" ></span>
       <div slot="back" class="goback" @click="goBack" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
-    <ul class="supplier_list paddingTop" :style="{'margin-bottom':chooseSupplier?'1rem':''}">
-      <li class="supplier_info_list" v-for="list in suppList" @click="editSupp(list)">
+    <ul class="supplier_list paddingTop" :style="{'margin-bottom':chooseRule?'1rem':''}">
+      <li class="supplier_info_list" v-for="list in roleList" @click="editRole(list.id,list.roleName,list.memo)">
         <div class="list_left">
-          <h4>{{list.name}}</h4>
-          <p>欠供应商欠款 <span>￥{{list.balance}}</span></p>
-          <p>联系电话 <span>{{list.mobile}}</span></p>
-          <p>负责人 <span>{{list.personHead}}</span></p>
+          <h4>{{list.roleName}}</h4>
+          <p><span>{{list.memo}}</span></p>
         </div>
         <div class="list_right">
-          <i class="iconfont icon-qianjin" v-if="!chooseSupplier"></i>
-          <em v-if="chooseSupplier" class="iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click="chooseId=list.id;chooseName=list.name"></em>
+          <i class="iconfont icon-qianjin" v-if="!chooseRule"></i>
+          <em v-if="chooseRule" class="iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click="chooseId=list.id;chooseName=list.name"></em>
         </div>
       </li>
     </ul>
-     <div class="bottom" v-if="chooseSupplier" @click="save">
+     <div class="bottom" v-if="chooseRule" @click="save">
           保存
       </div>
   </div>
@@ -29,7 +27,7 @@
 <script>
   import { mapMutations,mapState } from 'vuex'
   import { getStore } from 'src/config/mUtils'
-  import { get_supplier } from 'src/service/getData'
+  import { get_role_list } from 'src/service/getData'
   import headTop from 'src/components/header/head'
   import footGuide from 'src/components/footer/footGuide'
 
@@ -39,18 +37,18 @@
         imgPath: 'static/images/head.png',
         userId:getStore('userInfo').id,
         parama:'',
-        chooseSupplier:this.$route.query.chooseSupplier,
+        chooseRule:this.$route.query.chooseRule,
         fromPage:this.$route.query.fromPage,
-        suppList:null,
+        roleList:null,
         chooseId:-1,
         chooseName:null
       }
     },
     created(){
-      this.getSupplier();
+      this.getRole();
       if(this.chooseSupplier){
           switch (this.fromPage) {
-           case 'buyTrade':case 'buyBack':
+            case 'buyOrder':
               this.chooseId = this.buyOrder.supplierId
               this.chooseName = this.buyOrder.supplierName
               break;
@@ -80,15 +78,13 @@
         this.$router.push(name)
       },
       goBack(){
-          if(!this.chooseSupplier&&!this.fromPage){
-            this.$router.push({name:"basic"})
-          }else if(!this.chooseSupplier&&this.fromPage){
-            this.$router.push({name:this.fromPage})
+          if(!this.chooseRule){
+          this.$router.push({name:"msite"})
           }else{
             switch (this.fromPage) {
-              case 'buyTrade':case 'buyBack':
+              case 'buyOrder':
                 this.$router.push({
-                  name:this.fromPage
+                  name:this.fromPage,
                 })
                 break;
             
@@ -98,14 +94,14 @@
           }
       },
       save(){
-        if(!this.chooseSupplier){
+        if(!this.chooseRule){
           this.$router.push({name:"basic"})
         }else{
           switch (this.fromPage) {
-           case 'buyTrade':case 'buyBack':
-                this.$router.push({
-                  name:this.fromPage
-                })
+            case 'buyOrder':
+              this.$router.push({
+                name:this.fromPage,
+              })
               let order = Object.assign({},this.buyOrder,{
                 supplierId:this.chooseId==-1?'':this.chooseId,
                 supplierName:this.chooseName
@@ -118,16 +114,16 @@
           }
         }
       },
-      getSupplier(){
-        get_supplier(this.userId,this.parama).then((res)=>{
-          this.suppList=res.data;
+      getRole(){
+        get_role_list(this.userId).then((res)=>{
+          this.roleList=res.data;
         }).catch((err)=>{
 
         })
       },
-      editSupp(list){
-        if(!this.chooseSupplier){
-          this.$router.push({name:'supplierDetail',query:list})
+      editRole(roleId,roleName,memo){
+        if(!this.chooseRule){
+          this.$router.push({name:'editRole',query:{roleId:roleId,roleName:roleName,memo:memo}})
         }
       }
     },
@@ -139,21 +135,17 @@
   .supplier_list{
     @include same_ul_style;
     .supplier_info_list{
-      height: 2.2rem;
+      height: 1.6rem;
       padding: 0 0.2rem 0 0.4rem;
       .list_left{
         h4{
           font-size: 0.32rem;
           color: #444444;
+          line-height: .72rem;
         }
         p{
           font-size: 0.24rem;
           color: #999999;
-          &:nth-of-type(1){
-            span{
-              color: #dac1db;
-            }
-          }
           span{
             color: #999999;
           }

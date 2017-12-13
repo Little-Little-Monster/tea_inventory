@@ -24,20 +24,20 @@
             <section class="total-info">
                 <section>
                     <span>销售量</span> 
-                    <span>{{totalQuantity}}</span>
+                    <span>{{totalQuantity.toFixed(2)}}</span>
                 </section>
                 <section>
                     <span>总金额</span> 
-                    <span>￥{{totalAmount}}</span> 
+                    <span>￥{{totalAmount.toFixed(2)}}</span> 
                 </section>
             </section>
             <div class="worker-list list" v-for="list in reportList" @click="editWorker(list)">
                 <span>
                     {{list.goodsName}} <i class="text-info">X{{list.quantity}}</i>
                 </span>
-                <p class="text-info">单价：<em>￥{{list.unitAmount}}</em></p>
+                <p class="text-info">单价：<em>￥{{list.unitAmount.toFixed(2)}}</em></p>
                 <p class="text-info">销售时间：<em>{{list.bizDateStr}}</em></p>
-                <em class="list-option">￥{{list.amount}}</em>
+                <em class="list-option">￥{{list.amount.toFixed(2)}}</em>
             </div>
         </div>
         <div class="bottom" @click="getReport">

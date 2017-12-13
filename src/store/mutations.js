@@ -3,7 +3,8 @@ import {
     RECORD_USERINFO,
     RECORD_GOODSINFO,
     RECORD_BUYORDER,
-    RECORD_CUSTOMER
+    RECORD_CUSTOMER,
+    RECORD_STOCK
 } from './mutation-types.js'
 
 import { setStore, getStore } from '../config/mUtils'
@@ -27,5 +28,8 @@ export default {
     },
     [RECORD_CUSTOMER](state, customerInfo) {
         state.customer = customerInfo;
+    },
+    [RECORD_STOCK](state, stockInfo) {
+        state.stockState = stockInfo;
     }
 }

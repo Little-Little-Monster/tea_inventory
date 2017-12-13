@@ -1,8 +1,8 @@
 <template>
     <div>
     	<head-top signin-up='msite' goBack="" :headTitle="headTit">
-            <router-link slot="right" class="iconfont icon-jia" :to="{name:'addGoods'}"></router-link>
-            <div slot="back" class="goback" @click="$router.push({name:'msite'})" >
+            <router-link slot="right" class="iconfont icon-jia" v-if="!isGetGoods" :to="{name:'addGoods'}"></router-link>
+            <div slot="back" class="goback" @click="save" >
                 <span class="iconfont icon-fanhui title_text"></span>
             </div>
     	</head-top>
@@ -18,10 +18,14 @@
                     <p>售价：<em>{{goods.saleAmount}}</em></p>
                     <p>品牌：{{goods.goodsBrandName}}</p>
                 </div>
-                <em class="list-option iconfont icon-qianjin"></em>
+                <em v-if="!isGetGoods" class="list-option iconfont icon-qianjin"></em>
+                <em v-if="isGetGoods" class="list-option iconfont check-icon" :class="{'icon-radio-checked':chooseId==goods.id,'icon-danxuanweizhong':chooseId!=goods.id}" @click="chooseId=goods.id;chooseName=goods.name"></em>
+
             </div>
         </div>
-
+        <div @click="save" class="bottom" v-if="isGetGoods">
+            保存
+        </div>
     </div>    
 </template>
 
@@ -40,111 +44,16 @@ export default {
             goodsClassId:0,
             priceFlag:0,
             page:0,
-            pageSize:10
+            pageSize:10,
+            isGetGoods:this.$route.query.getGoods,
+            chooseId:this.$route.query.goodsId,
+            chooseName:this.$route.query.goodsName,
+            fromPage:this.$route.query.fromPage,
         }
     },
     created(){
         //获取商品列表
         get_goods_type(this.userId).then((res)=>{
-            res={
-                "code":"200",
-                "data":[
-                    {
-                        "children":[
-
-                        ],
-                        "id":5,
-                        "name":"白茶",
-                        "parentId":0
-                    },
-                    {
-                        "children":[
-
-                        ],
-                        "id":4,
-                        "name":"黑茶",
-                        "parentId":0
-                    },
-                    {
-                        "children":[
-
-                        ],
-                        "id":3,
-                        "name":"普洱茶",
-                        "parentId":0
-                    },
-                    {
-                        "children":[
-                            {
-                                "children":[
-
-                                ],
-                                "id":13,
-                                "name":"功夫红茶",
-                                "parentId":2
-                            },
-                            {
-                                "children":[
-
-                                ],
-                                "id":12,
-                                "name":"功夫红茶",
-                                "parentId":2
-                            },
-                            {
-                                "children":[
-
-                                ],
-                                "id":11,
-                                "name":"功夫红茶",
-                                "parentId":2
-                            },
-                            {
-                                "children":[
-
-                                ],
-                                "id":10,
-                                "name":"滇红",
-                                "parentId":2
-                            }
-                        ],
-                        "id":2,
-                        "name":"红茶",
-                        "parentId":0
-                    },
-                    {
-                        "children":[
-                            {
-                                "children":[
-                                    {
-                                        "children":[
-
-                                        ],
-                                        "id":9,
-                                        "name":"皇茶",
-                                        "parentId":6
-                                    },
-                                    {
-                                        "children":[
-
-                                        ],
-                                        "id":8,
-                                        "name":"碧螺春",
-                                        "parentId":6
-                                    }
-                                ],
-                                "id":6,
-                                "name":"毛峰",
-                                "parentId":1
-                            }
-                        ],
-                        "id":1,
-                        "name":"绿茶",
-                        "parentId":0
-                    }
-                ],
-                "message":"OK"
-            };
             this.goodsType = res.data;
             this.getGoods();
         }).catch((err)=>{
@@ -168,103 +77,26 @@ export default {
         ]),
         getGoods(){
             get_goods_list(this.userId,this.goodsClassId,this.priceFlag,this.page,this.pageSize).then((res)=>{
-                // res={
-                //     "code":"200",
-                //     "data":{
-                //         "size":5,
-                //         "info":[
-                //             {
-                //                 "attachmentUrl":null,
-                //                 "buyAmount":0.5,
-                //                 "createTime":1504341649000,
-                //                 "goodsBrandId":0,
-                //                 "goodsClassificationId":6,
-                //                 "goodsUnitId":1,
-                //                 "id":1,
-                //                 "idCard":"123456",
-                //                 "memo":"这个是测试商品",
-                //                 "modelSize":null,
-                //                 "name":"毛峰180",
-                //                 "saleAmount":1.5,
-                //                 "status":0,
-                //                 "updateTime":1504341649000
-                //             },
-                //             {
-                //                 "attachmentUrl":null,
-                //                 "buyAmount":0.5,
-                //                 "createTime":1504341944000,
-                //                 "goodsBrandId":0,
-                //                 "goodsClassificationId":6,
-                //                 "goodsUnitId":1,
-                //                 "id":2,
-                //                 "idCard":"123456",
-                //                 "memo":"这个是测试商品",
-                //                 "modelSize":null,
-                //                 "name":"毛峰280",
-                //                 "saleAmount":1.5,
-                //                 "status":0,
-                //                 "updateTime":1504341944000
-                //             },
-                //             {
-                //                 "attachmentUrl":null,
-                //                 "buyAmount":0.8,
-                //                 "createTime":1507991070000,
-                //                 "goodsBrandId":0,
-                //                 "goodsClassificationId":6,
-                //                 "goodsUnitId":1,
-                //                 "id":8,
-                //                 "idCard":"123489",
-                //                 "memo":"这个是测试商品",
-                //                 "modelSize":null,
-                //                 "name":"毛峰680",
-                //                 "saleAmount":1.8,
-                //                 "status":0,
-                //                 "updateTime":1507991070000
-                //             },
-                //             {
-                //                 "attachmentUrl":null,
-                //                 "buyAmount":0.8,
-                //                 "createTime":1507991176000,
-                //                 "goodsBrandId":0,
-                //                 "goodsClassificationId":6,
-                //                 "goodsUnitId":1,
-                //                 "id":9,
-                //                 "idCard":"123489",
-                //                 "memo":"这个是测试商品",
-                //                 "modelSize":null,
-                //                 "name":"毛峰680",
-                //                 "saleAmount":1.8,
-                //                 "status":0,
-                //                 "updateTime":1507991176000
-                //             },
-                //             {
-                //                 "attachmentUrl":null,
-                //                 "buyAmount":0.8,
-                //                 "createTime":1504345402000,
-                //                 "goodsBrandId":0,
-                //                 "goodsClassificationId":6,
-                //                 "goodsUnitId":1,
-                //                 "id":7,
-                //                 "idCard":"123456",
-                //                 "memo":"这个是测试商品",
-                //                 "modelSize":null,
-                //                 "name":"毛峰380",
-                //                 "saleAmount":1.8,
-                //                 "status":0,
-                //                 "updateTime":1504345402000
-                //             }
-                //         ]
-                //     },
-                //     "message":"OK"
-                // }
                 this.goodsList = res.data.info;
             }).catch((err)=>{
 
             })
         },
+        save(){
+            if(this.isGetGoods){
+                this.$router.push({name:this.fromPage,query:{
+                    goodsId:this.chooseId,
+                    goodsName:this.chooseName
+                }})
+            }else{
+                this.$router.push({name:"msite"})
+            }
+        },
         editGoods(goodsId){
             // this.RECORD_GOODSINFO(list)
-            this.$router.push({name:"addGoods",query:{edit:true,goodsId:goodsId}});
+            if(!this.isGetGoods){
+                this.$router.push({name:"addGoods",query:{edit:true,goodsId:goodsId}});
+            }
         }
 
     }
@@ -324,5 +156,9 @@ export default {
                 left:45%;
             }
         }
+    }
+    .check-icon{
+        @include sc(.4rem,$green);
+        right:.4rem;
     }
 </style>

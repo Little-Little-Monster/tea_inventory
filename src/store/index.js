@@ -11,7 +11,8 @@ const state = {
     headTitle: "茶叶进销存管理系统",
     storeGoodsInfo: {},
     buyOrder: {},
-    customer: {}
+    customer: {},
+    stockState: {}
 }
 
 export default new Vuex.Store({

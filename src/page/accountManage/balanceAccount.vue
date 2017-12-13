@@ -62,11 +62,11 @@ export default {
         this.getAccountInfo()
         if(this.getAccount){
             switch (this.fromPage) {
-                case 'buyTrade':
+                case 'buyTrade':case 'buyBack':
                     this.chooseId = this.buyOrder.settleAccountId
                     this.chooseName = this.buyOrder.settleAccountName
                     break;
-                case 'saleTrade':
+                case 'saleTrade':case 'saleBack':
                     this.chooseId = this.buyOrder.settleAccountId
                     this.chooseName = this.buyOrder.settleAccountName
                     break;
@@ -103,7 +103,9 @@ export default {
             })
         },
         goBack(){
-            if(this.getAccount){
+            if(this.getAccount&&this.fromPage){
+                this.$router.replace({name:this.fromPage})
+            }else if(!this.getAccount&&this.fromPage){
                 this.$router.replace({name:this.fromPage})
             }else{
                 this.$router.push({name:'accountManage'})
@@ -111,13 +113,13 @@ export default {
         },
         saveChoose(){
             switch (this.fromPage) {
-                case 'buyTrade':
+               case 'buyTrade':case 'buyBack':
                     let buyOrder = this.buyOrder;
                     buyOrder.settleAccountId = this.chooseId;
                     buyOrder.settleAccountName = this.chooseName;
                     this.RECORD_BUYORDER(buyOrder);
                     break;
-                case 'saleTrade':
+                case 'saleTrade':case 'saleBack':
                     let saleOrder = this.buyOrder;
                     saleOrder.settleAccountId = this.chooseId;
                     saleOrder.settleAccountName = this.chooseName;

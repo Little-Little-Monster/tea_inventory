@@ -54,6 +54,16 @@ const addCustomer = r => require.ensure([], () => r(require('../page/customer/ad
 const customerType = r => require.ensure([], () => r(require('../page/customer/customer-type')), 'customerType')
 const addCustomerType = r => require.ensure([], () => r(require('../page/customer/add-customer-type')), 'addCustomerType')
 
+const inventoryQuery = r => require.ensure([], () => r(require('../page/inventory/inventoryQuery')), 'inventoryQuery')
+const inventoryFlow = r => require.ensure([], () => r(require('../page/inventory/inventoryFlow')), 'inventoryFlow')
+
+const roleManage = r => require.ensure([], () => r(require('../page/roleManage/roleManage')), 'roleManage')
+const roleOption = r => require.ensure([], () => r(require('../page/roleManage/roleOption')), 'roleOption')
+
+const warehouseStock = r => require.ensure([], () => r(require('../page/stock/warehouseStock')), 'warehouseStock')
+const stockOption = r => require.ensure([], () => r(require('../page/stock/stockOption')), 'stockOption')
+const stockGoods = r => require.ensure([], () => r(require('../page/stock/choose-goods')), 'stockGoods')
+
 export default [{
     path: '/',
     component: App, //顶层路由，对应index.html
@@ -182,6 +192,11 @@ export default [{
             component: addPurchase
         },
         {
+            path: '/backPurchase',
+            name: 'buyBack',
+            component: addPurchase
+        },
+        {
             path: '/purchasedetail',
             name: 'purchasedetail',
             component: purchasedetail
@@ -189,6 +204,11 @@ export default [{
         {
             path: '/purchasehistory',
             name: 'buyHistory',
+            component: purchasehistory
+        },
+        {
+            path: '/buyBackHistory',
+            name: 'buyBackHistory',
             component: purchasehistory
         },
         {
@@ -202,6 +222,11 @@ export default [{
             component: addSalePurchase
         },
         {
+            path: '/backSalePurchase',
+            name: 'saleBack',
+            component: addSalePurchase
+        },
+        {
             path: '/saleDetail',
             name: 'salePurchasedetail',
             component: salePurchasedetail
@@ -209,6 +234,11 @@ export default [{
         {
             path: '/salehistory',
             name: 'saleHistory',
+            component: salePurchasehistory
+        },
+        {
+            path: '/sale/back/history',
+            name: 'saleBackHistory',
             component: salePurchasehistory
         },
         {
@@ -268,6 +298,54 @@ export default [{
             path: '/buy/report',
             name: 'buyReport',
             component: buyReport
+        },
+        //库存
+        {
+            path: '/inventory/query',
+            name: 'inventoryQuery',
+            component: inventoryQuery
+        },
+        {
+            path: '/inventory/flow',
+            name: 'inventoryFlow',
+            component: inventoryQuery
+        },
+        //角色管理
+        {
+            path: '/roleManage',
+            name: 'roleManage',
+            component: roleManage
+        },
+        {
+            path: '/addRole',
+            name: 'addRole',
+            component: roleOption
+        },
+        {
+            path: '/editRole',
+            name: 'editRole',
+            component: roleOption
+        },
+        //仓库盘点单
+        {
+            path: '/stock',
+            name: 'warehouseStock',
+            component: warehouseStock
+        },
+        {
+            path: '/add/stock',
+            name: 'addStock',
+            component: stockOption
+        },
+        {
+            path: '/edit/stock',
+            name: 'editStock',
+            component: stockOption
+        },
+        {
+            path: '/stock/goods',
+            name: 'stockGoods',
+            component: stockGoods
         }
     ],
 }];

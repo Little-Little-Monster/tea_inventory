@@ -1,6 +1,6 @@
 <template>
   <div class="add_purchase">
-    <head-top goBack="" head-title="销售单">
+    <head-top goBack="" :headTitle="$route.name=='saleTrade'?'销售单':'销售回退'">
       <div slot="back" class="goback" @click="returnBack" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
@@ -153,8 +153,8 @@
       <div class="bottom_left">合计：<span>￥{{saleOrderInfo.totalAmount}}</span></div>
       <div class="bottom_right" v-if="saleOrderInfo.status!=3">
         <span @click="submitOrder(1)" v-if="!saleOrderInfo.status||saleOrderInfo.status!=1" v-show="saleOrderInfo.status!=2">草稿</span> 
-        <span @click="submitOrder(2)" v-if="saleOrderInfo.status==1" >采购</span> 
-        <button :class="{returnGoods: false}" v-if="saleOrderInfo.status&&saleOrderInfo.status!=1" v-show="saleOrderInfo.status!=2" @click="submitOrder(2)">采购</button>
+        <span @click="submitOrder(2)" v-if="saleOrderInfo.status==1" >销售</span> 
+        <button :class="{returnGoods: false}" v-if="saleOrderInfo.status&&saleOrderInfo.status!=1" v-show="saleOrderInfo.status!=2" @click="submitOrder(2)">销售</button>
       </div>
 
       <div class="bottom_right" v-if="saleOrderInfo.status==2">
@@ -202,6 +202,7 @@
       if(this.edit){//编辑采购单
         switch (this.fromPage) {
           case 'saleHistory':
+          case 'saleBackHistory':
             //编辑采购单
             this.getSaleOrder()
             break;
@@ -273,6 +274,7 @@
       returnBack(){
         switch (this.fromPage) {
           case 'saleHistory':
+          case 'saleBackHistory':
             this.toAddress({name:this.fromPage});
             break;
         
@@ -288,7 +290,7 @@
         if(!this.saleOrderInfo.status || this.saleOrderInfo.status!=2&& this.saleOrderInfo.status!=3){
           this.$router.push({name:"customerManage",query:{
             chooseCustomer:true,
-            fromPage:'saleTrade'
+            fromPage:this.$route.name
           }})
         }
       },
@@ -297,7 +299,7 @@
         if(!this.saleOrderInfo.status || this.saleOrderInfo.status!=2&& this.saleOrderInfo.status!=3){
           this.$router.push({name:"storehouseList",query:{
             chooseWareHouse:true,
-            fromPage:'saleTrade'
+            fromPage:this.$route.name
           }})
         }
       },
@@ -305,7 +307,7 @@
         if(this.saleOrderInfo.warehouseId){
           if(!this.saleOrderInfo.status || this.saleOrderInfo.status!=2&& this.saleOrderInfo.status!=3){
             this.$router.push({name:'saleChoosegoods',query:{
-              fromPage:'saleTrade'
+              fromPage:this.$route.name
             }})
           }
         }else{
@@ -333,7 +335,7 @@
         if(!this.saleOrderInfo.status || this.saleOrderInfo.status!=2&& this.saleOrderInfo.status!=3){
           this.$router.replace({name:"balanceAccount",query:{
             getAccount:true,
-            fromPage:'saleTrade'
+            fromPage:this.$route.name
           }})
         }
       },
@@ -358,8 +360,11 @@
           this.showTip("请先选择商品！");
           return;
         }
-        this.saleOrderInfo.type=2//销售
-        // this.saleOrderInfo.type=3//销售退货
+        if(this.$route.name=='saleTrade'){
+          this.saleOrderInfo.type=2//销售
+        }else{
+          this.saleOrderInfo.type=3//销售退货
+        }
         this.saleOrderInfo.status=status//1提交，0草稿
 
         this.saleOrderInfo.operatorId = this.userId;

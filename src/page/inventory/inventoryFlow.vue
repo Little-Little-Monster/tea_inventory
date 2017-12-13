@@ -1,43 +1,33 @@
 <template>
     <div>
-    	<head-top signin-up='msite' goBack="" head-title="购买报表">
+    	<head-top signin-up='msite' goBack="" head-title="库存流水">
             <div slot="back" class="goback" @click="goBack" >
                 <span class="iconfont icon-fanhui title_text"></span>
             </div>
     	</head-top>
 
         <div class="cneter-con paddingTop">
-             <section class="title-choose">
-                <div class="login-tit">
-                    <input type="date" :class="{'full':startDate}" placeholder="开始时间" v-model="startDate">
-                </div>
-                <div class="regist-tit">
-                    <input type="date" :class="{'full':endDate}" placeholder="结束时间" v-model="endDate">
-                </div>
-                <div class="store">
-                    <select v-model="storeId">
-                        <option value="0">选择店铺</option>
-                        <option :value="store.id" v-for="store in storeList">{{store.storeName}}</option>
-                    </select>
-                </div>
-            </section>
             <section class="total-info">
                 <section>
-                    <span>采购量</span> 
-                    <span>{{totalQuantity.toFixed(2)}}</span>
+                    <span>收入</span> 
+                    <span>{{totalQuantity}}</span>
                 </section>
                 <section>
-                    <span>总金额</span> 
-                    <span>￥{{totalAmount.toFixed(2)}}</span> 
+                    <span>支出</span> 
+                    <span>￥{{totalAmount}}</span> 
+                </section>
+                <section>
+                    <span>结余</span> 
+                    <span>￥{{totalAmount}}</span> 
                 </section>
             </section>
             <div class="worker-list list" v-for="list in reportList" @click="editWorker(list)">
                 <span>
                     {{list.goodsName}} <i class="text-info">X{{list.quantity}}</i>
                 </span>
-                <p class="text-info">单价：<em>￥{{list.unitAmount.toFixed(2)}}</em></p>
-                <p class="text-info">采购时间：<em>{{list.bizDateStr}}</em></p>
-                <em class="list-option">￥{{list.amount.toFixed(2)}}</em>
+                <p class="text-info">单价：<em>￥{{list.unitAmount}}</em></p>
+                <p class="text-info">销售时间：<em>{{list.bizDateStr}}</em></p>
+                <em class="list-option">￥{{list.amount}}</em>
             </div>
         </div>
         <div class="bottom" @click="getReport">
@@ -51,7 +41,7 @@
 <script>
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
-import {get_buy_report,get_store_detail} from 'src/service/getData'
+import {get_sale_report,get_store_detail} from 'src/service/getData'
 import headTop from 'src/components/header/head'
 import alertTip from '../../components/common/alertTip'
 
@@ -101,7 +91,7 @@ export default {
             })
         },
         getReport(){
-            get_buy_report(this.userId,this.storeId,this.startDate,this.endDate).then((res)=>{
+            get_sale_report(this.userId,this.storeId,this.startDate,this.endDate).then((res)=>{
                 if(res.code!=200){
                     this.showTip(res.message)
                 }else{
@@ -114,7 +104,11 @@ export default {
             })
         },
         goBack(){
-            this.$router.push({name:"sensus"})
+            if(this.$route.query.fromPage){
+                this.$router.push({name:this.$route.query.fromPage})
+            }else{
+                this.$router.push({name:"wirehouse"})
+            }
         },
         showTip(msg){
             this.alertText = msg;
@@ -130,44 +124,6 @@ export default {
     @import 'src/style/mixin';
     .cneter-con{
         margin-bottom:1rem;
-    }
-    .title-choose{
-        width:100%;
-        height:.8rem;
-        margin-bottom: 0.1rem;
-        background: #fff;
-        &>div{
-            width:33%;
-            height:.8rem;
-            float: left;
-            text-align: center;
-            position: relative;
-            line-height: .8rem;
-            font-size:.32rem;
-            em{
-                display: inline-block;
-                @include wh(0.3rem,0.06rem);
-                background:$green;
-                position: absolute;
-                bottom: 0;
-                left:45%;
-            }
-            input{
-                right: 0;
-                @include ct;
-                width:80%;
-            }
-        }
-        .store{
-            width:33%;
-            select{
-                width:80%;
-                text-align: center;
-                background: #fff;
-                @include ct;
-                right:0;
-            }
-        }
     }
     .worker-list{
         @include wh(100%,2.2rem);

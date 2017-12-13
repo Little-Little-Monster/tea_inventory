@@ -1,7 +1,7 @@
 <template>
   <div class="choose_goods">
     <head-top signin-up='msite' goBack="" head-title="选择商品">
-      <div slot="back" class="goback" @click="toAddress({name:$route.query.fromPage})" >
+      <div slot="back" class="goback" @click="toAddress({name:fromPage})" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
     </head-top>
@@ -37,9 +37,15 @@
         </div>
       </div>
     </div>
-    <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
-    <div @click="saveGoods" class="bottom">
-      选好了
+    <alert-tip v-if="showAlert" :showHide="showAlert" @cancelTip="cancelTip" @closeTip="closeTip" :isInput="true" :alertText="alertText">
+      <div slot="inputVal" class="input-con">
+        <h4>请输入<br>批量盘点数量</h4>
+        <input type="number" v-model="allTotal">
+      </div>
+    </alert-tip>
+    <div class="bottom">
+      <span @click="isInput = true;showTip()" >批量盘点</span>
+      <span @click="saveGoods(1)">单个盘点</span>
     </div>
   </div>
 </template>
@@ -61,12 +67,15 @@
         typeShow:0,
         goodsList:[],
         showAlert:false,
-        alertText:''
+        alertText:'',
+        fromPage:this.$route.query.fromPage,
+        allTotal:1,
+        isInput:false
       }
     },
     created(){
-      if(this.buyOrder.buyGoods && this.buyOrder.buyGoods.length!=0){
-        this.goodsList = this.buyOrder.buyGoods;
+      if(this.stockState.stockGoods && this.stockState.stockGoods.length!=0){
+        this.goodsList = this.stockState.stockGoods;
       }else{
         this.getGoodsList();
       }
@@ -81,12 +90,12 @@
     },
     computed: {
       ...mapState([
-        'buyOrder'
+        'stockState'
       ])
     },
     methods: {
       ...mapMutations([
-        'CHANGE_HEADER','RECORD_BUYORDER'
+        'CHANGE_HEADER','RECORD_BUYORDER','RECORD_STOCK'
       ]),
       toAddress(name){
         this.$router.push(name)
@@ -96,39 +105,82 @@
         this.alertText = msg
       },
       getGoodsList(){
-        get_warehouse_goods_list(this.userId,0,this.buyOrder.warehouseId,0,1000).then((res)=>{
+        get_warehouse_goods_list(this.userId,0,this.stockState.warehouseId,0,1000).then((res)=>{
           this.goodsList = res.data;
           this.goodsList.forEach(element => {
             element.stockVos.forEach(el=>{
               this.$set(el,'quantity',0);
             })
           });
-          let orderInfo = this.buyOrder;
-          orderInfo.buyGoods = this.goodsList;
-
-          this.RECORD_BUYORDER(orderInfo);
+          let stockInfo = this.stockState;
+          stockInfo.stockGoods = this.goodsList;
+          this.RECORD_STOCK(stockInfo);
         }).catch((err)=>{
           this.showTip(err.message)
         })
       },
-      saveGoods(){
-        let buyGoods = []
+      saveGoods(flag){
+        // if(flag==0){
+        //   this.isInput = true;
+        // }else{
+        //   this.isInput = false;
+        //   this.pushData();
+        // }
+        let stockGoods = []
+        let isEmpty = true;
         this.goodsList.forEach(element => {
           element.stockVos.forEach(goods => {
-             buyGoods.push({
-              amount:Number(goods.buyAmount)*Number(goods.quantity),
-              goodsId:goods.goodsId,
-              goodsName:goods.name,
-              quantity:goods.quantity,
-              unitAmount:goods.buyAmount,
-            })
+            if(flag==0){
+              //批量盘点
+              if(isEmpty && goods.stockTotal>0){
+                isEmpty = false
+              }
+              if(goods.stockTotal>0){
+                stockGoods.push({
+                  goodsId:goods.goodsId,
+                  goodsName:goods.name,
+                  quantity:this.allTotal,
+                  unitAmount:goods.buyAmount,
+                  currQuantity:goods.stockTotal,
+                })
+              }
+            }else if(flag==1){
+              //单个盘点
+              let isEmpty = true;
+              if(goods.quantity!=0){
+                stockGoods.push({
+                  goodsId:goods.goodsId,
+                  goodsName:goods.name,
+                  quantity:goods.quantity,
+                  unitAmount:goods.buyAmount,
+                  currQuantity:goods.stockTotal,
+                })
+              }
+            }
           });
         });
-        let orderInfo = this.buyOrder;
-        orderInfo.showGoodsList = buyGoods;
-        this.$router.push({name:this.$route.query.fromPage})
-        this.RECORD_BUYORDER(orderInfo);
-      }
+        let orderInfo = this.stockState;
+        orderInfo.inventoryGoods = stockGoods;
+        if(isEmpty&&flag==0){
+          this.showTip("当前仓库暂无库存，无法批量盘点！")
+        }else{
+          this.$router.push({name:this.fromPage})
+          this.RECORD_STOCK(orderInfo);
+        }
+      },
+      closeTip(){
+        if(this.isInput){
+          this.showAlert = false;
+          this.saveGoods(0);
+        }
+      },
+      cancelTip(){
+        this.showAlert = false;
+        this.allTotal = 1;
+      },
+      pushData(){
+        
+      },
     },
     watch: {}
   }
@@ -219,6 +271,35 @@
 
         }
       }
+    }
+  }
+  .bottom{
+    display:flex;
+    span{
+      flex:1;
+      color:#fff;
+      &:nth-child(1){
+        border-right:1px solid #fff;
+      }
+    }
+  }
+  .input-con{
+    @include wh(100%,2rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    h4{
+      @include sc(.3rem,#E78787);
+      text-align: center;
+      line-height:.5rem;
+      margin-bottom:.2rem;
+    }
+    input{
+      border:1px solid #999;
+      border-radius: .08rem;
+      background: #fff;
+      text-align: center;
+      height:.6rem;
     }
   }
 </style>

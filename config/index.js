@@ -10,7 +10,7 @@ module.exports = {
         assetsRoot: path.resolve(__dirname, '../elm'),
         assetsSubDirectory: 'static',
         assetsPublicPath: '/',
-        productionSourceMap: true,
+        productionSourceMap: false,
         // Surge or Netlify already gzip all static assets for you.
         // Before setting to `true`, make sure to:
         // npm install --save-dev compression-webpack-plugin
@@ -37,7 +37,7 @@ module.exports = {
             // '/eus',
             // '/payapi',
         ],
-        proxypath: 'http://localhost:8081',
+        proxypath: 'http://tea.cdfpds.com',
         // CSS Sourcemaps off by default because relative paths are "buggy"
         // with this option, according to the CSS-Loader README
         // (https://github.com/webpack/css-loader#sourcemaps)

@@ -1,37 +1,37 @@
 <template>
   <div class="purchase_detail">
-    <head-top signin-up='msite' goBack="" :headTitle="$route.name=='buyBackHistory'?'采购回退历史':'采购历史'">
+    <head-top signin-up='msite' goBack="" head-title="盘点查询">
+      <span  slot="right" class="iconfont icon-jia" @click="$router.push({name:'addStock'})" ></span>
       <div slot="back" class="goback" @click="toAddress({name:'msite'});" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
     </head-top>
     <div class="purchase_detail_header paddingTop">
       <div class="left_button" :class="{'active':status==0}" @click="status=0">全部 <span></span></div>
-      <div class="left_button" :class="{'active':status==2}" @click="status=2">已采购 <span></span></div>
+      <div class="left_button" :class="{'active':status==2}" @click="status=2">已盘点 <span></span></div>
       <div class="right_button" :class="{'active':status==1}" @click="status=1">草稿 <span></span></div>
-      <div class="right_button" :class="{'active':status==3}" @click="status=3">撤销 <span></span></div>
     </div>
     <div class="cneter-con">
-      <div class="list buy-list" v-for="history in historyList" @click="editBuyOrder(history.id)">
-        <p>{{history.supplierName}}</p>
-        <p class="text-info">{{history.createDate}}</p>
-        <div class="list-more">
-          <em>￥{{history.totalAmount}}</em><br>
-          <em>{{history.warehouseName}}</em>
-        </div>
+      <div class="list buy-list" v-for="stock in stockList" @click="editStock(stock.id)">
+        <p>门店：{{stock.storeName}}</p>
+        <p class="text-info">仓库：{{stock.warehouseName}}</p>
+        <p class="text-info">创建时间：{{stock.createTimeStr}}</p>
         <span class="list-option">
           <em class="iconfont icon-qianjin"></em>
         </span>
       </div> 
     </div>
+    <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
 <script>
   import { mapMutations } from 'vuex'
   import { getStore } from 'src/config/mUtils'
   import headTop from 'src/components/header/head'
-  import {get_buy_history} from 'src/service/getData'
+  import {get_stock_list} from 'src/service/getData'
+  import alertTip from '../../components/common/alertTip'
   import footGuide from 'src/components/footer/footGuide'
+  
 
   export default {
     data(){
@@ -39,18 +39,20 @@
         enable: true,
         imgPath: 'static/images/head.png',
         userId:getStore('userInfo').id,
-        historyList:[],
+        stockList:[],
         status:0,
-        type:this.$route.name=='buyBackHistory'?5:4
+        showAlert:false,
+        alertText:null
       }
     },
     components: {
       headTop,
       footGuide,
+      alertTip
     },
     computed: {},
     created(){
-      this.getHistory();
+      this.getStock();
     },
     mounted(){
 
@@ -62,15 +64,21 @@
       toAddress(name){
         this.$router.push(name)
       },
-      getHistory(){
-        get_buy_history(this.userId,0,100,this.status,this.type).then((res)=>{
-          this.historyList = res.data.info;
+      getStock(){
+        get_stock_list(this.userId,this.status,0,100).then((res)=>{
+          if(res.code==200){
+            this.stockList = res.data.info;
+          }else{
+            this.alertText = res.message
+            this.showAlert = true
+          }
         }).catch((err)=>{
-
+          this.alertText = err.message
+          this.showAlert = true
         })
       },
-      editBuyOrder(id){
-        this.$router.push({name:this.$route.name=='buyBackHistory'?'buyBack':'buyTrade',query:{
+      editStock(id){
+        this.$router.push({name:"editStock",query:{
           edit:true,
           fromPage:this.$route.name,
           id:id
@@ -79,7 +87,7 @@
     },
     watch: {
       'status'(){
-        this.getHistory()
+        this.getStock()
       }
     }
   }
@@ -114,11 +122,11 @@
     }
     .buy-list{
       @include wh(100%,1.8rem);
-      padding:.4rem .8rem;
+      padding:.25rem .8rem;
       margin-bottom:.1rem;
       p{
         &:nth-child(1){
-          margin-bottom:.3rem;
+          margin-bottom:.2rem;
         }
       }
       .text-info{

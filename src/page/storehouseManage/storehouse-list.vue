@@ -53,10 +53,20 @@
       this.getStoreHouse()
       if(this.chooseWareHouse){
         switch (this.fromPage) {
-          case 'buyOrder':
+          case 'buyTrade':case 'buyBack':
             this.chooseId = this.buyOrder.warehouseId
             this.chooseName = this.buyOrder.warehouseName
             this.storeId = this.buyOrder.storeId
+            break;
+          case 'saleTrade':case 'saleBack':
+            this.chooseId = this.buyOrder.warehouseId
+            this.chooseName = this.buyOrder.warehouseName
+            this.storeId = this.buyOrder.storeId
+            break;
+           case 'addStock':case 'editStock':
+            this.chooseId = this.stockState.warehouseId
+            this.chooseName = this.stockState.warehouseName
+            this.storeId = this.stockState.storeId
             break;
         
           default:
@@ -72,12 +82,12 @@
     },
     computed: {
       ...mapState([
-        "buyOrder"
+        "buyOrder",'stockState'
       ])
     },
     methods: {
       ...mapMutations([
-        'CHANGE_HEADER','RECORD_BUYORDER'
+        'CHANGE_HEADER','RECORD_BUYORDER','RECORD_STOCK'
       ]),
       toAddress(name){
         this.$router.push(name)
@@ -104,14 +114,19 @@
           this.$router.push({name:'basic'})
         }else{
           switch (this.fromPage) {
-            case 'buyOrder':
+            case 'buyTrade':case 'buyBack':
               this.$router.push({
-                name:"buyTrade"
+                name:this.fromPage
               });
               break;
-            case 'saleTrade':
+            case 'saleTrade':case 'saleBack':
               this.$router.push({
-                name:"saleTrade"
+                name:this.fromPage
+              });
+              break;
+            case 'addStock':case 'editStock':
+              this.$router.push({
+                name:this.fromPage
               });
               break;
             default:
@@ -124,9 +139,9 @@
           this.$router.push({name:'basic'})
         }else{
           switch (this.fromPage) {
-            case 'buyOrder':
+            case 'buyTrade':case 'buyBack':
               this.$router.push({
-                name:"buyTrade"
+                name:this.fromPage
               });
               let order = Object.assign({},this.buyOrder,{
                 warehouseId:this.chooseId==-1?'':this.chooseId,
@@ -139,9 +154,9 @@
               }
               this.RECORD_BUYORDER(order)
               break;
-            case 'saleTrade':
+            case 'saleTrade':case 'saleBack':
               this.$router.push({
-                name:"saleTrade"
+                name:this.fromPage
               });
               let saleOrder = Object.assign({},this.buyOrder,{
                 warehouseId:this.chooseId==-1?'':this.chooseId,
@@ -153,6 +168,22 @@
                 saleOrder.buyGoods=[]
               }
               this.RECORD_BUYORDER(saleOrder)
+              break;
+            case 'addStock':case 'editStock':
+              this.$router.push({
+                name:this.fromPage
+              });
+              let stockState = Object.assign({},this.stockState,{
+                warehouseId:this.chooseId==-1?'':this.chooseId,
+                warehouseName:this.chooseName,
+                storeId:this.storeId==-1?'':this.storeId
+              })
+
+              if(this.stockState.warehouseId!=this.chooseId){
+                stockState.inventoryGoods=[]
+                stockState.stockGoods=[]
+              }
+              this.RECORD_STOCK(stockState)
               break;
             default:
               break;

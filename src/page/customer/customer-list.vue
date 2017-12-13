@@ -82,11 +82,12 @@
         })
       },
       goBack(){
-          if(this.chooseCustomer){
-              this.$router.replace({name:this.fromPage})
-          }else{
-              this.$router.push({name:'msite'})
-          }
+        this.$router.replace({name:this.fromPage})
+          // if(this.chooseCustomer){
+          //     this.$router.replace({name:this.fromPage})
+          // }else{
+          //     this.$router.push({name:'msite'})
+          // }
       },
       save(){
         if(this.chooseCustomer){

@@ -21,7 +21,13 @@
       <li @click="$router.push({name:'saleReport'})">
         <div class="li_left">
           <p><i class="iconfont icon-pandiandanliebiao"></i>销售报表</p>
-          <p>今日销售<span class="number"> 100</span> 笔<b></b>销售金额<span class="price"> ￥100.00</span></p>
+          <p>今日销售<span class="number"> {{saleInfo.size}}</span> 笔<b></b>销售金额<span class="price"> ￥{{saleInfo.totalAmount}}</span></p>
+        </div>
+      </li>
+      <li @click="$router.push({name:'buyReport'})">
+        <div class="li_left">
+          <p><i class="iconfont icon-pandiandanliebiao"></i>采购报表</p>
+          <p>今日采购<span class="number"> {{buyInfo.size}}</span> 笔<b></b>采购金额<span class="price"> ￥{{buyInfo.totalAmount}}</span></p>
         </div>
       </li>
       <li class="sensus_ul_detail" @click="$router.push({name:'buyReport'})">
@@ -52,7 +58,7 @@
 <script>
   import { mapMutations } from 'vuex'
   import { getStore } from 'src/config/mUtils'
-  import { get_sale_total_today } from 'src/service/getData';
+  import { get_sale_total_today,get_buy_total_today } from 'src/service/getData';
   import headTop from 'src/components/header/head'
   import footGuide from 'src/components/footer/footGuide'
 
@@ -61,7 +67,8 @@
       return {
         menuList: null,//菜单列表
         userId:getStore('userInfo').id,
-        saleInfo:null
+        saleInfo:{},
+        buyInfo:{}
       }
     },
     async beforeMount(){
@@ -70,6 +77,11 @@
     created(){
       get_sale_total_today(this.userId).then((res)=>{
         this.saleInfo = res.data;
+      });
+      get_buy_total_today(this.userId).then((res)=>{
+        this.buyInfo = res.data;
+      }).catch((err)=>{
+
       })
     },
     mounted(){
@@ -132,6 +144,30 @@
       &.sensus_content{
         li{
           &:nth-child(1){
+            height: 2rem;
+            .li_left{
+              p{
+                &:nth-child(2){
+                  font-size: 0.26rem;
+                  color: #ccc;
+                  margin-top: 0.3rem;
+                  margin-left: 0.42rem;
+                  b{
+                    margin-left: 0.4rem;
+                  }
+                }
+                .number{
+                  color: $green;
+                  font-weight: 600;
+                }
+                .price{
+                  color: #e91e63c7;
+                  font-weight: 600;
+                }
+              }
+            }
+          }
+          &:nth-child(2){
             height: 2rem;
             .li_left{
               p{

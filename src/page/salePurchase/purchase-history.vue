@@ -1,6 +1,6 @@
 <template>
   <div class="purchase_detail">
-    <head-top signin-up='msite' goBack="" head-title="销售历史">
+    <head-top signin-up='msite' goBack="" :headTitle="$route.name=='saleBackHistory'?'销售回退历史':'销售历史'">
       <div slot="back" class="goback" @click="toAddress({name:'msite'});" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
@@ -40,7 +40,8 @@
         imgPath: 'static/images/head.png',
         userId:getStore('userInfo').id,
         historyList:[],
-        status:0
+        status:0,
+        type:this.$route.name=='saleBackHistory'?3:2
       }
     },
     components: {
@@ -62,16 +63,16 @@
         this.$router.push(name)
       },
       getHistory(){
-        get_sale_history(this.userId,0,100,this.status,2).then((res)=>{
+        get_sale_history(this.userId,0,100,this.status,this.type).then((res)=>{
           this.historyList = res.data.info;
         }).catch((err)=>{
 
         })
       },
       editSaleOrder(id){
-        this.$router.push({name:"saleTrade",query:{
+        this.$router.push({name:this.$route.name=='saleBackHistory'?'saleBack':'saleTrade',query:{
           edit:true,
-          fromPage:"saleHistory",
+          fromPage:this.$route.name,
           id:id
         }})
       }

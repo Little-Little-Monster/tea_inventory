@@ -1,12 +1,17 @@
  <template>
     <div class="alet_container">
 	    <section class="tip_text_container">
-            <div class="tip_icon">
+            <div class="tip_icon" v-if="!isInput">
                 <span></span>
                 <span></span>
             </div>
             <p class="tip_text">{{alertText}}</p>
-            <div class="confrim" @click="closeTip">确认</div>
+            <slot name="inputVal"></slot>
+            <div class="confrim" v-if="!isInput" @click="closeTip">确认</div>
+            <div class="confrim" v-if="isInput">
+                <span @click="closeTip">确认</span> 
+                <span @click="cancelTip">取消</span> 
+            </div>
         </section>
     </div>
 </template>
@@ -22,10 +27,13 @@
         mounted(){
       
         },
-        props: ['alertText'],
+        props: ['alertText','isInput'],
         methods: {
             closeTip(){
                 this.$emit('closeTip')
+            },
+            cancelTip(){
+                this.$emit('cancelTip')
             }
         }
     }
@@ -103,6 +111,16 @@
             border: 1px;
             border-bottom-left-radius: 0.25rem;
             border-bottom-right-radius: 0.25rem;
+            span{
+                display: block;
+                float: left;
+                width:50%;
+                height:100%;
+                color:#fff;
+                &:nth-child(1){
+                    border-right:.01rem solid #fff;
+                }
+            }
         }
     }
     
