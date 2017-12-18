@@ -51,6 +51,7 @@
                 <em class="user-satus list-option iconfont " :class="{'icon-radio-checked':worker.status==1,'icon-danxuanweizhong':worker.status==0}"></em>
             </div>
             <div class="list" @click="goStore">
+                <em class="required">*</em>
                 <span>门店</span>
                 <em class="store-name ellipsis">
                     <i v-for="store in worker.storeIds">{{store.storeName}}，</i> 
@@ -100,21 +101,23 @@ export default {
     created(){
         this.$set(this.worker,'status',1)
         this.$set(this.worker,'sex',1)
+        this.getRoleList();
         if(this.$route.query.employeeId &&!this.$route.query.worker){
             //编辑员工，获取员工信息
             this.employeeId = this.$route.query.employeeId;
             this.getEmployee()
         }else if(this.$route.query.employeeId && this.$route.query.worker){
-            //编辑员工
+            //编辑员工(从store返回)
             this.employeeId = this.$route.query.employeeId;
             this.worker = JSON.parse(this.$route.query.worker);
             this.$set(this.worker,'storeIds', JSON.parse(this.$route.query.storeIds))
             // this.worker = this.$route.query.worker;
         }else if(!this.$route.query.employeeId && this.$route.query.worker){
-            this.$set(this.worker,'storeIds', JSON.parse(this.$route.query.storeIds))
+            this.worker = JSON.parse(this.$route.query.worker);
+            this.$set(this.worker,'storeIds', JSON.parse(this.$route.query.storeIds));
+            //获取员工角色列表
+            this.getRoleList();
         }
-        //获取员工角色列表
-        this.getRoleList();
     },
     mounted(){
 
@@ -139,6 +142,7 @@ export default {
             get_employee(this.userId,this.employeeId).then((res)=>{
                 this.worker = res.data;
                 this.worker.storeIds = [];
+                this.roleList = res.data.roleVos;
                 this.worker.storeVos.forEach(el=>{
                     if(el.selected){
                         this.worker.storeIds.push({
@@ -182,6 +186,17 @@ export default {
                this.showTip('请输入密码！');
                return;
             }
+            let newsStore = []
+            if(this.worker.storeIds){
+                this.worker.storeIds.forEach(el=>{
+                    newsStore.push(el.id)
+                });
+                this.worker.storeIds = newsStore;
+            }else{
+                this.showTip('请选择门店！');
+                return;
+            }
+            
             if(!this.employeeId){
                 if(!this.secondPwd){
                     this.showTip('请输入确认密码！');
@@ -195,13 +210,7 @@ export default {
                 }
             }
             
-            let newsStore = []
-            this.worker.storeIds.forEach(el=>{
-                newsStore.push(el.id)
-            });
-            this.worker.storeIds = newsStore;
-
-            // this.worker.roles = [];
+            this.worker.roles =  this.roleList
             // this.roleList.forEach(el=>{
             //     if(el.selected){
             //         this.worker.roles.push(el.id)
@@ -216,32 +225,13 @@ export default {
         },
         getRoleList(){
             get_rolelist(this.userId).then((res)=>{
-                res={
-                    "code":"200",
-                    "data":[
-                        {
-                            "createTime":1508077251000,
-                            "id":7,
-                            "roleName":"商品管理员",
-                            "type":1,
-                            "updateTime":1508077251000
-                        },
-                        {
-                            "createTime":1508077344000,
-                            "id":8,
-                            "roleName":"商品管理员",
-                            "type":1,
-                            "updateTime":1508077344000
-                        }
-                    ],
-                    "message":"OK"
-                };
                 this.roleList = res.data;
                 this.roleList.forEach(element => {
                     this.$set(element,'selected',false)
                 });
             }).catch((err)=>{
-
+                this.alertText = err.message;
+                this.showAlert = true;
             })
         }
     },

@@ -6,7 +6,11 @@ import { routerMode } from './config/env'
 import './config/rem'
 import FastClick from 'fastclick'
 import VueTouch from "vue-touch"
-Vue.use(VueTouch);
+Vue.use(VueTouch, { name: 'v-touch' })
+
+
+
+
 //引入字体
 import "./iconfont/iconfont.css";
 

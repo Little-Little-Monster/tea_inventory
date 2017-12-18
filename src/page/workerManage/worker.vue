@@ -18,28 +18,35 @@
                     <em v-if="!isOn"></em>
                 </div>
             </section>
-            <div class="worker-list list" v-for="list in workerList" @click="editWorker(list)">
-                <span>{{list.employeeName}}</span>
-                <p>所属门店：<em>{{list.storeName}}</em></p>
-                <p>最后登陆时间：<em>{{list.loginTime}}</em></p>
-                <p>创建时间：<em>{{list.createDate}}</em></p>
-                <em v-if="!$route.query.getWorker" class="list-option iconfont icon-qianjin"></em>
-                <em v-if="$route.query.getWorker" class="list-option iconfont check-icon" :class="{'icon-radio-checked':workerId==list.employeeId,'icon-danxuanweizhong':workerId!=list.employeeId}" @click="workerId=list.employeeId;workerName=list.employeeName"></em>
-                <!-- <em v-if="!$route.query.single" class="list-option iconfont check-icon" :class="{'icon-radio-checked':list.selected,'icon-danxuanweizhong':!list.selected}" @click="list.selected?list.selected=false:list.selected=true"></em> -->
+            <div class="worker-list list" v-for="list in workerList" @click="editWorker(list)" v-if="list.status==Number(isOn)">
+                <left-slider :index="list.employeeId" @swipe="swipe" @swipeRight="inputIndex=-1" >
+                    <span>{{list.employeeName}}</span>
+                    <p class="ellipsis">所属门店：<em v-for="store in list.storeNames">{{store}},</em></p>
+                    <p>最后登陆时间：<em>{{list.loginTime}}</em></p>
+                    <p>创建时间：<em>{{list.createDate}}</em></p>
+                    <em v-if="!$route.query.getWorker&&inputIndex!=list.employeeId" class="list-option iconfont icon-qianjin"></em>
+                    <em v-if="$route.query.getWorker" class="list-option iconfont check-icon" :class="{'icon-radio-checked':workerId==list.employeeId,'icon-danxuanweizhong':workerId!=list.employeeId}" @click="workerId=list.employeeId;workerName=list.employeeName"></em>
+                    <div  :class="{'option-con-list':!$route.query.getWorker&&inputIndex==list.employeeId,'option-none':!(!$route.query.getWorker&&inputIndex==list.employeeId)}" >
+                        <span @click="deleteWorker(list.employeeId)">删除</span>
+                    </div> 
+                    <!-- <em v-if="!$route.query.single" class="list-option iconfont check-icon" :class="{'icon-radio-checked':list.selected,'icon-danxuanweizhong':!list.selected}" @click="list.selected?list.selected=false:list.selected=true"></em> -->
+                </left-slider>
             </div>
         </div>
         <div class="bottom" v-if="$route.query.getWorker" @click="save">
             保存
         </div>
+        <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
     </div>    
 </template>
 
 <script>
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
-import {get_worker_list} from 'src/service/getData'
+import {get_worker_list,delete_worker} from 'src/service/getData'
 import headTop from 'src/components/header/head'
-
+import alertTip from '../../components/common/alertTip'
+import LeftSlider from '../../components/common/slideLeft.vue';
 export default {
 	data(){
         return {
@@ -47,7 +54,10 @@ export default {
             workerList:null,
             isOn:true,//是否启用,
             workerId:null,
-            workerName:null
+            workerName:null,
+            showAlert:false,
+            alertText:'',
+            inputIndex:-1
         }
     },
     created(){
@@ -55,11 +65,7 @@ export default {
             this.workerId = this.$route.query.workerId
             this.workerName = this.$route.query.workerName
         }
-        get_worker_list(this.userId).then((res)=>{
-            this.workerList = res.data;
-        }).catch((err)=>{
-
-        })
+       this.getWorker()
     },
     beoreRouteLeave(to,from,next){
         if(to.name=='saleTrade'||to.name=='saleBack'){
@@ -74,7 +80,7 @@ export default {
         
     },
     components: {
-    	headTop,
+    	headTop,alertTip,LeftSlider
     },
     computed: {
 		...mapState([
@@ -97,6 +103,20 @@ export default {
             }else{
                 this.$router.push({name:'basic'})
             }
+        },
+        getWorker(){
+            get_worker_list(this.userId).then((res)=>{
+                if(res.code==200){
+                    this.workerList = res.data;
+                }else{
+                    this.showTip(res.message)
+                }
+            }).catch((err)=>{
+                this.showTip(err.message)
+            })
+        },
+        swipe(id){
+            this.inputIndex=id
         },
         save(){
             if(this.$route.query.getWorker){
@@ -124,8 +144,25 @@ export default {
                 this.$router.push({name:'basic'})
             }
         },
+        deleteWorker(id){
+            delete_worker(id,2).then((res)=>{
+                if(res.code==200){
+                    this.getWorker();
+                    this.inputIndex = -1;
+                    this.showTip("删除成功！")
+                }else{
+                    this.showTip(err.message)
+                }
+            }).catch((err)=>{
+                this.showTip(err.message)
+            })
+        },
+        showTip(msg){
+            this.alertText = msg;
+            this.showAlert = true;
+        },
         editWorker(list){
-            if(!this.$route.query.getWorker){
+            if(!this.$route.query.getWorker&&this.inputIndex==-1){
                 this.$router.push({name:'workerOption',query:{employeeId:list.employeeId}})
             }
         }
@@ -170,6 +207,7 @@ export default {
             line-height:.4rem;
         };
         p:nth-of-type(1){
+            padding-right:.5rem;
             em{
                 color:$text;
             }

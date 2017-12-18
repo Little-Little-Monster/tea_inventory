@@ -211,7 +211,7 @@
             this.customerInfo.city =  this.household.city
             this.customerInfo.district =  this.household.district
             customer_handel(this.userId,this.customerInfo).then((res)=>{
-                this.$router.push({name:"customerMange"});
+                this.$router.push({name:"customerManage"});
                 this.RECORD_CUSTOMER({})
             }).catch((err)=>{
                 this.alertText = err.message;

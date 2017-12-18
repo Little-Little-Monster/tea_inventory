@@ -8,19 +8,36 @@
     	</head-top>
 
         <div class="cneter-con paddingTop">
+            <section class="title-choose">
+                <div class="login-tit">
+                    <span class="iconfont" :class="{'icon-jiantou2-copy-copy':priceFlag,'icon-jiantou1-copy-copy':!priceFlag}" @click="priceFlag?priceFlag=0:priceFlag=1;getGoods()">
+                        价格
+                    </span>
+                </div>
+                <div class="store">
+                    <select v-model="goodsClassId" @change="getGoods">
+                        <option value="0">选择类别</option>
+                        <option :value="types.id" v-for="types in goodsType">{{types.name}}</option>
+                    </select>
+                </div>
+            </section>
             <div class="list goods-con" v-for="goods in goodsList" @click="editGoods(goods.id)">
-                <div class="header">
-                    <img :src="goods.attachmentUrl" alt="">
-                </div>
-                <div class="goods-detail">
-                    <p>{{goods.name}}</p>
-                    <p>分类：{{goods.goodsClassificationName}}</p>
-                    <p>售价：<em>{{goods.saleAmount}}</em></p>
-                    <p>品牌：{{goods.goodsBrandName}}</p>
-                </div>
-                <em v-if="!isGetGoods" class="list-option iconfont icon-qianjin"></em>
-                <em v-if="isGetGoods" class="list-option iconfont check-icon" :class="{'icon-radio-checked':chooseId==goods.id,'icon-danxuanweizhong':chooseId!=goods.id}" @click="chooseId=goods.id;chooseName=goods.name"></em>
-
+                <left-slider class="parentType" :index="goods.id" @swipe="swipe"  @swipeRight="inputIndex=-1">
+                    <div class="header">
+                        <img :src="goods.attachmentUrl" alt="">
+                    </div>
+                    <div class="goods-detail">
+                        <p>{{goods.name}}</p>
+                        <p>分类：{{goods.goodsClassificationName}}</p>
+                        <p>售价：<em>{{goods.saleAmount}}</em></p>
+                        <p>品牌：{{goods.goodsBrandName}}</p>
+                    </div>
+                    <em v-if="!isGetGoods && inputIndex!=goods.id" class="list-option iconfont icon-qianjin"></em>
+                    <em v-if="isGetGoods" class="list-option iconfont check-icon" :class="{'icon-radio-checked':chooseId==goods.id,'icon-danxuanweizhong':chooseId!=goods.id}" @click="chooseId=goods.id;chooseName=goods.name"></em>
+                    <div  :class="{'option-con-list':!isGetGoods&&inputIndex==goods.id,'option-none':!(!isGetGoods&&inputIndex==goods.id)}" >
+                        <span>删除</span>
+                    </div>
+                </left-slider>
             </div>
         </div>
         <div @click="save" class="bottom" v-if="isGetGoods">
@@ -32,8 +49,10 @@
 <script>
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
-import {get_goods_list,get_goods_type} from 'src/service/getData'
+import {loadMore} from 'src/components/common/mixin'
+import {get_goods_list,get_goods_type,get_goods_by_name} from 'src/service/getData'
 import headTop from 'src/components/header/head'
+import LeftSlider from '../../components/common/slideLeft.vue';
 
 export default {
 	data(){
@@ -49,13 +68,23 @@ export default {
             chooseId:this.$route.query.goodsId,
             chooseName:this.$route.query.goodsName,
             fromPage:this.$route.query.fromPage,
+            inputIndex:-1,
+            goodsType:null
         }
     },
     created(){
         //获取商品列表
         get_goods_type(this.userId).then((res)=>{
             this.goodsType = res.data;
-            this.getGoods();
+            if(this.$route.query.goodsName){
+                get_goods_by_name(this.userId,this.$route.query.goodsName).then((res)=>{
+                     this.goodsList = res.data
+                }).catch((err)=>{
+
+                })
+            }else{
+                this.getGoods();
+            }
         }).catch((err)=>{
 
         })
@@ -64,7 +93,7 @@ export default {
         
     },
     components: {
-    	headTop,
+    	headTop,LeftSlider
     },
     computed: {
 		...mapState([
@@ -89,15 +118,46 @@ export default {
                     goodsName:this.chooseName
                 }})
             }else{
-                this.$router.push({name:"msite"})
+                if(this.fromPage){
+                     this.$router.push({name:this.fromPage})
+                }else{
+                    this.$router.push({name:"msite"})
+                }
             }
+        },
+        swipe(id){
+            this.inputIndex = id;
         },
         editGoods(goodsId){
             // this.RECORD_GOODSINFO(list)
-            if(!this.isGetGoods){
+            if(!this.isGetGoods&&this.inputIndex!=goodsId){
                 this.$router.push({name:"addGoods",query:{edit:true,goodsId:goodsId}});
             }
-        }
+        },
+        //到达底部加载更多数据
+		async loaderMore(){
+			if (this.touchend) {
+				return
+			}
+			//防止重复请求
+			if (this.preventRepeatReuqest) {
+				return 
+			}
+			this.showLoading = true;
+			this.preventRepeatReuqest = true;
+
+			//数据的定位加20位
+			this.offset += 20;
+			let res = await shopList(this.latitude, this.longitude, this.offset, this.restaurantCategoryId);
+			this.hideLoading();
+			this.shopListArr = [...this.shopListArr, ...res];
+			//当获取数据小于20，说明没有更多数据，不需要再次请求数据
+			if (res.length < 20) {
+				this.touchend = true;
+				return
+			}
+			this.preventRepeatReuqest = false;
+		},
 
     }
 }
@@ -135,13 +195,14 @@ export default {
             @include sc(.24rem,$text_light);
         }
     }
-    .title-choose{
+   .title-choose{
         width:100%;
         height:.8rem;
         margin-bottom: 0.1rem;
         background: #fff;
         &>div{
             width:50%;
+            height:.8rem;
             float: left;
             text-align: center;
             position: relative;
@@ -154,6 +215,27 @@ export default {
                 position: absolute;
                 bottom: 0;
                 left:45%;
+            }
+            input{
+                right: 0;
+                @include ct;
+                width:80%;
+            }
+        }
+        .login-tit{
+            span{
+                @include sc(.28rem,$green)
+            }
+        }
+        .store{
+            width:33%;
+            select{
+                width:80%;
+                text-align: center;
+                background: #fff;
+                @include sc(.28rem,$green)
+                @include ct;
+                right:0;
             }
         }
     }

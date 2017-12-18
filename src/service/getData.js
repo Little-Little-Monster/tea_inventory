@@ -24,6 +24,12 @@ export const get_captchas = () => fetch('/v1/captchas', {}, 'POST');
 
 export const get_today_money = (userId) => fetch('/api/invoicing/settle/account/query/total', { userId });
 
+/**
+ * 设置菜单
+ */
+
+export const save_menu = (menu) => fetch('/api/invoicing/store/menu/show/handler', menu, "POST");
+
 
 /**
  * 手机号登录
@@ -48,6 +54,25 @@ export const store_handel = (store, userId) => fetch('/api/invoicing/store/' + u
 export const get_store_detail = (userId) => fetch('/api/invoicing/store/query/list', {
     userId
 });
+
+/**
+ * 删除门店
+ */
+
+export const delete_store = (storeId, status) => fetch('/api/invoicing/store/update/status', {
+    storeId,
+    status
+});
+
+/**
+ * 删除员工
+ */
+
+export const delete_worker = (id, status) => fetch('/api/invoicing/store/employee/infos/update', {
+    id,
+    status
+});
+
 
 /**
  * 获取员工列表
@@ -75,6 +100,7 @@ export const get_employee = (userId, id) => fetch('/api/invoicing/' + userId + '
 
 export const get_rolelist = (userId) => fetch('/api/invoicing/role/query/list', { userId });
 
+
 /**
  * 获取供应商列表
  */
@@ -100,6 +126,14 @@ export const get_storehouse = (userId) => fetch('/api/invoicing/warehouse/query/
  */
 
 export const save_wirehouse = (wirehouse) => fetch('/api/invoicing/warehouse/handler', wirehouse, "POST");
+/**
+ * 删除仓库
+ */
+
+export const delete_warehouse = (id, status) => fetch('/api/invoicing/warehouse/update/status', {
+    id,
+    status
+});
 
 /**
  * 获取客户列表
@@ -135,6 +169,14 @@ export const save_customer_type = (userId, typeInfo) => fetch('/api/invoicing/cu
  */
 
 export const customer_handel = (userId, customerInfo) => fetch('/api/invoicing/customer/' + userId + '/handler', customerInfo, 'POST');
+/**
+ * 删除客户
+ */
+
+export const delete_customer = (id, status) => fetch('/api/invoicing/customer/update/status', {
+    id,
+    status
+});
 
 /**
 /**
@@ -159,6 +201,15 @@ export const get_goods_list = (userId, goodsClassId, priceFlag, page, pageSize) 
     priceFlag,
     page,
     pageSize
+});
+
+/**
+ * 获取商品(名字模糊查询)
+ */
+
+export const get_goods_by_name = (userId, goodsName) => fetch('/api/invoicing/goods/query/like', {
+    userId,
+    goodsName
 });
 
 /**
@@ -196,6 +247,12 @@ export const save_goods_type = (userId, info) => fetch('/api/invoicing/goods/cla
  * 创建/更新商品单位
  */
 
+export const delete_goods_type = (id) => fetch('/api/invoicing/goods/classification/query/delete', { id });
+
+/**
+ * 创建/更新商品单位
+ */
+
 export const save_goods_unit = (userId, info) => fetch('/api/invoicing/goods/unit/handler/' + userId, info, "POST");
 
 /**
@@ -204,12 +261,25 @@ export const save_goods_unit = (userId, info) => fetch('/api/invoicing/goods/uni
 
 export const save_goods_brand = (userId, info) => fetch('/api/invoicing/goods/brand/handler/' + userId, info, "POST");
 
+/**
+ * 删除商品品牌
+ */
+
+export const delete_goods_brand = (id) => fetch('/api/invoicing/goods/brand/query/delete', { id });
+
 
 /**
  * 获取商品单位
  */
 
 export const get_goods_unit = (userId) => fetch('/api/invoicing/goods/unit/query/list', { userId });
+
+/**
+ * 删除商品单位
+ */
+
+export const delete_goods_unit = (id) => fetch('/api/invoicing/goods/unit/query/delete', { id });
+
 
 /**
  * 获取商品品牌

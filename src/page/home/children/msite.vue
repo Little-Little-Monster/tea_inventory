@@ -16,6 +16,10 @@
         </div>
         <div class="swiper-pagination"></div>
       </div>
+      <div class="search-goods">
+        <input type="text" v-model="goodsName" placeholder="请输入商品名称">
+        <em class="list-option iconfont icon-sousuo" @click="searchGoods"></em>
+      </div>
     </nav>
     <section class="user-info">
       <p class="user-name">
@@ -36,9 +40,13 @@
       </div>
     </section>
     <div class="menu-con">
-      <div class="menu-item" v-for="menu in menuList" @click="$router.push({name:menu.routerCode,query:{fromPage:$route.name}})">
+      <div class="menu-item" v-if="menu.selected" v-for="menu in menuList" @click="$router.push({name:menu.routerCode,query:{fromPage:$route.name}})">
         <p class="iconfont" :class="menu.icon"></p>
         <p>{{menu.name}}</p>
+      </div>
+      <div class="menu-item more-icon"  @click="$router.push({name:'selMenu'})">
+        <p class="iconfont icon-menu" ></p>
+        <p></p>
       </div>
     </div>
   </div>
@@ -61,7 +69,8 @@
         date:0,
         clock:0,
         userId:getStore('userInfo').id,
-        userName:getStore('userInfo').userName
+        userName:getStore('userInfo').userName,
+        goodsName:""
       }
     },
     async beforeMount(){
@@ -96,6 +105,9 @@
       ...mapMutations([
         'CHANGE_HEADER'
       ]),
+      searchGoods(){
+        this.$router.push({name:"goodsManage",query:{fromPage:this.$route.name,goodsName:this.goodsName}})
+      }
     },
     watch: {}
   }
@@ -122,7 +134,6 @@
     height: 2rem;
     .swiper-container {
       @include wh(100%, auto);
-      padding-bottom: 0.6rem;
       .swiper-pagination {
         bottom: 0.2rem;
       }
@@ -133,6 +144,27 @@
     }
     .fl_back {
       @include wh(100%, 100%);
+    }
+    .search-goods{
+      position: absolute;
+      top:1.2rem;
+      left:1.2rem;
+      z-index:99;
+      @include wh(3.9rem,.4rem);
+      input{
+        border: 2px solid #FFFFFF;
+        border-radius: 1rem;
+        background: #fff;
+        @include wh(3.9rem,.4rem);
+        text-indent:.2rem;
+        line-height:.5rem;
+      }
+      .list-option{
+        @include ct;
+        right:.2rem;
+        top:.25rem;
+        @include sc(.3rem,$green)
+      }
     }
   }
 
@@ -165,13 +197,13 @@
   }
 
   .menu-con {
-    min-height: 6.1rem;
     background: #fff;
     display: flex;
     flex-wrap: wrap;
     // overflow: auto;
     .menu-item {
       width: 25%;
+      height:1.5rem;
       padding-top: 5%;
       p {
         text-align: center;
@@ -187,5 +219,12 @@
         }
       }
     }
+    .more-icon{
+      padding-top: 5%;
+      p{
+        font-size:.44rem;
+      }
+    }
   }
+  
 </style>

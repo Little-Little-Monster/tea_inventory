@@ -2,7 +2,7 @@
   <div class="purchase_detail">
     <head-top signin-up='msite' goBack="" head-title="盘点查询">
       <span  slot="right" class="iconfont icon-jia" @click="$router.push({name:'addStock'})" ></span>
-      <div slot="back" class="goback" @click="toAddress({name:'msite'});" >
+      <div slot="back" class="goback" @click="goBack" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
     </head-top>
@@ -13,12 +13,17 @@
     </div>
     <div class="cneter-con">
       <div class="list buy-list" v-for="stock in stockList" @click="editStock(stock.id)">
-        <p>门店：{{stock.storeName}}</p>
-        <p class="text-info">仓库：{{stock.warehouseName}}</p>
-        <p class="text-info">创建时间：{{stock.createTimeStr}}</p>
-        <span class="list-option">
-          <em class="iconfont icon-qianjin"></em>
-        </span>
+        <left-slider class="parentType" :index="stock.id" @swipe="swipe" @swipeRight="inputIndex=-1">
+          <p>门店：{{stock.storeName}}</p>
+          <p class="text-info">仓库：{{stock.warehouseName}}</p>
+          <p class="text-info">创建时间：{{stock.createTimeStr}}</p>
+          <span class="list-option" v-if="inputIndex!=stock.id||stock.status!=1">
+            <em class="iconfont icon-qianjin"></em>
+          </span>
+          <div  v-if="stock.status==1" :class="{'option-con-list':inputIndex==stock.id,'option-none':inputIndex!=stock.id}" >
+              <span @click="deleteStock(stock.id)">删除</span>
+          </div>
+        </left-slider>
       </div> 
     </div>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
@@ -28,9 +33,10 @@
   import { mapMutations } from 'vuex'
   import { getStore } from 'src/config/mUtils'
   import headTop from 'src/components/header/head'
-  import {get_stock_list} from 'src/service/getData'
+  import {get_stock_list,delete_stock} from 'src/service/getData'
   import alertTip from '../../components/common/alertTip'
   import footGuide from 'src/components/footer/footGuide'
+  import LeftSlider from '../../components/common/slideLeft.vue';
   
 
   export default {
@@ -42,13 +48,15 @@
         stockList:[],
         status:0,
         showAlert:false,
-        alertText:null
+        alertText:null,
+        inputIndex:-1,
       }
     },
     components: {
       headTop,
       footGuide,
-      alertTip
+      alertTip,
+      LeftSlider
     },
     computed: {},
     created(){
@@ -77,12 +85,37 @@
           this.showAlert = true
         })
       },
+      goBack(){
+        this.$router.push({name:this.$route.query.fromPage});
+      },
+      showTip(msg){
+        this.showAlert = true;
+        this.alertText = msg
+      },
+      deleteStock(id){
+        delete_stock(id).then((res)=>{
+          if(res.code==200){
+            this.showTip('删除成功！');
+            this.getStock();
+          }else{
+            this.showTip(res.message)
+          }
+        }).catch((err)=>{
+          this.showTip(err.message)
+        })
+      },
       editStock(id){
-        this.$router.push({name:"editStock",query:{
-          edit:true,
-          fromPage:this.$route.name,
-          id:id
-        }})
+        if(this.inputIndex!=id){
+          this.$router.push({name:"editStock",query:{
+            edit:true,
+            fromPage:this.$route.name,
+            id:id
+          }})
+        }
+        
+      },
+      swipe(id){
+        this.inputIndex = id;
       }
     },
     watch: {
@@ -122,11 +155,12 @@
     }
     .buy-list{
       @include wh(100%,1.8rem);
-      padding:.25rem .8rem;
+      // padding:.25rem .8rem;
       margin-bottom:.1rem;
       p{
         &:nth-child(1){
-          margin-bottom:.2rem;
+          margin:0 0 .2rem 0;
+          padding-top:.3rem;
         }
       }
       .text-info{

@@ -4,6 +4,9 @@
       <div slot="back" class="goback" @click="goBack" >
         <span class="iconfont icon-fanhui title_text"></span>
       </div>
+      <div slot="right" v-if="$route.query.id"   @click="deleteBalance" >
+        <span class="delete">删除</span>
+      </div>
     </head-top>
     <ul class="add-edit-upplier paddingTop">
       <li>
@@ -113,7 +116,7 @@
 <script>
   import { mapState,mapMutations } from 'vuex'
   import { getStore } from 'src/config/mUtils'
-  import { balance_account_handel,get_balance_account_detail } from 'src/service/getData'
+  import { balance_account_handel,get_balance_account_detail,balance_account_delete } from 'src/service/getData'
   import headTop from 'src/components/header/head'
   import alertTip from '../../components/common/alertTip'
   import kswitch from 'src/components/common/kswitch'
@@ -126,6 +129,7 @@
         accountInfo:{},
         userId:getStore("userInfo").id,
         accountInfo:{},
+        alertText:'',
         showAlert:false,
       }
     },
@@ -182,6 +186,19 @@
               this.showAlert = true;
           })
       },
+      deleteBalance(){
+        balance_account_delete(this.$route.query.id).then((res)=>{
+          if(res.code==200){
+           this.goBack()
+          }else{
+            this.alertText = res.message;
+            this.showAlert = true;
+          }
+        }).catch((err)=>{
+          this.alertText = err.message;
+          this.showAlert = true;
+        })
+      },
       async addAccount(){
             if(!this.accountInfo.accountName){
               this.alertText = "请输入账户名称";
@@ -222,7 +239,11 @@
 </script>
 <style lang="scss" scoped>
   @import '../../../src/style/mixin';
-
+  .right{
+    .delete{
+      @include sc(.3rem,#fff)
+    }
+  }
   .add-edit-upplier {
     @include same_ul_style;
     margin-bottom: 1rem;

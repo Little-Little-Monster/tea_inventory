@@ -7,7 +7,7 @@
     	</head-top>
 
         <div class="cneter-con paddingTop">
-             <section class="title-choose">
+            <section class="title-choose">
                 <div class="login-tit">
                     <input type="date" :class="{'full':startDate}" placeholder="开始时间" v-model="startDate">
                 </div>

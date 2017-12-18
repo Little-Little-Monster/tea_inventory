@@ -8,10 +8,10 @@
             <div class="guide-icon iconfont icon-kucun"></div>
             <span>库存</span>
         </section>
-        <section @click = "gotoAddress({name: 'sale'})" class="guide_item">
+        <!-- <section @click = "gotoAddress({name: 'sale'})" class="guide_item">
             <div class="guide-icon iconfont icon-xiaoshou"></div>
             <span>销售</span>
-        </section>
+        </section> -->
         <section @click = "gotoAddress({name: 'sensus'})" class="guide_item">
             <div class="guide-icon iconfont icon-shapecopy25"></div>
             <span>统计</span>

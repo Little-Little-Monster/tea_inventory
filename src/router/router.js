@@ -10,6 +10,8 @@ const sensus = r => require.ensure([], () => r(require('../page/home/children/se
 const sale = r => require.ensure([], () => r(require('../page/home/children/sale')), 'sale')
 const basic = r => require.ensure([], () => r(require('../page/home/children/basic')), 'basic')
 
+const selMenu = r => require.ensure([], () => r(require('../page/home/selMenu')), 'selMenu')
+
 
 const store = r => require.ensure([], () => r(require('../page/storeManage/store')), 'store')
 const storeOption = r => require.ensure([], () => r(require('../page/storeManage/storeOption')), 'storeOption')
@@ -120,6 +122,11 @@ export default [{
                     component: basic
                 }
             ]
+        },
+        {
+            path: '/menu',
+            name: 'selMenu',
+            component: selMenu
         },
         {
             path: '/store',

@@ -31,9 +31,12 @@
                 <span>账户管理</span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
-            <div class="option-list">
+            <!-- <div class="option-list">
                 <span>短信管理</span>
                 <span class="jiantou iconfont icon-qianjin"></span>
+            </div> -->
+            <div class="login-out" @click="loginOut">
+                退出登陆
             </div>
         </section>
     </div>
@@ -41,7 +44,7 @@
 
 <script>
 import {mapMutations} from 'vuex'
-import {getStore} from 'src/config/mUtils'
+import {getStore,removeAllStore} from 'src/config/mUtils'
 import headTop from 'src/components/header/head'
 import footGuide from 'src/components/footer/footGuide'
 
@@ -70,6 +73,10 @@ export default {
         ]),
         toAddress(name){
             this.$router.push(name)
+        },
+        loginOut(){
+            removeAllStore();
+            this.$router.push({name:"login"})
         }
     },
     watch: {
@@ -123,6 +130,16 @@ export default {
         .option-name{
             @include sc(.32rem,$text)
         }
+    }
+    .login-out{
+        @include wh(80%,.8rem);
+        background: #EF2A14;
+        margin:0 auto;
+        margin-top:.2rem;
+        @include borderRadius(1rem);
+        text-align: center;
+        line-height: .8rem;
+        @include sc(.3rem,#fff)
     }
 
 </style>

@@ -13,27 +13,35 @@
     </div>
     <ul class="storehouse_content" :style="{'margin-bottom':chooseWareHouse?'1rem':''}">
       <li class="supplier_info_list" v-for="list in storeHousList" @click="editHouse(list)">
-        <div class="list_left">
-         <h4>{{list.warehouseName}}</h4>
-          <p>负责人：<span>{{list.warehouseHeadName}}</span></p>
-          <p>门店：{{list.storeName}}</p>
-        </div>
-        <div class="list_right">
-         <i class="iconfont icon-qianjin" v-if="!chooseWareHouse"></i>
-          <em v-if="chooseWareHouse" class="iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.warehouseId,'icon-danxuanweizhong':chooseId!=list.warehouseId}" @click="chooseId=list.warehouseId;chooseName=list.warehouseName;storeId=list.storeId"></em>
-        </div>
+       <left-slider class="parentType" :index="list.warehouseId" @swipe="swipe" @swipeRight="inputIndex=-1">
+          <div class="list_left">
+          <h4>{{list.warehouseName}}</h4>
+            <p>负责人：<span>{{list.warehouseHeadName}}</span></p>
+            <p>门店：{{list.storeName}}</p>
+          </div>
+          <div class="list_right">
+            <i class="iconfont icon-qianjin list-option" v-if="!chooseWareHouse&&inputIndex!=list.warehouseId"></i>
+            <em v-if="chooseWareHouse" class="iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.warehouseId,'icon-danxuanweizhong':chooseId!=list.warehouseId}" @click="chooseId=list.warehouseId;chooseName=list.warehouseName;storeId=list.storeId"></em>
+            <div  :class="{'option-con-list':!chooseWareHouse&&inputIndex==list.warehouseId,'option-none':!(!chooseWareHouse&&inputIndex==list.warehouseId)}" >
+                <span @click="deleteWearhouse(list.warehouseId)">删除</span>
+            </div>
+          </div>
+       </left-slider>
       </li>
     </ul>
     <div class="bottom" v-if="chooseWareHouse" @click="save">
         保存
     </div>
+    <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
 <script>
   import { mapMutations,mapState } from 'vuex'
   import { getStore } from 'src/config/mUtils'
   import headTop from 'src/components/header/head'
-  import { get_storehouse } from 'src/service/getData';
+  import alertTip from '../../components/common/alertTip'
+  import { get_storehouse,delete_warehouse } from 'src/service/getData';
+  import LeftSlider from '../../components/common/slideLeft.vue';
 
   export default {
     data(){
@@ -46,7 +54,10 @@
         chooseId:-1,
         chooseName:'',
         userId:getStore('userInfo').id,
-        storeId:-1
+        storeId:-1,
+        inputIndex:-1,
+        showAlert:false,
+        alertText:''
       }
     },
     created(){
@@ -78,7 +89,7 @@
 
     },
     components: {
-      headTop,
+      headTop,alertTip,LeftSlider
     },
     computed: {
       ...mapState([
@@ -99,8 +110,15 @@
 
         })
       },
+      swipe(id){
+          this.inputIndex=id
+      },
+      showTip(msg){
+          this.alertText = msg;
+          this.showAlert = true;
+      },
       editHouse(list){
-        if(!this.chooseWareHouse){
+        if(!this.chooseWareHouse&&this.inputIndex!=list.warehouseId){
           this.$router.push({name:'addEditStorehouse',
             query:{
               edit: true,
@@ -108,6 +126,19 @@
             }
           })
         }
+      },
+      deleteWearhouse(id){
+          delete_warehouse(id,2).then((res)=>{
+              if(res.code==200){
+                  this.getStoreHouse();
+                  this.inputIndex = -1;
+                  this.showTip("删除成功！")
+              }else{
+                  this.showTip(err.message)
+              }
+          }).catch((err)=>{
+              this.showTip(err.message)
+          })
       },
       goBack(){
           if(!this.chooseWareHouse){
@@ -224,23 +255,39 @@
       @include same_ul_style;
       li{
         height: 2.2rem;
-        .list_left{
-          h4{
-            color: #444;
-            font-size: 0.32rem;
-            margin-bottom: 0.2rem;
+        position: relative;
+        width:100%;
+        overflow: hidden;
+        padding-right:0;
+        .parentType{
+          .move{
+            display: flex;
           }
-          p{
-            font-size: 0.24rem;
-            color: #999;
-            &:nth-child(2){
-              margin-bottom: 0.1rem;
+          @include wh(100%,100%);
+          .list_left{
+            float: left;
+            width:90%;
+            margin-top:.5rem;
+            h4{
+              color: #444;
+              font-size: 0.32rem;
+              margin-bottom: 0.2rem;
+            }
+            p{
+              font-size: 0.24rem;
+              color: #999;
+              &:nth-child(2){
+                margin-bottom: 0.1rem;
+              }
             }
           }
-        }
-        .list_right{
-          i{
-            color: #999;
+          .list_right{
+            float: left;
+            text-align: right;
+            line-height:2.2rem;
+            i{
+              color: #999;
+            }
           }
         }
       }

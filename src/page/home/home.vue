@@ -51,7 +51,7 @@ export default {
 <style lang="scss" scoped>
     @import 'src/style/mixin';
     .cneter-con{
-        margin-bottom:0.9rem;
+        margin-bottom:1.2rem;
     }
 
 </style>
