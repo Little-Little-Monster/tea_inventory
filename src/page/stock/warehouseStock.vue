@@ -1,31 +1,37 @@
 <template>
-  <div class="purchase_detail">
+  <div class="purchase_detail main">
     <head-top signin-up='msite' goBack="" head-title="盘点查询">
-      <span  slot="right" class="iconfont icon-jia" @click="$router.push({name:'addStock'})" ></span>
+      <span  slot="right" class="iconfont icon-jia" @click="$router.push({name:'addStock',query:{fromPage:$route.name}})" ></span>
       <div slot="back" class="goback" @click="goBack" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
     </head-top>
     <div class="purchase_detail_header paddingTop">
-      <div class="left_button" :class="{'active':status==0}" @click="status=0">全部 <span></span></div>
-      <div class="left_button" :class="{'active':status==2}" @click="status=2">已盘点 <span></span></div>
-      <div class="right_button" :class="{'active':status==1}" @click="status=1">草稿 <span></span></div>
+      <div class="left_button" :class="{'active':status==0}" @click="status=0;page=0;touchend=false">全部 <span></span></div>
+      <div class="left_button" :class="{'active':status==2}" @click="status=2;page=0;touchend=false">已盘点 <span></span></div>
+      <div class="right_button" :class="{'active':status==1}" @click="status=1;page=0;touchend=false">草稿 <span></span></div>
     </div>
-    <div class="cneter-con">
-      <div class="list buy-list" v-for="stock in stockList" @click="editStock(stock.id)">
-        <left-slider class="parentType" :index="stock.id" @swipe="swipe" @swipeRight="inputIndex=-1">
-          <p>门店：{{stock.storeName}}</p>
-          <p class="text-info">仓库：{{stock.warehouseName}}</p>
-          <p class="text-info">创建时间：{{stock.createTimeStr}}</p>
-          <span class="list-option" v-if="inputIndex!=stock.id||stock.status!=1">
-            <em class="iconfont icon-qianjin"></em>
-          </span>
-          <div  v-if="stock.status==1" :class="{'option-con-list':inputIndex==stock.id,'option-none':inputIndex!=stock.id}" >
-              <span @click="deleteStock(stock.id)">删除</span>
-          </div>
-        </left-slider>
-      </div> 
+    <div class="cneter-con" v-load-more="loaderMore" type="2">
+      <div style="height:auto">
+        <div class="list buy-list" v-for="stock in stockList" @click="editStock(stock.id)">
+          <left-slider class="parentType" :index="stock.id" @swipe="swipe" @swipeRight="inputIndex=-1">
+            <p>门店：{{stock.storeName}}</p>
+            <p class="text-info">仓库：{{stock.warehouseName}}</p>
+            <p class="text-info">创建时间：{{stock.createTimeStr}}</p>
+            <span class="list-option" v-if="inputIndex!=stock.id||stock.status!=1">
+              <em class="iconfont icon-qianjin"></em>
+            </span>
+            <div  v-if="stock.status==1" :class="{'option-con-list':inputIndex==stock.id,'option-none':inputIndex!=stock.id}" >
+                <span @click="deleteStock(stock.id)">删除</span>
+            </div>
+          </left-slider>
+        </div> 
+        <p v-if="touchend" class="empty_data">没有更多了</p>
+      </div>
     </div>
+     <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
@@ -37,7 +43,8 @@
   import alertTip from '../../components/common/alertTip'
   import footGuide from 'src/components/footer/footGuide'
   import LeftSlider from '../../components/common/slideLeft.vue';
-  
+  import {loadMore} from 'src/components/common/mixin'
+  import loading from 'src/components/common/loading'
 
   export default {
     data(){
@@ -50,14 +57,22 @@
         showAlert:false,
         alertText:null,
         inputIndex:-1,
+        page:0,
+        pageSize:10,
+        preventRepeatReuqest: false, //到达底部加载数据，防止重复加载
+			  showBackStatus: false, //显示返回顶部按钮
+			  showLoading: true, //显示加载动画
+			  touchend: false, //没有更多数据
       }
     },
     components: {
       headTop,
       footGuide,
       alertTip,
-      LeftSlider
+      LeftSlider,
+      loading
     },
+    mixins: [loadMore],
     computed: {},
     created(){
       this.getStock();
@@ -73,9 +88,13 @@
         this.$router.push(name)
       },
       getStock(){
-        get_stock_list(this.userId,this.status,0,100).then((res)=>{
+        get_stock_list(this.userId,this.status,this.page,this.pageSize).then((res)=>{
           if(res.code==200){
             this.stockList = res.data.info;
+            if (res.data.info.length < this.pageSize) {
+              this.touchend = true;
+            }
+            this.showLoading = false
           }else{
             this.alertText = res.message
             this.showAlert = true
@@ -85,8 +104,33 @@
           this.showAlert = true
         })
       },
+      //到达底部加载更多数据
+      async loaderMore(){
+        if (this.touchend) {
+          return
+        }
+        //防止重复请求
+        if (this.preventRepeatReuqest) {
+          return 
+        }
+        this.showLoading = true;
+        this.preventRepeatReuqest = true;
+        //数据的定位加20位
+        this.page++;
+        let res = await get_stock_list(this.userId,this.status,this.page,this.pageSize)
+              this.showLoading = false;
+              this.preventRepeatReuqest = false;
+              if (res.data.info.length < this.pageSize) {
+                this.touchend = true;
+              }
+              this.stockList = [...this.stockList,...res.data.info]
+      },
       goBack(){
-        this.$router.push({name:this.$route.query.fromPage});
+        if(this.$route.query.fromPage){
+          this.$router.push({name:this.$route.query.fromPage});
+        }else{
+          this.$router.push({name:'msite'});
+        }
       },
       showTip(msg){
         this.showAlert = true;
@@ -134,8 +178,9 @@
       justify-content: space-between;
       background: #fff;
       height: 0.8rem;
+      line-height: .8rem;
+      text-align: center;
       font-size: 16px;
-      padding: 0 0.58rem 0 0.79rem;
       align-items: center;
       margin-bottom:.01rem;
       div.active {

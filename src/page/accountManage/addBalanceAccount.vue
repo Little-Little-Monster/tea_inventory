@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main">
     <head-top signin-up='msite' goBack="" :head-title="$route.query.id?'编辑结算账户':'新增结算账户'">
       <div slot="back" class="goback" @click="goBack" >
         <span class="iconfont icon-fanhui title_text"></span>
@@ -8,10 +8,10 @@
         <span class="delete">删除</span>
       </div>
     </head-top>
-    <ul class="add-edit-upplier paddingTop">
+    <ul class="add-edit-upplier cneter-con paddingTop">
       <li>
         <div class="list_left">
-          名称 <i>*</i>
+          名称 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
           <input type="text" v-model="accountInfo.accountName" placeholder="请输入账户名称" style="width: 2.27rem;">
@@ -19,7 +19,7 @@
       </li>
       <li>
         <div class="list_left">
-          账号<i>*</i>
+          账号<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
           <input type="text" v-model="accountInfo.account" placeholder="请输入账户" style="width: 2.27rem;">
@@ -27,7 +27,7 @@
       </li>
       <li>
         <div class="list_left">
-          开户人<i>*</i>
+          开户人<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
           <input type="text" v-model="accountInfo.accountHolder" placeholder="请输入开户人" style="width: 1.99rem;">
@@ -35,7 +35,7 @@
       </li>
       <li @click="toStore" style="margin:.1rem 0;">
         <div class="list_left">
-          门店<i>*</i>
+          门店<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
             <span v-if="accountInfo.storeId||accountInfo.storeId==0">{{accountInfo.storeName}}</span>
@@ -252,7 +252,7 @@
     }
     .remark {
       height: 2.8rem;
-      margin-bottom: 1.16rem;
+      // margin-bottom: 1.16rem;
       display: block;
       height: 2.8rem;
       padding-top: 0.3rem;
@@ -275,6 +275,23 @@
           color: #999;
         }
       };
+      .list_left {
+            font-size: 0.3rem;
+            color: #444;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+        }
+        .list_right {
+            font-size: 0.26rem;
+            color: #ccc;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+        }
       .list_left {
         font-size: 0.32rem;
         color: #666666;

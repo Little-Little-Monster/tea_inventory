@@ -1,6 +1,6 @@
 <template>
-    <div class="loginContainer">
-        <head-top :head-title="'登录'" goBack="true">
+    <div class="loginContainer main" >
+        <head-top :head-title="'登录'" goBack="">
             <!-- <div slot="changeLogin" class="change_login" @click="changeLoginWay">{{loginWay? "密码登录":"短信登录"}}</div> -->
         </head-top>
         <section class="title-choose">
@@ -13,7 +13,7 @@
                 <em v-if="!isLogin"></em>
             </div>
         </section>
-        <form class="loginForm" @submit.prevent="mobileLogin" v-if="isLogin">
+        <form class="loginForm cneter-con" @submit.prevent="mobileLogin" v-if="isLogin">
             <section class="input_container">
                 <span class="iconfont icon-2shoujirenzheng"></span>
                 <input type="text" placeholder="请输入手机号" v-model.lazy="userAccount">
@@ -186,7 +186,7 @@
     @import '../../style/mixin';
 
     .loginContainer{
-        padding-top: 0.88rem;
+        // padding-top: 0.88rem;
         p, span, input{
             font-family: Helvetica Neue,Tahoma,Arial;
         }

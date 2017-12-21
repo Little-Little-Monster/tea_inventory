@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="main">
     	<head-top signin-up='msite' goBack="" :headTitle="title">
             <div slot="back" class="goback" @click="goBackRoute" >
                 <span class="iconfont icon-fanhui title_text"></span>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main">
     <head-top signin-up='msite' goBack="" head-title="供应商列表">
       <span v-if="!chooseSupplier" slot="right" class="iconfont icon-jia" @click="$router.push({name:'addEditUpplier'})" ></span>
       <div slot="back" class="goback" @click="goBack" >
@@ -7,13 +7,13 @@
       </div>
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
-    <ul class="supplier_list paddingTop" :style="{'margin-bottom':chooseSupplier?'1rem':''}">
+    <ul class="supplier_list paddingTop cneter-con" :style="{'margin-bottom':chooseSupplier?'1rem':''}">
       <li class="supplier_info_list" v-for="list in suppList" @click="editSupp(list)">
         <div class="list_left">
           <h4>{{list.name}}</h4>
-          <p>欠供应商欠款 <span>￥{{list.balance}}</span></p>
-          <p>联系电话 <span>{{list.mobile}}</span></p>
-          <p>负责人 <span>{{list.personHead}}</span></p>
+          <p>欠供应商欠款： <span>￥{{list.balance}}</span></p>
+          <p>联系电话： <span>{{list.mobile}}</span></p>
+          <p>负责人： <span>{{list.personHead}}</span></p>
         </div>
         <div class="list_right">
           <i class="iconfont icon-qianjin" v-if="!chooseSupplier"></i>
@@ -141,14 +141,32 @@
     .supplier_info_list{
       height: 2.2rem;
       padding: 0 0.2rem 0 0.4rem;
+      .list_left {
+            font-size: 0.3rem;
+            color: #444;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .list_right {
+            font-size: 0.26rem;
+            color: #ccc;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+        }
       .list_left{
         h4{
           font-size: 0.32rem;
           color: #444444;
+          margin-bottom:.2rem;
         }
         p{
           font-size: 0.24rem;
           color: #999999;
+          line-height:.4rem;
           &:nth-of-type(1){
             span{
               color: #dac1db;

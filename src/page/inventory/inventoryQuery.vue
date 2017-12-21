@@ -1,86 +1,88 @@
 <template>
-    <div>
+    <div class="main">
     	<head-top signin-up='msite' goBack="" :headTitle="$route.name=='inventoryFlow'?'库存流水':'库存查询'">
             <div slot="back" class="goback" @click="goBack" >
                 <span class="iconfont icon-fanhui title_text"></span>
             </div>
     	</head-top>
 
-        <div class="cneter-con paddingTop">
-            
-             <section class="title-choose">
-                <div class="search" v-if="$route.name!='inventoryFlow'">
-                    <div class="search-name">商品名字</div>
-                    <input  placeholder="请输入商品名字" type="text" v-model="searchInfo.goodsName">
-                </div>
-                <div class="search" v-if="$route.name=='inventoryFlow'" @click="getGoods">
-                    <div class="search-name">商品</div>
-                    <span class="sel-goods" v-if="!goodsId">请选择商品<i class="iconfont icon-qianjin"></i></span>
-                    <span class="sel-goods" v-if="goodsId">{{goodsName}}<i class="iconfont icon-qianjin"></i></span>
-                </div>
-                <div class="search">
-                    <div class="search-name">仓库</div>
-                    <div class="sel-con">
-                        <select v-model="searchInfo.warehouseId" >
-                            <option value='0'>选择仓库</option>
-                            <option :value="storehouse.warehouseId" v-for="storehouse in storeHouseList">{{storehouse.warehouseName}}</option>
-                        </select>
+        <div class="cneter-con paddingTop " v-load-more="loaderMore" type="2">
+            <div style="height:auto">
+                <section class="title-choose">
+                    <div class="search" v-if="$route.name!='inventoryFlow'">
+                        <div class="search-name">商品名字</div>
+                        <input  placeholder="请输入商品名字" type="text" v-model="searchInfo.goodsName">
                     </div>
-                </div>
-                <div class="search">
-                    <div class="search-name">开始日期</div>
-                    <input :class="{'full':searchInfo.startDate}"placeholder="请选择开始日期" type="date" v-model="searchInfo.startDate">
-                </div>
-                <div class="search">
-                    <div class="search-name">结束日期</div>
-                    <input :class="{'full':searchInfo.endDate}" placeholder="请选择结束日期" type="date" v-model="searchInfo.endDate">
-                </div>
-                
-            </section>
-            <section class="total-info">
-                <section>
-                    <span>总库存</span> 
-                    <span>{{totalQuantity}}</span>
+                    <div class="search" v-if="$route.name=='inventoryFlow'" @click="getGoods">
+                        <div class="search-name">商品</div>
+                        <span class="sel-goods" v-if="!goodsId">请选择商品<i class="iconfont icon-qianjin"></i></span>
+                        <span class="sel-goods" v-if="goodsId">{{goodsName}}<i class="iconfont icon-qianjin"></i></span>
+                    </div>
+                    <div class="search">
+                        <div class="search-name">仓库</div>
+                        <div class="sel-con">
+                            <select v-model="searchInfo.warehouseId" >
+                                <option value='0'>选择仓库</option>
+                                <option :value="storehouse.warehouseId" v-for="storehouse in storeHouseList">{{storehouse.warehouseName}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="search">
+                        <div class="search-name">开始日期</div>
+                        <input :class="{'full':startDate}" placeholder="请选择开始日期" type="date" v-model="startDate">
+                    </div>
+                    <div class="search">
+                        <div class="search-name">结束日期</div>
+                        <input :class="{'full':endDate}" placeholder="请选择结束日期" type="date" v-model="endDate">
+                    </div>
+                    
                 </section>
-                <section>
-                    <span>总金额</span> 
-                    <span>￥{{totalAmount}}</span> 
+                <section class="total-info">
+                    <section>
+                        <span>总库存</span> 
+                        <span>{{totalQuantity}}</span>
+                    </section>
+                    <section>
+                        <span>总金额</span> 
+                        <span>￥{{totalAmount}}</span> 
+                    </section>
                 </section>
-            </section>
-            <div v-if="$route.name!='inventoryFlow'" class="worker-list list" v-for="list in queryList">
-                <span>
-                    {{list.goodsName}} 
-                </span>
-                <p class="text-info">采购单价：<em>￥{{list.buyAmount}}</em></p>
-                <p class="text-info">销售单价：<em>￥{{list.saleAmount}}</em></p>
-                <em class="list-option">
-                    <i class="list-sub">当前库存量</i> 
-                    {{list.total}}
-                </em>
-            </div>
-            <div v-if="$route.name=='inventoryFlow'" class="worker-list list" v-for="list in queryList">
-                <span>
-                    {{list.goodsName}}
-                </span>
-                <p class="text-info">剩余数量： <em>{{list.leftQuantity}}</em></p>
-                <p class="text-info">创建时间： <em>{{list.createTimeStr}}</em></p>
-                <p class="text-info">类型： 
-                    <em v-if="list.type==0">商品初始化</em>
-                    <em v-if="list.type==1">盘点</em>
-                    <em v-if="list.type==2">销售</em>
-                    <em v-if="list.type==3">销售回退</em>
-                    <em v-if="list.type==4">采购</em>
-                    <em v-if="list.type==5">采购回退</em>
-                    <em v-if="list.type==6">调拨</em>
-                    <em v-if="list.type==7">采购撤销</em>
-                    <em v-if="list.type==8">销售撤销</em>
-                    <em v-if="list.type==9">盘点撤销</em>
-                    <em v-if="list.type==10">调拨撤销</em>
-                </p>
-                <em class="list-option">
-                    <i class="list-sub">发生数量</i> 
-                    {{list.quantity}}
-                </em>
+                <div v-if="$route.name!='inventoryFlow'" class="worker-list list" v-for="list in queryList">
+                    <span>
+                        {{list.goodsName}} 
+                    </span>
+                    <p class="text-info">采购单价：<em>￥{{list.buyAmount}}</em></p>
+                    <p class="text-info">销售单价：<em>￥{{list.saleAmount}}</em></p>
+                    <em class="list-option">
+                        <i class="list-sub">当前库存量</i> 
+                        {{list.total}}
+                    </em>
+                </div>
+                <div v-if="$route.name=='inventoryFlow'" class="worker-list list" v-for="list in queryList">
+                    <span>
+                        {{list.goodsName}}
+                    </span>
+                    <p class="text-info">剩余数量： <em>{{list.leftQuantity}}</em></p>
+                    <p class="text-info">创建时间： <em>{{list.createTimeStr}}</em></p>
+                    <p class="text-info">类型： 
+                        <em v-if="list.type==0">商品初始化</em>
+                        <em v-if="list.type==1">盘点</em>
+                        <em v-if="list.type==2">销售</em>
+                        <em v-if="list.type==3">销售回退</em>
+                        <em v-if="list.type==4">采购</em>
+                        <em v-if="list.type==5">采购回退</em>
+                        <em v-if="list.type==6">调拨</em>
+                        <em v-if="list.type==7">采购撤销</em>
+                        <em v-if="list.type==8">销售撤销</em>
+                        <em v-if="list.type==9">盘点撤销</em>
+                        <em v-if="list.type==10">调拨撤销</em>
+                    </p>
+                    <em class="list-option">
+                        <i class="list-sub">发生数量</i> 
+                        {{list.quantity}}
+                    </em>
+                </div>
+                <p v-if="touchend" class="empty_data">没有更多了</p>
             </div>
         </div>
         <div class="bottom" @click="getQuery" v-if="$route.name!='inventoryFlow'">
@@ -89,6 +91,9 @@
         <div class="bottom" @click="getFlower" v-if="$route.name=='inventoryFlow'">
             <i >查询流水</i> 
         </div>
+        <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
         <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
 
     </div>    
@@ -100,6 +105,8 @@ import {getStore} from 'src/config/mUtils'
 import { get_inventory_query, get_inventory_flow, get_storehouse } from 'src/service/getData'
 import headTop from 'src/components/header/head'
 import alertTip from '../../components/common/alertTip'
+import {loadMore} from 'src/components/common/mixin'
+import loading from 'src/components/common/loading'
 
 export default {
 	data(){
@@ -116,6 +123,12 @@ export default {
             totalAmount:0,
             goodsId:this.$route.query.goodsId?this.$route.query.goodsId:0,
             goodsName:this.$route.query.goodsName,
+            page:0,
+            pageSize:10,
+            preventRepeatReuqest: false, //到达底部加载数据，防止重复加载
+            showBackStatus: false, //显示返回顶部按钮
+            showLoading: true, //显示加载动画
+            touchend: false, //没有更多数据
             
         }
     },
@@ -124,8 +137,8 @@ export default {
         this.searchInfo.goodsName = ""
         this.searchInfo.startDate = ""
         this.searchInfo.endDate = ""
-        this.searchInfo.page = 0
-        this.searchInfo.pageSize = 100
+        this.searchInfo.page = this.page;
+        this.searchInfo.pageSize = this.pageSize
         this.searchInfo.userId = this.userId;
         this.getStoreHouse()
         if(this.$route.name=='inventoryFlow'){
@@ -138,8 +151,9 @@ export default {
     mounted(){
         
     },
+    mixins: [loadMore],
     components: {
-    	headTop,alertTip
+    	headTop,alertTip,loading
     },
     computed: {
 		...mapState([
@@ -171,6 +185,8 @@ export default {
             }})
         },
         getQuery(){
+            this.searchInfo.startDate = this.startDate
+            this.searchInfo.endDate = this.endDate
             get_inventory_query(this.searchInfo).then((res)=>{
                 if(res.code!=200){
                     this.showTip(res.message)
@@ -183,10 +199,42 @@ export default {
                         this.totalQuantity = 0
                         this.totalAmount = 0
                     }
+                    if (res.data.info.length < this.pageSize) {
+                        this.touchend = true;
+                    }
+                    this.showLoading = false
                 }
             }).catch((err)=>{
-                 this.showTip(err.message)
+                 this.showTip(err.message);
+                 this.showLoading = false
             })
+        },
+        //到达底部加载更多数据
+        async loaderMore(){
+            if (this.touchend) {
+            return
+            }
+            //防止重复请求
+            if (this.preventRepeatReuqest) {
+            return 
+            }
+            this.showLoading = true;
+            this.preventRepeatReuqest = true;
+            //数据的定位加20位
+            this.searchInfo.page++;
+            let res
+            if(this.$route.name=='inventoryFlow'){
+                res = await get_inventory_flow(this.searchInfo)
+            }else{
+                res = await get_inventory_query(this.searchInfo)
+            }
+            
+            this.showLoading = false;
+            this.preventRepeatReuqest = false;
+            if (res.data.info.length < this.pageSize) {
+            this.touchend = true;
+            }
+            this.queryList = [...this.queryList,...res.data.info]
         },
         getFlower(){
             this.searchInfo.goodsId = this.goodsId;
@@ -202,9 +250,14 @@ export default {
                         this.totalQuantity = 0
                         this.totalAmount = 0
                     }
+                    if (res.data.info.length < this.pageSize) {
+                        this.touchend = true;
+                    }
+                     this.showLoading = false
                 }
             }).catch((err)=>{
                  this.showTip(err.message)
+                  this.showLoading = false
             })
         },
         goBack(){
@@ -231,15 +284,14 @@ export default {
     }
     .title-choose{
         width:100%;
-        min-height:1rem;
-        margin-bottom: 0.1rem;
+        height:4rem;
         background: #fff;
         &>div{
             width:100%;
             height:1rem;
             background: #fff;
+            border-bottom: 0.01rem solid $bc;
             float: left;
-            margin-bottom: 0.05rem;
             text-align: center;
             position: relative;
             line-height: 1rem;
@@ -266,6 +318,7 @@ export default {
                  flex: 4;
                  text-align: right;
                  select{
+                     width:80%;
                      @include sc(.28rem,#A1A1A1);
                      background: #fff;
                      padding-right: .2rem;
@@ -285,6 +338,8 @@ export default {
     }
     .worker-list{
         @include wh(100%,2.2rem);
+        margin:0;
+        border-bottom: 0.02rem solid $bc;
         span{
             @include sc(.32rem,#444);
             line-height:.9rem;
@@ -342,9 +397,9 @@ export default {
     .total-info{
         @include wh(100%,1.5rem);
         display: flex;
-        padding:.25rem .4rem;
+        padding:.2rem .4rem;
         background:#fff;
-        margin-bottom:.05rem;
+        border-bottom: 0.01rem solid $bc;
         section{
             flex:1;
             text-align: center;

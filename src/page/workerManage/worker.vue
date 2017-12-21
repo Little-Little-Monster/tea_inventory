@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="main">
     	<head-top signin-up='msite' goBack="" head-title="员工管理">
             <router-link v-if="!$route.query.getWorker" slot="right" class="iconfont icon-jia" :to="{name:'workerOption'}"></router-link>
             <div slot="back" class="goback" @click="goBack" >

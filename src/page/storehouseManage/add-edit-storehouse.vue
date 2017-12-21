@@ -1,5 +1,5 @@
 <template>
-  <div class="add_edit_storehouse">
+  <div class="add_edit_storehouse main">
     <head-top goBack="" :head-title="$route.query.edit?'编辑仓库':'新增仓库'">
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
       <span  slot="back" @click="$router.push({name:'storehouseList'})">
@@ -9,10 +9,10 @@
     <ul class="add_edit_header paddingTop">
       <li>
         <div class="list_left">
-          名称 <i>*</i>
+          名称 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
-          <input type="text" v-model="storeHouse.warehouseName" placeholder="请输入仓库名称" style="width: 1.99rem;">
+          <input type="text" v-model="storeHouse.warehouseName" placeholder="请输入仓库名称" style="width: 2,69rem;">
         </div>
       </li>
       <li @click="goWorker">
@@ -189,6 +189,23 @@
         padding: 0 0.4rem;
         input{
           text-align: right;
+        }
+        .list_left {
+            font-size: 0.3rem;
+            color: #444;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+        }
+        .list_right {
+            font-size: 0.26rem;
+            color: #ccc;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
         }
         .list_left {
           font-size: 0.32rem;

@@ -1,16 +1,16 @@
 <template>
-  <div class="add_customer_type paddingTop">
+  <div class="add_customer_type paddingTop main">
     <head-top goBack="" :headTitle="$route.query.id?'编辑分类':'添加分类'">
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
       <span slot="back" @click="$router.push({name:'customerType'})">
           <span class="back iconfont icon-fanhui"></span>
       </span>
     </head-top>
-    <div class="add-content">
+    <div class="add-content cneter-con">
       <ul>
         <li>
           <div class="list_left">
-            名称 <i>*</i>
+            名称 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
           </div>
           <div class="list_right">
             <input type="text" v-model="typeInfo.name" placeholder="请输入客户名称" style="width: 2.27rem;">
@@ -125,6 +125,23 @@
             text-align: right;
           }
           .list_left {
+            font-size: 0.3rem;
+            color: #444;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .list_right {
+            font-size: 0.26rem;
+            color: #ccc;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+        }
+          .list_left {
+            position: relative;
             font-size: 16px;
             color: #666666;
             i {

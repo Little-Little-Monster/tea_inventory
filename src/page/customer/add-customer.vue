@@ -1,14 +1,14 @@
 <template>
-  <div>
+  <div class="main">
     <head-top signin-up='msite' goBack="" :head-title="$route.query.id?'编辑客户':'新增客户'">
       <div slot="back" class="goback" @click="goBack" >
         <span class="iconfont icon-fanhui title_text"></span>
       </div>
     </head-top>
-    <ul class="add-edit-upplier paddingTop">
+    <ul class="add-edit-upplier cneter-con paddingTop">
       <li>
         <div class="list_left">
-          名称 <i>*</i>
+          名称 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
           <input type="text" v-model="customerInfo.name" placeholder="请输入客户名称" style="width: 2.27rem;">
@@ -16,7 +16,7 @@
       </li>
       <li>
         <div class="list_left">
-          联系人<i>*</i>
+          联系人<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
           <input type="text" v-model="customerInfo.contacts" placeholder="请输入客户联系人" style="width: 2.27rem;">
@@ -24,7 +24,7 @@
       </li>
       <li>
         <div class="list_left">
-          手机<i>*</i>
+          手机<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
           <input type="number" v-model="customerInfo.mobile" placeholder="请输入手机号码" style="width: 1.99rem;">
@@ -32,7 +32,7 @@
       </li>
       <li @click="toType">
         <div class="list_left">
-          分类<i>*</i>
+          分类<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
             <span v-if="customerInfo.customerClassId||customerInfo.customerClassId==0">{{customerInfo.customerClassName}}</span>
@@ -85,7 +85,7 @@
         </div>
       </li>
       <li class="address-con">
-        <div style="position:relative;height:1rem;">
+        <div style="position:relative;min-height:1rem;height:auto">
             <div class="list_left">
             地址
             </div>
@@ -97,8 +97,8 @@
             <div class="list_left" style="width:2rem">
             详细地址
             </div>
-            <div class="list_right" style="float:right;right:0.4rem;height:1rem">
-                <input type="text" v-model="customerInfo.address" placeholder="请输入详细地址" style="width: 3.27rem;margin-top:.3rem">
+            <div class="list_right" style="float:left;right:0.4rem;height:1rem">
+                <input type="text" v-model="customerInfo.address" placeholder="请输入详细地址" style="width: 3.27rem;margin-top:.1rem">
             </div>
         </div>
       </li>
@@ -142,7 +142,7 @@
         }
     },
     mounted(){
-
+      
     },
     beforeRouteLeave(to, from, next){
         if(to.name!='customerType'){
@@ -232,7 +232,9 @@
       text-align: right;
     }
     .address-con{
-       height:2rem; 
+       min-height:2rem; 
+       overflow: hidden;
+       height:auto;
        display: block;
        .list_left{
            width:15%;
@@ -253,6 +255,23 @@
         }
       };
     position: relative;
+    .list_left {
+            font-size: 0.3rem;
+            color: #444;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+        }
+        .list_right {
+            font-size: 0.26rem;
+            color: #ccc;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+        }
       .list_left {
         font-size: 0.32rem;
         color: #666666;
@@ -277,16 +296,24 @@
         }
       }
       .address{
-        min-width:50%;
+        float: right;
+        height:1rem;
         width:auto;
-        height:40%;
-        @include ct;
         right:0;
+        padding:.25rem 0;
+        .address-picker{
+          &>label{
+            padding:.1rem 0;
+          }
+        }
       }
       .add-detail{
-          height: 1rem;
+          min-height: 1rem;
+          height:auto;
+          overflow: hidden;
           width:100%;
           float: left;
+          display: flex;
       }
     }
   }

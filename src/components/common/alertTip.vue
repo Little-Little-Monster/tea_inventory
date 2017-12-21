@@ -53,7 +53,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        z-index: 200;
+        z-index: 2000;
         background: rgba(50,46,72,0.59)
     }
     .tip_text_container{
@@ -99,12 +99,14 @@
             text-align: center;
             margin-top: .2rem;
             padding: 0 .4rem;
+            max-height:4rem;
+            overflow: auto;
         }
         .confrim{
             @include sc(.34rem, #fff);
             font-weight: bold;
             margin-top: .2rem;
-            background-color: #4cd964;
+            background-color: $green;
             width: 100%;
             text-align: center;
             line-height: .7rem;

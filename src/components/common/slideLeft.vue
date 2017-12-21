@@ -32,7 +32,7 @@
                 if(ev.touches.length == 1){
                     // 手指按下的时候记录按下的位置
                     this.startX = ev.touches[0].clientX;
-                    console.log(this.startX)
+                    // console.log(this.startX)
                 }
             },
             _touchMove: function(ev) {
@@ -63,7 +63,7 @@
                 if (event.changedTouches.length == 1) {
                     this.startX = 0;
                     this.zIndex = "z-index:" + -1 + "rem";
-                    console.log(event.changedTouches[0].clientX)
+                    // console.log(event.changedTouches[0].clientX)
                     // 手指移动结束后的水平位置
                     let endX = event.changedTouches[0].clientX;
                     // 触摸开始与结束,手指移动的距离

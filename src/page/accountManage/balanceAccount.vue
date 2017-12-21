@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="main">
     	<head-top signin-up='msite' goBack="" head-title="结算账户管理">
             <router-link v-if="!getAccount" slot="right" class="iconfont icon-jia" :to="{name:'addBalanceAccount'}"></router-link>
             <span slot="back" @click="goBack">
@@ -147,8 +147,15 @@ export default {
 </script>
 <style lang="scss" scoped>
     @import 'src/style/mixin';
-    .check-icon{
-        @include sc(.4rem,$green)
+    .list-con{
+        height:auto;
+        .check-icon{
+            @include sc(.4rem,$green);
+            right:.2rem;
+        }
+    }
+    .balance-list{
+        height:auto;
     }
     .right{
         width:20%;
@@ -171,13 +178,14 @@ export default {
         @include sc(.24rem,$text_light)
     }
     .list-option{
-        @include sc(.34rem,#E78787);
+        @include sc(.26rem,#E78787);
         right:.4rem;
+        
     }
     .total-info{
         @include wh(100%,1.5rem);
         display: flex;
-        padding:.25rem .4rem;
+        padding:.35rem .4rem .2rem .4rem;
         background:#fff;
         margin-bottom:.1rem;
         section{
@@ -190,10 +198,10 @@ export default {
                 // width:100%;
                 flex:1;
                 &:nth-child(1){
-                    @include sc(.28rem,$text_light)
+                    @include sc(.26rem,$text_light)
                 }
                 &:nth-child(2){
-                    @include sc(.34rem,#E78787 )
+                    @include sc(.26rem,#E78787 )
                 }
                 &.green{
                     color:$green;

@@ -1,6 +1,6 @@
 <template>
-    <div>
-    	<head-top signin-up='msite' :headTitle="headTitle">
+    <div class="main">
+    	<head-top class="head" signin-up='msite' :headTitle="headTitle">
 
     	</head-top>
 
@@ -8,7 +8,7 @@
             <router-view></router-view>
         </div>
 
-    	<foot-guide></foot-guide>
+    	<foot-guide class="foot"></foot-guide>
     </div>    
 </template>
 
@@ -48,10 +48,27 @@ export default {
 
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+.main{
+    display: flex;
+    flex-direction: column;
+    width:100%;
+    height:100%;
+    .head{
+        align-self: flex-start;
+        height:.98rem;
+        width:100%;
+    }
+    .foot{
+        align-self: flex-end;
+        height:.98rem;
+    }
+}
     @import 'src/style/mixin';
     .cneter-con{
-        margin-bottom:1.2rem;
+        // margin-bottom:1.2rem;
+        flex:1;
+        overflow: auto;
     }
 
 </style>

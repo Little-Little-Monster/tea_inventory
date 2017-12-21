@@ -13,6 +13,11 @@
                 <img src="../../../images/msite_bg_2.png">
               </figure>
             </div>
+            <div class="swiper-slide food_types_container" :key="">
+              <figure>
+                <img src="../../../images/msite_bg_3.png">
+              </figure>
+            </div>
           </div>
           <div class="swiper-pagination"></div>
         </div>
@@ -23,28 +28,41 @@
       </nav>
       <ul class="wirehouse_ul">
          <li @click="$router.push({name:'inventoryFlow'})">
-          <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>库存流水</div>
-          <div class="li_right">商品库存变化<i class="iconfont icon-qianjin"></i></div>
+          <div class="li_left">
+            <em class="iconfont icon-inventoryLaundryList"></em>
+            <i>库存流水</i> 
+          </div>
+          <div class="li_right" style="text-align:right">商品库存变化<i class="iconfont icon-qianjin"></i></div>
         </li>
         <li class="sensus_ul_detail">
           <div class="li_left" @click="$router.push({name:'inventoryQuery'})">
-            <p><i class="iconfont icon-pandiandanliebiao"></i>库存查询</p>
+            <p>
+              <em class="iconfont icon-cangkukucunchaxun"></em>
+              <i>库存查询</i>
+              
+              </p>
             <span>库存状况</span>
           </div>
           <div class="border_center"></div>
           <div class="li_right" @click="$router.push({name:'warehouseStock',query:{fromPage:$route.name}})">
-            <p><i class="iconfont icon-pandiandanliebiao"></i>库存盘点</p>
+            <p>
+              <em class="iconfont icon-ccgl-kucunpandian-1"></em>
+              <i>库存盘点</i>
+              </p>
             <span>盘点</span>
           </div>
         </li>
         <li class="sensus_ul_detail">
           <div class="li_left" @click="$router.push({name:'buyHistory',query:{fromPage:$route.name}})">
-            <p><i class="iconfont icon-pandiandanliebiao"></i>采购进货</p>
+            <p>
+              <em class="iconfont icon-gerenzhongxin-caigoudan"></em>
+              <i>采购进货</i>
+            </p>
             <span>进货，增加库存</span>
           </div>
           <div class="border_center"></div>
           <div class="li_right" @click="$router.push({name:'buyBackHistory',query:{fromPage:$route.name}})">
-            <p><i class="iconfont icon-pandiandanliebiao"></i>采购退货</p>
+            <p><i class="iconfont icon-caigoutuihuodan"></i>采购退货</p>
             <span>出货，减少库存</span>
           </div>
         </li>
@@ -119,6 +137,7 @@ export default {
           @include wh(100%, auto);
           .swiper-pagination {
             bottom: 0.2rem;
+            height:auto;
           }
           img{
             width:100%;
@@ -156,9 +175,22 @@ export default {
         li{
           margin-bottom: .2rem;
           padding-left:0.4rem;
+          &>div{
+             padding-top: 0.51rem;
+             i{
+               position: absolute;
+             }
+             .iconfont{
+              @include sc(.34rem,#97D4BF);
+              position: relative;
+              // bottom:.1rem;
+              margin-right:.2rem
+             }
+          }
           &.sensus_ul_detail{
             padding: 0;
             div{
+              
               span{
                 font-size: 0.20rem;
                 color: #ccc;
@@ -172,6 +204,7 @@ export default {
             .li_right{
               width: 3.73rem;
               padding-left: 0.28rem;
+              padding: 0.31rem;
               font-size: 0.3rem;
             }
           }
@@ -187,7 +220,6 @@ export default {
           }
           .li_right{
             i{
-              margin-left: 0.15rem;
             }
           }
         }

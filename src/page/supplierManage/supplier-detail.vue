@@ -7,7 +7,7 @@
     <ul class="supplier_detail_header paddingTop">
       <li>
         <div class="list_left">
-          手机
+          名称
         </div>
         <div class="list_right">
           {{userInfo.name}}
@@ -85,7 +85,7 @@
       &.supplier_detail_header{
         li:nth-child(1){
           .list_right {
-            color: #444;
+            color: #bbb;
           }
         }
       }
@@ -101,5 +101,22 @@
         }
       }
     }
+    .list_left {
+            font-size: 0.3rem;
+            color: #444;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+        }
+        .list_right {
+            font-size: 0.26rem;
+            color: #ccc;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+        }
   }
 </style>

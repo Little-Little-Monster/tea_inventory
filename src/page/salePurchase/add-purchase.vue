@@ -1,175 +1,177 @@
 <template>
-  <div class="add_purchase">
+  <div class="add_purchase main">
     <head-top goBack="" :headTitle="$route.name=='saleTrade'?'销售单':'销售回退'">
       <div slot="back" class="goback" @click="returnBack" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
     </head-top>
-    <ul class="add_purchase_header paddingTop">
-      <li @click="goCustomer">
-        <div class="list_left" >
-          客户 <i>*</i>
-        </div>
-        <div class="list_right">
-          <span v-if="saleOrderInfo.customerId||saleOrderInfo.customerId==0">{{saleOrderInfo.customerName}}</span>
-          <span v-if="!saleOrderInfo.customerId && saleOrderInfo.customerId!=0">请选择客户</span>
-          <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
-        </div>
-      </li>
-      <li @click="goStore">
-        <div class="list_left">
-          仓库<i>*</i>
-        </div>
-        <div class="list_right" >
-          <span v-if="saleOrderInfo.warehouseName">{{saleOrderInfo.warehouseName}}</span>
-          <span v-if="!saleOrderInfo.warehouseName">请选择供仓库</span>
-          <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
-        </div>
-      </li>
-     <li @click="toAccount">
-        <div class="list_left">
-          结算账户<i>*</i>
-        </div>
-        <div class="list_right">
-          <span v-if="!saleOrderInfo.settleAccountId">请选择结算账户</span>
-          <span v-if="saleOrderInfo.settleAccountId">{{saleOrderInfo.settleAccountName}}</span>
-          <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
-        </div>
-      </li>
-    </ul>
-    <ul>
-      <li style="padding-right: 0.58rem" @click="goGoods">
-        <div class="list_left">
-          选择商品
-        </div>
-        <div class="list_right" v-if="saleOrderInfo.status!=2&&saleOrderInfo.status!=3">
-          <i class="iconfont icon-iconjia" style="font-size: 20px;font-weight: 900"></i>
-        </div>
-      </li>
-      <li class="good-con" v-if="saleOrderInfo.showGoodsList&&saleOrderInfo.showGoodsList.length!=0">
-        <div class="good-list goods-tit">
-          <span>名称</span>
-          <span>单价</span>
-          <span>数量</span>
-          <span>总价</span>
-        </div>
-        <!-- <div  v-for="(buyGoods,index2) in saleOrderInfo.buyGoods">
-          <div class="good-list" v-for="(list,index) in buyGoods.stockVos.length" v-if="buyGoods.stockVos[index].quantity!=0">
-            <span>{{buyGoods.stockVos[index].name}}</span>
-            <span>￥<input type="number" v-model="buyGoods.stockVos[index].buyAmount" @input="getTotal"></span>
-            <span><input type="number" v-model="buyGoods.stockVos[index].quantity" @input="getTotal"></span>
-            <span>{{Number(buyGoods.stockVos[index].buyAmount)*Number(buyGoods.stockVos[index].quantity)}}</span>
+    <div class="cneter-con">
+      <ul class="add_purchase_header paddingTop">
+        <li @click="goCustomer">
+          <div class="list_left" >
+            客户 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
           </div>
-        </div> -->
+          <div class="list_right">
+            <span v-if="saleOrderInfo.customerId||saleOrderInfo.customerId==0">{{saleOrderInfo.customerName}}</span>
+            <span v-if="!saleOrderInfo.customerId && saleOrderInfo.customerId!=0">请选择客户</span>
+            <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
+          </div>
+        </li>
+        <li @click="goStore">
+          <div class="list_left">
+            仓库<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
+          </div>
+          <div class="list_right " >
+            <span class="ellipsis" v-if="saleOrderInfo.warehouseName">{{saleOrderInfo.warehouseName}}</span>
+            <span v-if="!saleOrderInfo.warehouseName">请选择供仓库</span>
+            <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
+          </div>
+        </li>
+      <li @click="toAccount">
+          <div class="list_left">
+            结算账户<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
+          </div>
+          <div class="list_right">
+            <span v-if="!saleOrderInfo.settleAccountId">请选择结算账户</span>
+            <span v-if="saleOrderInfo.settleAccountId">{{saleOrderInfo.settleAccountName}}</span>
+            <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
+          </div>
+        </li>
+      </ul>
+      <ul>
+        <li style="padding-right: 0.58rem" @click="goGoods">
+          <div class="list_left">
+            选择商品
+          </div>
+          <div class="list_right" v-if="saleOrderInfo.status!=2&&saleOrderInfo.status!=3">
+            <i class="iconfont icon-iconjia" style="font-size: 20px;font-weight: 900"></i>
+          </div>
+        </li>
+        <li class="good-con" v-if="saleOrderInfo.showGoodsList&&saleOrderInfo.showGoodsList.length!=0">
+          <div class="good-list goods-tit">
+            <span>名称</span>
+            <span>单价</span>
+            <span>数量</span>
+            <span>总价</span>
+          </div>
+          <!-- <div  v-for="(buyGoods,index2) in saleOrderInfo.buyGoods">
+            <div class="good-list" v-for="(list,index) in buyGoods.stockVos.length" v-if="buyGoods.stockVos[index].quantity!=0">
+              <span>{{buyGoods.stockVos[index].name}}</span>
+              <span>￥<input type="number" v-model="buyGoods.stockVos[index].buyAmount" @input="getTotal"></span>
+              <span><input type="number" v-model="buyGoods.stockVos[index].quantity" @input="getTotal"></span>
+              <span>{{Number(buyGoods.stockVos[index].buyAmount)*Number(buyGoods.stockVos[index].quantity)}}</span>
+            </div>
+          </div> -->
 
-        <div  class="good-list list" v-for="(buyGoods,index) in saleOrderInfo.showGoodsList" >
-          <span>{{buyGoods.goodsName}}</span>
-          <span>￥<input type="number" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.unitAmount" @input="getTotal"></span>
-          <span><input type="number" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.quantity" @input="getTotal"></span>
-          <span>{{Number(buyGoods.unitAmount)*Number(buyGoods.quantity)}}</span>
-          <span class="list-option iconfont icon-jian jian-goods" v-if="saleOrderInfo.status!=2&&saleOrderInfo.status!=3" @click="saleOrderInfo.showGoodsList.splice(index,1);getTotal()"></span>
+          <div  class="good-list list" v-for="(buyGoods,index) in saleOrderInfo.showGoodsList" >
+            <span>{{buyGoods.goodsName}}</span>
+            <span>￥<input type="number" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.unitAmount" @input="getTotal"></span>
+            <span><input type="number" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.quantity" @input="getTotal"></span>
+            <span>{{(Number(buyGoods.unitAmount)*Number(buyGoods.quantity)).toFixed(2)}}</span>
+            <span class="list-option iconfont icon-jian jian-goods" v-if="saleOrderInfo.status!=2&&saleOrderInfo.status!=3" @click="saleOrderInfo.showGoodsList.splice(index,1);getTotal()"></span>
+          </div>
+        </li>
+      </ul>
+      <ul>
+        <li>
+          <div class="list_left">
+            折扣 <i class="required" style="position:absolute;top:.4rem;left:.8rem">%</i>
+          </div>
+          <div class="list_right">
+            <input type="number" placeholder="未付" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="saleOrderInfo.discount" @input="getTotal">
+          </div>
+        </li>
+        <li @click="goWorker" >
+          <div class="list_left">
+            销售员<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
+          </div>
+          <div class="list_right" >
+            <span v-if="saleOrderInfo.saleId">{{saleOrderInfo.saleName}}</span>
+            <span v-if="!saleOrderInfo.saleId">请选择销售员</span>
+            <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
+          </div>
+        </li>
+        <li>
+          <div class="list_left">
+            业务日期
+          </div>
+          <div class="list_right">
+            <input type="date" placeholder="请选择日期" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="saleOrderInfo.bizDateStr">
+            <!-- <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i> -->
+          </div>
+        </li>
+        <li style="margin-bottom:0" @click="showPay = !showPay">
+          <div class="list_left">
+            支付方式
+          </div>
+          <div class="list_right">
+            <em class="iconfont icon-xiala2"></em>
+          </div>
+        </li>
+        <li style="margin-bottom:0" v-show="showPay">
+          <div class="list_left">
+            支付宝
+          </div>
+          <div class="list_right">
+            <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':saleOrderInfo.payType==0,'icon-danxuanweizhong':saleOrderInfo.payType!=0}" @click="(saleOrderInfo.payType!=0)?saleOrderInfo.payType=0:''"></em>
+          </div>
+        </li>
+        <li style="margin-bottom:0" v-show="showPay">
+          <div class="list_left">
+            微信
+          </div>
+          <div class="list_right">
+            <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':saleOrderInfo.payType==1,'icon-danxuanweizhong':saleOrderInfo.payType!=1}" @click="(saleOrderInfo.payType!=1)?saleOrderInfo.payType=1:''"></em>
+          </div>
+        </li>
+        <li style="margin-bottom:0" v-show="showPay">
+          <div class="list_left">
+            现金
+          </div>
+          <div class="list_right">
+            <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':saleOrderInfo.payType==2,'icon-danxuanweizhong':saleOrderInfo.payType!=2}" @click="(saleOrderInfo.payType!=2)?saleOrderInfo.payType=2:''"></em>
+          </div>
+        </li>
+        <li v-show="showPay">
+          <div class="list_left">
+            POS
+          </div>
+          <div class="list_right">
+            <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':saleOrderInfo.payType==3,'icon-danxuanweizhong':saleOrderInfo.payType!=3}" @click="(saleOrderInfo.payType!=3)?saleOrderInfo.payType=3:''"></em>
+          </div>
+        </li>
+      </ul>
+      <ul class="remark">
+        <li>
+          <div class="list_left">
+            <p>备注</p>
+            <!-- <input type="text" placeholder="请输入备注信息"> -->
+            <textarea :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="saleOrderInfo.memo" placeholder="请输入备注信息"></textarea>
+          </div>
+        </li>
+      </ul>
+      <div class="bottom" v-if="edit">
+        <div class="bottom_left">合计：<span>￥{{Number(saleOrderInfo.totalAmount).toFixed(2)}}</span></div>
+        <div class="bottom_right" v-if="saleOrderInfo.status!=3">
+          <span @click="submitOrder(1)" class="model" v-if="!saleOrderInfo.status||saleOrderInfo.status!=1" v-show="saleOrderInfo.status!=2">草稿</span> 
+          <span @click="submitOrder(2)" v-if="saleOrderInfo.status==1" >销售</span> 
+          <button :class="{returnGoods: false}" v-if="saleOrderInfo.status&&saleOrderInfo.status!=1" v-show="saleOrderInfo.status!=2" @click="submitOrder(2)">销售</button>
         </div>
-      </li>
-    </ul>
-    <ul>
-      <li>
-        <div class="list_left">
-          折扣 <i>%</i>
-        </div>
-        <div class="list_right">
-          <input type="number" placeholder="未付" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="saleOrderInfo.discount" @input="getTotal">
-        </div>
-      </li>
-      <li @click="goWorker" >
-        <div class="list_left">
-          销售员<i>*</i>
-        </div>
-        <div class="list_right" >
-          <span v-if="saleOrderInfo.saleId">{{saleOrderInfo.saleName}}</span>
-          <span v-if="!saleOrderInfo.saleId">请选择销售员</span>
-          <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
-        </div>
-      </li>
-      <li>
-        <div class="list_left">
-          业务日期
-        </div>
-        <div class="list_right">
-          <input type="date" placeholder="请选择日期" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="saleOrderInfo.bizDateStr">
-          <!-- <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i> -->
-        </div>
-      </li>
-      <li style="margin-bottom:0" @click="showPay = !showPay">
-        <div class="list_left">
-          支付方式
-        </div>
-        <div class="list_right">
-          <em class="iconfont icon-xiala2"></em>
-        </div>
-      </li>
-      <li style="margin-bottom:0" v-show="showPay">
-        <div class="list_left">
-          支付宝
-        </div>
-        <div class="list_right">
-          <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':saleOrderInfo.payType==0,'icon-danxuanweizhong':saleOrderInfo.payType!=0}" @click="(saleOrderInfo.status==1)?saleOrderInfo.payType=0:''"></em>
-        </div>
-      </li>
-      <li style="margin-bottom:0" v-show="showPay">
-        <div class="list_left">
-          微信
-        </div>
-        <div class="list_right">
-          <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':saleOrderInfo.payType==1,'icon-danxuanweizhong':saleOrderInfo.payType!=1}" @click="(saleOrderInfo.status==1)?saleOrderInfo.payType=1:''"></em>
-        </div>
-      </li>
-      <li style="margin-bottom:0" v-show="showPay">
-        <div class="list_left">
-          现金
-        </div>
-        <div class="list_right">
-          <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':saleOrderInfo.payType==2,'icon-danxuanweizhong':saleOrderInfo.payType!=2}" @click="(saleOrderInfo.status==1)?saleOrderInfo.payType=2:''"></em>
-        </div>
-      </li>
-      <li v-show="showPay">
-        <div class="list_left">
-          POS
-        </div>
-        <div class="list_right">
-          <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':saleOrderInfo.payType==3,'icon-danxuanweizhong':saleOrderInfo.payType!=3}" @click="(saleOrderInfo.status==1)?saleOrderInfo.payType=3:''"></em>
-        </div>
-      </li>
-    </ul>
-    <ul class="remark">
-      <li>
-        <div class="list_left">
-          <p>备注</p>
-          <!-- <input type="text" placeholder="请输入备注信息"> -->
-          <textarea :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="saleOrderInfo.memo" placeholder="请输入备注信息"></textarea>
-        </div>
-      </li>
-    </ul>
-    <div class="bottom" v-if="edit">
-      <div class="bottom_left">合计：<span>￥{{saleOrderInfo.totalAmount}}</span></div>
-      <div class="bottom_right" v-if="saleOrderInfo.status!=3">
-        <span @click="submitOrder(1)" v-if="!saleOrderInfo.status||saleOrderInfo.status!=1" v-show="saleOrderInfo.status!=2">草稿</span> 
-        <span @click="submitOrder(2)" v-if="saleOrderInfo.status==1" >销售</span> 
-        <button :class="{returnGoods: false}" v-if="saleOrderInfo.status&&saleOrderInfo.status!=1" v-show="saleOrderInfo.status!=2" @click="submitOrder(2)">销售</button>
-      </div>
 
-      <div class="bottom_right" v-if="saleOrderInfo.status==2">
-        <button :class="{returnGoods: false}" @click="cancel">撤销</button>
-      </div>
+        <div class="bottom_right" v-if="saleOrderInfo.status==2">
+          <button :class="{returnGoods: false}" @click="cancel">撤销</button>
+        </div>
 
-      <div class="bottom_right" v-if="saleOrderInfo.status==1">
-        <button :class="{returnGoods: false}" @click="deleteOrder">删除</button>
+        <div class="bottom_right" v-if="saleOrderInfo.status==1">
+          <button :class="{returnGoods: false}" @click="deleteOrder">删除</button>
+        </div>
       </div>
-    </div>
-    <div class="bottom" v-if="!edit">
-      <div class="bottom_left">合计：<span>￥{{saleOrderInfo.totalAmount}}</span></div>
-      <div class="bottom_right" >
-        <span @click="submitOrder(1)">草稿</span> 
-        <button :class="{returnGoods: false}"  v-show="saleOrderInfo.status!=1" @click="submitOrder(2)">销售</button>
+      <div class="bottom" v-if="!edit">
+        <div class="bottom_left">合计：<span>￥{{Number(saleOrderInfo.totalAmount).toFixed(2)}}</span></div>
+        <div class="bottom_right" >
+          <span @click="submitOrder(1)" class="model">草稿</span> 
+          <button :class="{returnGoods: false}"  v-show="saleOrderInfo.status!=1" @click="submitOrder(2)">销售</button>
+        </div>
       </div>
     </div>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
@@ -426,6 +428,23 @@
         height: 1rem;
         padding: 0 0.4rem;
         .list_left {
+            font-size: 0.3rem;
+            color: #444;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+        }
+        .list_right {
+            font-size: 0.26rem;
+            color: #ccc;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .list_left {
           font-size: 16px;
           color: #666666;
           i {
@@ -445,6 +464,9 @@
           input{
             background: #fff;
             text-align: right;
+          }
+          .check-icon{
+            font-size:.4rem;
           }
         }
       }
@@ -482,10 +504,13 @@
               width:30%;
             }
             &:nth-child(3){
-              width:20%;
+             width:12%;
+              input{
+                width:100%;
+              }
             }
             &:nth-child(4){
-              width:20%;
+              width:28%;
             }
             text-align: center;
             display: inline-block;
@@ -532,27 +557,35 @@
       justify-content: space-between;
       align-items: center;
       .bottom_left {
-        font-size: 14px;
+        font-size: .20rem;
         padding-left: 0.3rem;
+        text-align: left;
         span {
           color: #D38888;;
           margin-left: 0.14rem;
-          font-size: 16px;
+          font-size: .26rem
         }
       }
       .bottom_right {
         font-size: 16px;
         color: #A8A8A8;
         button {
-          width: 1.6rem;
+          float: right;
+          width: 50%;
           height: 0.98rem;
           background: #9FC894;
           color: #fff;
           font-size: 16px;
-          margin-left: 0.43rem;
+          // margin-left: 0.43rem;
           &.returnGoods {
             background: #E78787;
           }
+        }
+        .model{
+          @include wh(50%,.98rem);
+          float: left;
+          background: #F58095 ;
+          color:#fff;
         }
       }
     }

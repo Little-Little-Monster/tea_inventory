@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main">
     <head-top signin-up='msite' goBack="" :headTitle="title">
       <div slot="right" v-if="queryType!='storeGoodsNum'" class="iconfont icon-jia" @click="toAddAttr"></div>
       <div slot="back" class="goback" @click="goBackRoute">
@@ -354,7 +354,9 @@
   .check-icon {
     @include sc(.4rem, $green)
   }
-
+  .paddingTop{
+    margin-bottom: 1.2rem;
+  }
   .list {
     min-height: 1rem;
     height: auto;
@@ -381,7 +383,13 @@
         min-height: 1rem;
         height: 1rem;
         height: auto;
-        border-left:1px solid #ccc
+        border-left:1px solid #ccc;
+        .list-option{
+          right:.9rem;
+        }
+        .edit-option{
+          right:.5rem;
+        }
       }
     }
     .left-delete{
@@ -390,12 +398,9 @@
       }
     }
     .edit-option {
-      div{
-        padding:0 .2rem;
-      }
       i {
         @include sc(.4rem, #fff);
-        margin-left: .2rem;
+        margin: 0 .2rem;
       }
     }
   }

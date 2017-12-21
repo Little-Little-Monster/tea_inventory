@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="main">
     	<head-top goBack="" :headTitle="$route.query.employeeId?'编辑员工':'添加员工'">
             <!-- <div slot="right" >
                 <span class="save" @click="saveWorker">保存</span>
@@ -25,6 +25,18 @@
                 <span>电话</span>
                 <input type="text" placeholder="请输入联系电话" v-model="worker.mobile">
             </div>
+            <div class="list" @click="goStore">
+                <em class="required">*</em>
+                <span>门店</span>
+                <em class="store-name ellipsis">
+                    <i v-for="store in worker.storeIds">{{store.storeName}}，</i> 
+                </em>
+                <em class="list-option iconfont icon-qianjin"></em>
+            </div>
+            <div class="list" @click="worker.status==0?worker.status=1:worker.status=0">
+                <span>账户是否启用</span>
+                <em class="user-satus list-option iconfont " :class="{'icon-radio-checked':worker.status==1,'icon-danxuanweizhong':worker.status==0}"></em>
+            </div>
             <div class="list">
                 <span>性别</span>
                 <em class='list-option sex-con'>
@@ -36,6 +48,7 @@
                 <span>年龄</span>
                 <input type="number" placeholder="请输入年龄" v-model="worker.age">
             </div>
+            
             <div class="list" v-if="!employeeId">
                 <em class="required">*</em>
                 <span>密码</span>
@@ -46,18 +59,7 @@
                 <span>确认密码</span>
                 <input type="password" placeholder="请输入确认密码" v-model="secondPwd">
             </div>
-            <div class="list" @click="worker.status==0?worker.status=1:worker.status=0">
-                <span>账户是否启用</span>
-                <em class="user-satus list-option iconfont " :class="{'icon-radio-checked':worker.status==1,'icon-danxuanweizhong':worker.status==0}"></em>
-            </div>
-            <div class="list" @click="goStore">
-                <em class="required">*</em>
-                <span>门店</span>
-                <em class="store-name ellipsis">
-                    <i v-for="store in worker.storeIds">{{store.storeName}}，</i> 
-                </em>
-                <em class="list-option iconfont icon-qianjin"></em>
-            </div>
+            
             <div class=" memo">
                 <span>备注</span><br>
                 <textarea placeholder="请输入备注信息" v-model="worker.memo"></textarea>
@@ -317,8 +319,10 @@ export default {
         background: #fff;
         padding:.5rem .6rem;
         overflow: hidden;
+        height:auto;
         .role{
             width:50%;
+            height:auto;
             float: left;
             padding-bottom: .33rem;
             em{

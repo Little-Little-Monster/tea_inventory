@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="msite-con">
     <nav class="msite_nav paddingTop">
       <div class="swiper-container">
         <div class="swiper-wrapper">
@@ -13,40 +13,47 @@
               <img src="../../../images/msite_bg_2.png">
             </figure>
           </div>
+          <div class="swiper-slide food_types_container" :key="">
+            <figure>
+              <img src="../../../images/msite_bg_3.png">
+            </figure>
+          </div>
         </div>
         <div class="swiper-pagination"></div>
       </div>
-      <div class="search-goods">
+      <!-- <div class="search-goods">
         <input type="text" v-model="goodsName" placeholder="请输入商品名称">
         <em class="list-option iconfont icon-sousuo" @click="searchGoods"></em>
-      </div>
+      </div> -->
     </nav>
-    <section class="user-info">
-      <p class="user-name">
-         <i v-if="6<clock&&clock<=12">上午好,</i> 
-         <i v-if="12<clock&&clock<=18">下午好,</i> 
-         <i v-if="18<clock&&clock<=24">晚上好,</i> 
-         <i v-if="0<clock&&clock<=6">凌晨好,</i> 
-        {{userName}}
-      </p>
-      <div class="user-detail">
-        <div class="left">
-          <p>今日收益</p>
-          <span>{{date}}</span>
+    <div class="content">
+      <section class="user-info">
+        <p class="user-name">
+          <i v-if="6<clock&&clock<=12">上午好,</i> 
+          <i v-if="12<clock&&clock<=18">下午好,</i> 
+          <i v-if="18<clock&&clock<=24">晚上好,</i> 
+          <i v-if="0<clock&&clock<=6">凌晨好,</i> 
+          {{userName}}
+        </p>
+        <div class="user-detail">
+          <div class="left">
+            <p>今日收益</p>
+            <span>{{date}}</span>
+          </div>
+          <div class="right">
+            <span class="money"> ￥{{money.toFixed(2)}}</span>
+          </div>
         </div>
-        <div class="right">
-          <span class="money"> ￥{{money.toFixed(2)}}</span>
+      </section>
+      <div class="menu-con">
+        <div class="menu-item" v-if="menu.selected" v-for="menu in menuList" @click="$router.push({name:menu.routerCode,query:{fromPage:$route.name}})">
+          <p class="iconfont" :class="menu.icon"></p>
+          <p>{{menu.name}}</p>
         </div>
-      </div>
-    </section>
-    <div class="menu-con">
-      <div class="menu-item" v-if="menu.selected" v-for="menu in menuList" @click="$router.push({name:menu.routerCode,query:{fromPage:$route.name}})">
-        <p class="iconfont" :class="menu.icon"></p>
-        <p>{{menu.name}}</p>
-      </div>
-      <div class="menu-item more-icon"  @click="$router.push({name:'selMenu'})">
-        <p class="iconfont icon-menu" ></p>
-        <p></p>
+        <div class="menu-item more-icon"  @click="$router.push({name:'selMenu'})">
+          <p class="iconfont icon-menu" ></p>
+          <p></p>
+        </div>
       </div>
     </div>
   </div>
@@ -114,7 +121,10 @@
 </script>
 <style lang="scss" scoped>
   @import 'src/style/mixin';
-
+  .msite-con{
+    display: flex;
+    flex-direction: column;
+  }
   .msite_title {
     @include center;
     width: 50%;
@@ -135,6 +145,7 @@
     .swiper-container {
       @include wh(100%, auto);
       .swiper-pagination {
+        height:auto;
         bottom: 0.2rem;
       }
       img{
@@ -167,21 +178,27 @@
       }
     }
   }
-
+  .content{
+    flex:1;
+    overflow: auto;
+  }
   .user-info {
-    @include wh(100%, 2.4rem);
+    @include wh(100%, 2rem);
     margin-bottom: 0.1rem;
     background: #fff;
-    padding: 0.47rem 0.52rem 0 0.46rem;
+    padding: 0.27rem 0.52rem 0 0.46rem;
     .user-name {
       @include sc(.38rem, $text);
       font-weight: 600;
-      margin-bottom: .5rem;
+      margin-bottom: .2rem;
       i{
         font-weight: 600;
       }
     }
     .left {
+      float: left;
+      width:70%;
+      height:1rem;
       p {
         @include sc(.34rem, $text)
       }
@@ -190,6 +207,9 @@
       }
     }
     .right {
+      float: left;
+      width:30%;
+      height:1rem;
       span {
         @include sc(.42rem, $text)
       }
@@ -197,13 +217,17 @@
   }
 
   .menu-con {
-    background: #fff;
+    background: #fff!important;
+    flex:1;
     display: flex;
     flex-wrap: wrap;
     // overflow: auto;
     .menu-item {
+      background-color: #fff;
       width: 25%;
       height:1.5rem;
+      min-height:1.5rem;
+      height:auto;
       padding-top: 5%;
       p {
         text-align: center;

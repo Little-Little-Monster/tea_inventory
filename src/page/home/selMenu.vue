@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <div class="main">
     <head-top signin-up='msite' goBack="" head-title="选择菜单">
       <div slot="back" class="goback" @click="$router.go(-1)" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
-    <ul class="supplier_list paddingTop" :style="{'margin-bottom':chooseRule?'1rem':''}">
+    <ul class="supplier_list cneter-con" :style="{'margin-bottom':'1.2rem'}">
       <li class="supplier_info_list" v-for="menu in menuList">
         <div class="list_left">
           <h4 class="iconfont" :class=menu.icon ><span>{{menu.name}}</span></h4>
@@ -121,6 +121,7 @@
 </script>
 <style lang="scss" scoped>
   @import '../../../src/style/mixin';
+  @import '../../../src/style/common';
   .supplier_list{
     @include same_ul_style;
     .supplier_info_list{

@@ -30,6 +30,18 @@ export const get_today_money = (userId) => fetch('/api/invoicing/settle/account/
 
 export const save_menu = (menu) => fetch('/api/invoicing/store/menu/show/handler', menu, "POST");
 
+/**
+ * 今日结余查询
+ */
+
+export const get_today_account = (userId) => fetch('/api/invoicing/settle/account/query/today', { userId });
+
+/**
+ * 今日结余账户对应明细
+ */
+
+export const get_today_account_detail = (info) => fetch('/api/invoicing/settle/account/query/detail', info);
+
 
 /**
  * 手机号登录

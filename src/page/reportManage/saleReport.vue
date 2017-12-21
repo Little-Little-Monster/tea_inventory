@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="main">
     	<head-top signin-up='msite' goBack="" head-title="销售报表">
             <div slot="back" class="goback" @click="goBack" >
                 <span class="iconfont icon-fanhui title_text"></span>
@@ -193,7 +193,7 @@ export default {
             }
         };
         .list-option{
-            @include sc(.34rem,#E78787);
+            @include sc(.26rem,#E78787);
             right:.4rem;
         }
     }
@@ -235,7 +235,7 @@ export default {
                     @include sc(.28rem,$text_light)
                 }
                 &:nth-child(2){
-                    @include sc(.34rem,#E78787 )
+                    @include sc(.28rem,#E78787 )
                 }
             }
         }

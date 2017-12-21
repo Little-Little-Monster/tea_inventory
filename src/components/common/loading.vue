@@ -29,6 +29,14 @@
 
 <style lang="scss" scoped>
     @import '../../style/mixin';
+	// .loda-main{
+	// 	@include wh(100%,100%);
+	// 	position: fixed;
+    // 	top: 0;
+    // 	left: 0;
+	// 	background: #ccc;
+	// 	overflow: hidden;
+	// }
 	@keyframes load{
 		0%   {transform: translateY(0px);}
 		50%  {transform: translateY(-50px);}

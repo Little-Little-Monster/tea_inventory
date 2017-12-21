@@ -1,5 +1,5 @@
 <template>
-  <div class="storehouse_list">
+  <div class="storehouse_list main">
     <head-top signin-up='msite' goBack="" head-title="仓库管理">
       <router-link v-if="!chooseWareHouse" slot="right" class="iconfont icon-jia" :to="{name:'addEditStorehouse'}"></router-link>
       <div slot="back" class="goback" @click="goBack" >
@@ -7,28 +7,31 @@
       </div>
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
-    <div class="storehouse-header paddingTop">
-      <div class="left_button">已启用 <span v-show="enable"></span></div>
-      <div class="right_button">已停用 <span v-show="!enable"></span></div>
-    </div>
-    <ul class="storehouse_content" :style="{'margin-bottom':chooseWareHouse?'1rem':''}">
-      <li class="supplier_info_list" v-for="list in storeHousList" @click="editHouse(list)">
-       <left-slider class="parentType" :index="list.warehouseId" @swipe="swipe" @swipeRight="inputIndex=-1">
-          <div class="list_left">
-          <h4>{{list.warehouseName}}</h4>
-            <p>负责人：<span>{{list.warehouseHeadName}}</span></p>
-            <p>门店：{{list.storeName}}</p>
-          </div>
-          <div class="list_right">
-            <i class="iconfont icon-qianjin list-option" v-if="!chooseWareHouse&&inputIndex!=list.warehouseId"></i>
-            <em v-if="chooseWareHouse" class="iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.warehouseId,'icon-danxuanweizhong':chooseId!=list.warehouseId}" @click="chooseId=list.warehouseId;chooseName=list.warehouseName;storeId=list.storeId"></em>
-            <div  :class="{'option-con-list':!chooseWareHouse&&inputIndex==list.warehouseId,'option-none':!(!chooseWareHouse&&inputIndex==list.warehouseId)}" >
-                <span @click="deleteWearhouse(list.warehouseId)">删除</span>
+    <div class="cneter-con">
+      <div class="storehouse-header  paddingTop">
+        <div class="left_button" @click="flag=1">已启用 <span v-show="flag==1"></span></div>
+        <div class="right_button"  @click="flag=0">已停用 <span v-show="flag==0"></span></div>
+      </div>
+      <ul class="storehouse_content" :style="{'margin-bottom':chooseWareHouse?'1rem':''}">
+        <li class="supplier_info_list" v-for="list in storeHousList" @click="editHouse(list)" v-show="flag==list.status">
+        <left-slider class="parentType" :index="list.warehouseId" @swipe="swipe" @swipeRight="inputIndex=-1">
+            <div class="list_left">
+            <h4>{{list.warehouseName}}</h4>
+              <p>负责人：<span>{{list.warehouseHeadName}}</span></p>
+              <p>门店：{{list.storeName}}</p>
             </div>
-          </div>
-       </left-slider>
-      </li>
-    </ul>
+            <div class="list_right">
+              <i class="iconfont icon-qianjin list-option" v-if="!chooseWareHouse&&inputIndex!=list.warehouseId"></i>
+              <em v-if="chooseWareHouse" class="iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.warehouseId,'icon-danxuanweizhong':chooseId!=list.warehouseId}" @click="chooseId=list.warehouseId;chooseName=list.warehouseName;storeId=list.storeId"></em>
+              <div  :class="{'option-con-list':!chooseWareHouse&&inputIndex==list.warehouseId,'option-none':!(!chooseWareHouse&&inputIndex==list.warehouseId)}" >
+                  <span @click="deleteWearhouse(list.warehouseId)">删除</span>
+              </div>
+            </div>
+        </left-slider>
+        </li>
+      </ul>
+    </div>
+    
     <div class="bottom" v-if="chooseWareHouse" @click="save">
         保存
     </div>
@@ -48,7 +51,7 @@
       return {
         imgPath: 'static/images/head.png',
         storeHousList:null,
-        enable:true,
+        flag:1,
         chooseWareHouse:this.$route.query.chooseWareHouse,
         fromPage:this.$route.query.fromPage,
         chooseId:-1,
@@ -233,13 +236,14 @@
       justify-content: space-between;
       background: #fff;
       height: 0.8rem;
-      padding: 0 1.5rem;
+      padding: 0 0.5rem;
       font-size: 0.32rem;
       margin-bottom: 1px;
       div{
         position: relative;
         height: 0.8rem;
         line-height: 0.8rem;
+        text-align: center;
         span{
           position: absolute;
           bottom: 0;
@@ -260,18 +264,16 @@
         overflow: hidden;
         padding-right:0;
         .parentType{
-          .move{
-            display: flex;
-          }
           @include wh(100%,100%);
+          
           .list_left{
             float: left;
-            width:90%;
+            width:80%;
             margin-top:.5rem;
             h4{
               color: #444;
               font-size: 0.32rem;
-              margin-bottom: 0.2rem;
+              margin-bottom: 0.35rem;
             }
             p{
               font-size: 0.24rem;
@@ -279,10 +281,15 @@
               &:nth-child(2){
                 margin-bottom: 0.1rem;
               }
+              span{
+                color:inherit;
+              }
             }
           }
           .list_right{
-            float: left;
+            float: right;
+            margin-right:.3rem;
+            width:auto;
             text-align: right;
             line-height:2.2rem;
             i{

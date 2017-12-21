@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="main">
     	<head-top signin-up='msite' goBack="" :headTitle="goodsInfo.id?'编辑商品':'添加商品'">
             <div slot="back" class="goback" @click="returnBack" >
                 <span class="iconfont icon-fanhui title_text"></span>
@@ -10,7 +10,7 @@
             <ul class="add_edit_header">
                 <li>
                     <div class="list_left">
-                    名称 <i>*</i>
+                    名称 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
                     </div>
                     <div class="list_right">
                         <input type="text" v-model="goodsInfo.name" placeholder="由数字或字母组成" style="width: 2.99rem;">
@@ -18,7 +18,7 @@
                 </li>
                 <li class="margin-bot">
                     <div class="list_left">
-                    货号 <i>*</i>
+                    货号 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
                     </div>
                     <div class="list_right">
                         <input type="text" v-model="goodsInfo.idCard" placeholder="货号唯一，保存后不能修改" style="width: 3.99rem;">
@@ -26,7 +26,7 @@
                 </li>
                 <li>
                     <div class="list_left">
-                    采购价 <i>*</i>
+                    采购价 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
                     </div>
                     <div class="list_right">
                         <input type="number" step="0.01" v-model="goodsInfo.buyAmount" placeholder="￥0.00" style="width: 2.99rem;">
@@ -34,7 +34,7 @@
                 </li>
                 <li class="margin-bot">
                     <div class="list_left">
-                    销售价 <i>*</i>
+                    销售价 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
                     </div>
                     <div class="list_right">
                         <input type="number" step="0.01" v-model="goodsInfo.saleAmount" placeholder="￥0.00" style="width: 2.99rem;">
@@ -42,7 +42,7 @@
                 </li>
                 <li>
                     <div class="list_left">
-                    净含量 <i>*</i>
+                    净含量 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
                     </div>
                     <div class="list_right">
                         <input type="number" step="0.01" v-model="goodsInfo.modelSize" placeholder="0.00" style="width: 2.99rem;">
@@ -73,6 +73,7 @@
                     商品图片 <i></i>
                     </div>
                     <div class="list_right">
+                        <img :src="imgUrl" alt="">
                         <i class="iconfont icon-jia" @click="$refs.input.click()" style="font-size:.4rem;font-weight:600;color:#999;position: relative;top: 1px;"></i>
                         <input type="file" ref="input" :value="files" v-show="" class="file-input" id="file-input" @change="getFile($event)">
                     </div>
@@ -153,6 +154,7 @@ import {save_goods,get_goods_info} from 'src/service/getData'
 import headTop from 'src/components/header/head'
 import kswitch from 'src/components/common/kswitch'
 import alertTip from '../../components/common/alertTip'
+import { baseUrl} from '../../config/env'
 
 export default {
 	data(){
@@ -165,7 +167,8 @@ export default {
             upLimit:0,
             downLimit:0,
             files:null,
-            file:null
+            file:null,
+            imgUrl:''
         }
     },
     created(){
@@ -231,7 +234,7 @@ export default {
             this.showAlert = true;
             this.alertText = text;
         },
-        getFile(event) {
+        async getFile(event) {
             if(event.target.files[0]){
                 this.file = event.target.files[0];
                 console.log(this.file);
@@ -241,26 +244,35 @@ export default {
                         name:'请选择图片!'
                     }
                     this.showTip(this.file.name)
+                    return;
                 }else if(this.file.size/1024/1024>2){
                     this.file={
                         name:'文件不能超过2M'
                     }
                     this.showTip(this.file.name)
+                    return;
+                    
                 }
                 let formData = new FormData();
                 formData.append('files',this.file);
                 formData.append('type','application/octet-stream');
 
-                fetch('/api/invoicing/image/file/upload', {
+                fetch(baseUrl+'/api/invoicing/image/file/upload', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'multipart/form-data;charset=utf-8',
-                    },
                     body: formData,
                 }).then((res)=>{
-                    console.log(res)
+                    let resJson = res.json()
+                    resJson.then((res2)=>{
+                            if(res2.code==200){
+                            this.imgUrl = res2.data.path;
+                        }else{
+                            this.showTip(res2.message)
+                        }
+                    }).catch((err)=>{
+                        this.showTip(err.message)
+                    })
                 }).catch((err)=>{
-                    console.log(err)
+                    this.showTip(err.message)
                 })
             }
         },
@@ -336,6 +348,23 @@ export default {
           text-align: right;
         }
         .list_left {
+            font-size: 0.3rem;
+            color: #444;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+        }
+        .list_right {
+            font-size: 0.26rem;
+            color: #ccc;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+        }
+        .list_left {
           font-size: 0.32rem;
           color: #666666;
           i {
@@ -355,6 +384,11 @@ export default {
           span {
             color: #999999;
             font-size: 0.28rem;
+          }
+          img{
+              width:1rem;
+              height:1rem;
+              align-items: flex-start;
           }
         }
       }

@@ -1,12 +1,14 @@
 <template>
-  <div>
-    <head-top signin-up='msite' goBack="true" :head-title="$route.query.id?'编辑盘点':'添加盘点'">
-      <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
+  <div class="main">
+    <head-top signin-up='msite' goBack="" :head-title="$route.query.id?'编辑盘点':'添加盘点'">
+      <div slot="back" class="goback" @click="$router.push({name:'warehouseStock'})" >
+        <span class="iconfont icon-fanhui title_text"></span>
+      </div>
     </head-top>
-    <ul class="add-edit-upplier paddingTop">
+    <ul class="add-edit-upplier paddingTop cneter-con">
       <li @click="getWearhouse">
         <div class="list_left">
-          仓库 <i>*</i>
+          仓库 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
           <span v-if="stockInfo.warehouseId">{{stockInfo.warehouseName}}</span>
@@ -15,7 +17,7 @@
         </div>
       </li>
       <li class="memo">
-        <div class="list_left">
+        <div>
           备注
         </div>
         <textarea v-model="stockInfo.memo" :readonly="status==2" placeholder="请输入备注"></textarea>
@@ -36,7 +38,7 @@
         </div>
         <div class="goods-list" v-for="(goods,index) in stockInfo.inventoryGoods">
           <span>{{goods.goodsName}}</span>
-          <span>{{goods.unitAmount}}</span>
+          <span>{{Number(goods.unitAmount).toFixed(2)}}</span>
           <span><input type="number"  v-model="goods.quantity" @input="getTotal"></span>
           <span>{{goods.currQuantity}}</span>
           <i class="list-option iconfont icon-jian jian-goods"  v-if="status!=2" @click="stockInfo.inventoryGoods.splice(index,1);getTotal()"></i>
@@ -46,8 +48,8 @@
     <div class="bottom">
       <div class="bottom_left">总量：<span>{{stockInfo.totalQuantity}}</span></div>
       <div class="bottom_right" v-if="status!=2">
-        <span @click="addStock(1)" v-if="status!=1">草稿</span> 
-        <span @click="deleteStock" v-if="status==1">删除</span> 
+        <span @click="addStock(1)" class="model" v-if="status!=1">草稿</span> 
+        <span @click="deleteStock" class="model" v-if="status==1">删除</span> 
         <button :class="{returnGoods: false}" @click="addStock(2)">盘点</button>
       </div>
     </div>
@@ -197,6 +199,23 @@
         }
       }
       .list_left {
+            font-size: 0.3rem;
+            color: #444;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+        }
+        .list_right {
+            font-size: 0.26rem;
+            color: #ccc;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+        }
+      .list_left {
         font-size: 0.32rem;
         color: #666666;
         i{
@@ -218,6 +237,9 @@
       }
     }
     .memo{
+      div{
+        height:auto;
+      }
       height: 2rem;
       flex-wrap: wrap;
       textarea{
@@ -289,27 +311,35 @@
       justify-content: space-between;
       align-items: center;
       .bottom_left {
-        font-size: 14px;
+        font-size: .20rem;
         padding-left: 0.3rem;
+        text-align: left;
         span {
           color: #D38888;;
           margin-left: 0.14rem;
-          font-size: 16px;
+          font-size: .26rem
         }
       }
       .bottom_right {
         font-size: 16px;
         color: #A8A8A8;
         button {
-          width: 1.6rem;
+          float: right;
+          width: 50%;
           height: 0.98rem;
           background: #9FC894;
           color: #fff;
           font-size: 16px;
-          margin-left: 0.43rem;
+          // margin-left: 0.43rem;
           &.returnGoods {
             background: #E78787;
           }
+        }
+        .model{
+          @include wh(50%,.98rem);
+          float: left;
+          background: #F58095 ;
+          color:#fff;
         }
       }
     }

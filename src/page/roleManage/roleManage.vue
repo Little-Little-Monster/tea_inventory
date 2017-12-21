@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main">
     <head-top signin-up='msite' goBack="" head-title="角色管理">
       <span v-if="!chooseRule" slot="right" class="iconfont icon-jia" @click="$router.push({name:'addRole'})" ></span>
       <div slot="back" class="goback" @click="goBack" >
@@ -7,7 +7,7 @@
       </div>
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
-    <ul class="supplier_list paddingTop" :style="{'margin-bottom':chooseRule?'1rem':''}">
+    <ul class="supplier_list paddingTop cneter-con" :style="{'margin-bottom':chooseRule?'1rem':''}">
       <li class="supplier_info_list" v-for="list in roleList" @click="editRole(list.id,list.roleName,list.memo)">
         <div class="list_left">
           <h4>{{list.roleName}}</h4>
@@ -137,6 +137,23 @@
     .supplier_info_list{
       height: 1.6rem;
       padding: 0 0.2rem 0 0.4rem;
+      .list_left {
+            font-size: 0.3rem;
+            color: #444;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+        }
+        .list_right {
+            font-size: 0.26rem;
+            color: #ccc;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+        }
       .list_left{
         h4{
           font-size: 0.32rem;
@@ -146,6 +163,7 @@
         p{
           font-size: 0.24rem;
           color: #999999;
+          width:180%;
           span{
             color: #999999;
           }

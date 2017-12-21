@@ -13,6 +13,11 @@
               <img src="../../../images/msite_bg_2.png">
             </figure>
           </div>
+          <div class="swiper-slide food_types_container" :key="">
+            <figure>
+              <img src="../../../images/msite_bg_3.png">
+            </figure>
+          </div>
         </div>
         <div class="swiper-pagination"></div>
       </div>
@@ -22,11 +27,11 @@
       </div> -->
     </nav>
     <ul class="sensus_ul sensus_header">
-      <li>
-        <div class="li_left"><i class="iconfont icon-pandiandanliebiao"></i>今天结余</div>
-        <div class="li_right">收支明细、记账 <i class="iconfont icon-qianjin"></i></div>
+      <li @click="$router.push({name:'todayAccount'})">
+        <div class="li_left"><i class="iconfont icon-zhouqipandianmingxi"></i>今日结余</div>
+        <div class="li_right" style="text-align:right">收支明细、记账 <i class="iconfont icon-qianjin"></i></div>
       </li>
-      <!-- <li class="sensus_ul_detail">
+      <!-- <li class="sensus_ul_detail"> 
         <div class="li_left">
           <p><i class="iconfont icon-pandiandanliebiao"></i>客户对账</p>
           <span>欠款对账、收款月结</span>
@@ -41,13 +46,13 @@
     <ul class="sensus_ul sensus_content">
       <li @click="$router.push({name:'saleReport'})">
         <div class="li_left">
-          <p><i class="iconfont icon-pandiandanliebiao"></i>销售报表</p>
+          <p><i class="iconfont icon-xiaoshoubaobiao"></i>销售报表</p>
           <p>今日销售<span class="number"> {{saleInfo.size}}</span> 笔<b></b>销售金额<span class="price"> ￥{{saleInfo.totalAmount}}</span></p>
         </div>
       </li>
       <li @click="$router.push({name:'buyReport'})">
         <div class="li_left">
-          <p><i class="iconfont icon-pandiandanliebiao"></i>采购报表</p>
+          <p><i class="iconfont icon-caigoubaobiao"></i>采购报表</p>
           <p>今日采购<span class="number"> {{buyInfo.size}}</span> 笔<b></b>采购金额<span class="price"> ￥{{buyInfo.totalAmount}}</span></p>
         </div>
       </li>
@@ -137,7 +142,12 @@
       display: block;
     }
   }
-
+.iconfont{
+              @include sc(.34rem,#97D4BF);
+              position: relative;
+              // bottom:.1rem;
+              margin-right:.2rem
+             }
   .msite_nav {
     background-color: #fff;
     border-bottom: 0.025rem solid $bc;
@@ -146,6 +156,7 @@
       @include wh(100%, auto);
       .swiper-pagination {
         bottom: 0.2rem;
+        height:auto;
       }
       img{
         width:100%;
@@ -185,6 +196,9 @@
         padding-left: 0.31rem;
         i:not(.icon-qianjin){
           margin-right: 0.15rem;
+        }
+        &>div{
+          padding-top:.54rem;
         }
         &.sensus_ul_detail{
           padding: 0;

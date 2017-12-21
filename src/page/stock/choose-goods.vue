@@ -1,5 +1,5 @@
 <template>
-  <div class="choose_goods">
+  <div class="choose_goods main">
     <head-top signin-up='msite' goBack="" head-title="选择商品">
       <div slot="back" class="goback" @click="toAddress({name:fromPage})" >
           <span class="iconfont icon-fanhui title_text"></span>
@@ -11,7 +11,7 @@
           <li :class="{'active':typeShow==index}" @click="typeShow=index">{{goodstype.goodsClassficationName}}</li>
         </ul>
       </div>
-      <div class="goods_classify_list">
+      <div class="goods_classify_list cneter-con ">
         <ul v-if="goodsList.length!=0">
           <li v-for="goods in goodsList[typeShow].stockVos">
             <div class="goods_pic">
@@ -76,8 +76,10 @@
     created(){
       if(this.stockState.stockGoods && this.stockState.stockGoods.length!=0){
         this.goodsList = this.stockState.stockGoods;
-      }else{
+      }else if(this.stockState.warehouseId){
         this.getGoodsList();
+      }else{
+        this.toAddress({name:this.$route.query.fromPage})
       }
     },
     mounted(){
@@ -218,31 +220,38 @@
             height: 2.4rem;
             background: #fff;
             margin-bottom: 1px;
-            padding: 0.2rem 0 0.2rem 0.33rem;
+            padding: 0.5rem 0 0.2rem 0.33rem;
             display: flex;
             justify-content: flex-start;
             .goods_pic {
               width: 1.4rem;
               height: 1.4rem;
               background: #D8D8D8;
-              margin-right: 0.3rem;
             }
             .goods_info {
               color: #999;
+              flex:1;
               font-size: 12px;
+              padding-left: 0.3rem;
               h3 {
                 font-size: 16px;
-                color: #444444;
+                color: #97D4BF ;
                 line-height: 0.45rem;
                 margin-bottom: 0.2rem;
               }
-              p {
-                margin-bottom: 0.1rem;
+              p:nth-child(4){
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height:.6rem;
                 .price {
                   color: #E78787;
+                  flex:2
                 }
                 .iconfont{
                   color:$green;
+                  flex:1;
+                  text-align: center;
                 }
               }
               .quantity{
@@ -251,7 +260,9 @@
                 @include borderRadius(.4rem);
                 text-align: center;
                 width:1rem;
-                margin:.1rem .2rem;
+                height:.4rem;
+                line-height:.6rem;
+                // margin:.1rem .2rem;
               }
             }
           }

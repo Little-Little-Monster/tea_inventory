@@ -50,10 +50,11 @@
     }
     #head_top{
         background-color: $black;
-        position: fixed;
-        z-index: 100;
-        left: 0;
-        top: 0;
+        // position: fixed;
+        // z-index: 100;
+        // left: 0;
+        // top: 0;
+        position: relative;
         @include wh(100%, 0.88rem);
         line-height: 0.88rem;
     }
@@ -90,13 +91,17 @@
         }
     }
     .right{
-        right: .2rem;
+        right: .1rem;
         @include ct;
-        height: 100%;
+        height: .8rem;
+        width:.8rem;
         text-align: center;
         span{
             @include sc(0.34rem, #fff);
             line-height: 100%;
         };
+        .icon-jia{
+            font-size:.4rem;
+        }
     }
 </style>

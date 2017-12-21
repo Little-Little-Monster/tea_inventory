@@ -1,15 +1,24 @@
 <template>
-  <div>
+  <div class="main">
     <head-top signin-up='msite' goBack="true" :head-title="$route.query.id?'编辑供应商':'新增供应商'">
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
-    <ul class="add-edit-upplier paddingTop">
+    <ul class="add-edit-upplier cneter-con paddingTop">
       <li>
         <div class="list_left">
-          名称 <i>*</i>
+          名称 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
           <input type="text" v-model="userInfo.name" placeholder="请输入负责人名称" style="width: 2.27rem;">
+        </div>
+      </li>
+      <li>
+        <div class="list_left">
+          手机
+          <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
+        </div>
+        <div class="list_right">
+          <input type="mobile" v-model="userInfo.mobile" placeholder="请输入手机号码" style="width: 1.99rem;">
         </div>
       </li>
       <li>
@@ -36,14 +45,7 @@
           <kswitch :checked="enable" @click.native="enable=!enable"></kswitch>
         </div>
       </li>
-      <li>
-        <div class="list_left">
-          手机
-        </div>
-        <div class="list_right">
-          <input type="mobile" v-model="userInfo.mobile" placeholder="请输入手机号码" style="width: 1.99rem;">
-        </div>
-      </li>
+      
       <li>
         <div class="list_left">
           电话
@@ -146,8 +148,26 @@
         }
       }
       .list_left {
+            font-size: 0.3rem;
+            color: #444;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+        }
+        .list_right {
+            font-size: 0.26rem;
+            color: #ccc;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+        }
+      .list_left {
         font-size: 0.32rem;
         color: #666666;
+        cneter-con
         i{
           position: relative;
           top: 3px;

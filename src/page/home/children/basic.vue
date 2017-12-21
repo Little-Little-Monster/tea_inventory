@@ -12,23 +12,38 @@
         </section>
         <section class="option-con">
             <div class="option-list" @click="toAddress({name:'store'})">
-                <span>门店管理</span>
+                <span>
+                    <i class="iconfont icon-mendianguanli"></i>
+                    门店管理
+                </span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
             <div class="option-list" @click="toAddress({name:'worker'})">
-                <span>员工管理</span>
+                <span> 
+                    <i class="iconfont icon-kehuguanli"></i>
+                    员工管理
+                </span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
             <div class="option-list" @click="toAddress({name:'supplierList'})">
-                <span>供应商管理</span>
+                <span> 
+                    <i class="iconfont icon-gongyingshangguanli"></i>
+                    供应商管理
+                </span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
             <div class="option-list" @click="toAddress({name: 'storehouseList'})">
-                <span>仓库管理</span>
+                <span>
+                     <i class="iconfont icon-depot1"></i>
+                     仓库管理
+                </span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
             <div class="option-list" @click="toAddress({name: 'accountManage'})">
-                <span>账户管理</span>
+                <span> 
+                    <i class="iconfont icon-account"></i>
+                    账户管理
+                </span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
             <!-- <div class="option-list">
@@ -97,14 +112,18 @@ export default {
 
         .user-head{
             @include wh(27%,100%);
+            position: relative;
             img{
                 @include center;
+                @include wh(1.5rem,1.5rem);
+                // @include borderRadius(50%)
             }
         }
         .info{
             position: relative;
             float: left;
-            @include wh(73%,100%);
+            margin-left:3%;
+            @include wh(70%,100%);
             p{
                 &:nth-child(1){
                     @include sc(.24rem,$text_light);
@@ -130,12 +149,17 @@ export default {
         .option-name{
             @include sc(.32rem,$text)
         }
+        i{
+            @include sc(.4rem,#97D4BF);
+            margin-right:.2rem;
+        }
     }
     .login-out{
         @include wh(80%,.8rem);
-        background: #EF2A14;
+        background: #F58095;
         margin:0 auto;
         margin-top:.2rem;
+        margin-bottom:.2rem;
         @include borderRadius(1rem);
         text-align: center;
         line-height: .8rem;

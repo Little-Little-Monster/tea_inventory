@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="main">
     	<head-top signin-up='msite' goBack="" head-title="选择客户分类">
             <router-link slot="right" class="iconfont icon-jia" :to="{name:'addCustomerType'}"></router-link>
             <span slot="back" @click="pushStore">
@@ -12,6 +12,9 @@
                 <span>{{list.name}}</span>
                 <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click.stop="chooseId=list.id;chooseName=list.name"></em>
             </div>
+        </div>
+        <div @click="pushStore" class="bottom">
+        保存
         </div>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
     </div>    

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="main">
     	<head-top goBack="true" :headTitle="$route.query.id?'编辑门店':'添加门店'">
 
     	</head-top>

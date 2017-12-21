@@ -1,19 +1,19 @@
 <template>
-  <div>
+  <div class="main">
     <head-top signin-up='msite' goBack="true" :head-title="$route.query.roleId?'编辑角色':'添加角色'">
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
-    <ul class="add-edit-upplier paddingTop">
+    <ul class="add-edit-upplier cneter-con paddingTop">
       <li>
         <div class="list_left">
-          角色名称 <i>*</i>
+          角色名称 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
           <input type="text" v-model="userInfo.roleName" placeholder="请输入角色名称" style="width: 2.27rem;">
         </div>
       </li>
       <li class="memo">
-        <div class="list_left">
+        <div class="memo-tit">
           备注
         </div>
         <textarea placeholder="请输入备注" v-model="userInfo.memo"></textarea>
@@ -21,7 +21,7 @@
       <li class="tip">
         提示：员工的角色权限修改后，需要重新登录才能生效。部分权限
         仅当登录电脑版时有效，如首页、采购订单、销售订单等功能仅在
-        å电脑版使用。
+        电脑版使用。
       </li>
       <li>
         <div class="list_left">
@@ -192,6 +192,23 @@
         }
       }
       .list_left {
+            font-size: 0.3rem;
+            color: #444;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+        }
+        .list_right {
+            font-size: 0.26rem;
+            color: #ccc;
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+            align-items: center;
+        }
+      .list_left {
         font-size: 0.32rem;
         color: #666666;
         i{
@@ -212,6 +229,9 @@
     .memo{
       height: 2rem;
       flex-wrap: wrap;
+      .memo-tit{
+        height:auto;
+      }
       textarea{
         width:100%;
         height:60%;
@@ -282,6 +302,8 @@
             .sub-option{
               position: absolute;
               right:.4rem;
+              width:auto;
+              height:auto;
               @include ct;
             }
           }

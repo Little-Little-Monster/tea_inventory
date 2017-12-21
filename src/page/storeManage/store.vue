@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="main">
     	<head-top signin-up='msite' goBack="" head-title="门店管理">
             <router-link v-if="!$route.query.getStore" slot="right" class="iconfont icon-jia" :to="{name:'storeOption'}"></router-link>
             <span slot="back" @click="goBack">
@@ -105,7 +105,7 @@ export default {
                                 }
                             });
                         }else{
-                            if(this.$route.query.fromPage='addBalanceAccount'){
+                            if(this.$route.query.fromPage=='addBalanceAccount'){
                                 //结算账户选择门店
                                 this.singleId = this.customer.storeId
                                 this.singleName = this.customer.storeName

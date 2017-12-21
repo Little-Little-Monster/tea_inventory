@@ -1,5 +1,5 @@
 <template>
-  <div class="customer-list paddingTop">
+  <div class="customer-list main paddingTop">
     <head-top signin-up='msite' goBack="" head-title="全部分类">
       <router-link slot="right" class="iconfont icon-jia" v-if="!chooseCustomer" :to="{name:'addCustomer'}"></router-link>
       <div slot="back" class="goback" @click="goBack" >
@@ -7,26 +7,31 @@
       </div>
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
-    <ul class="customer-content" :style="{'margin-bottom':chooseCustomer?'1rem':''}">
-      <li class="supplier_info_list" v-for="list in customerList">
-        <left-slider class="parentType" :index="list.id" @swipe="swipe" @swipeRight="inputIndex=-1">
-          <div class="list_left">
-            <h4>{{list.name}}</h4>
-            <p>客户分类：{{list.customerClassName}}</p>
-            <p>客户欠款：￥0.00</p>
-          </div>
-          <div class="list_right" >
-            <i @click="$router.push({name:'addCustomer',query:{id: list.id}})" v-if="!chooseCustomer&&inputIndex!=list.id" class="iconfont icon-bianji"></i>
-            <span @click="$router.push({name:'addCustomer',query:{id: list.id}})" v-if="!chooseCustomer&&inputIndex!=list.id">编辑</span>
-            <em v-if="chooseCustomer" class="list-option iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click.stop="chooseId=list.id;balance=list.balance;chooseName=list.name"></em>
-            <div  :class="{'option-con-list':!chooseCustomer&&inputIndex==list.id,'option-none':!(!chooseCustomer&&inputIndex==list.id)}" >
-                <span @click="deleteCustomer(list.id)">删除</span>
+    <ul class="customer-content cneter-con" v-load-more="loaderMore" type="2" :style="{'margin-bottom':chooseCustomer?'1rem':''}">
+      <div style="auto">
+        <li class="supplier_info_list" v-for="list in customerList">
+          <left-slider class="parentType" :index="list.id" @swipe="swipe" @swipeRight="inputIndex=-1">
+            <div class="list_left">
+              <h4>{{list.name}}</h4>
+              <p>客户分类：{{list.customerClassName}}</p>
+              <p>客户欠款：￥0.00</p>
             </div>
-          </div>
-          
-        </left-slider>
-      </li>
+            <div class="list_right" >
+              <i @click="$router.push({name:'addCustomer',query:{id: list.id}})" v-if="!chooseCustomer&&inputIndex!=list.id" class="iconfont icon-bianji"></i>
+              <span @click="$router.push({name:'addCustomer',query:{id: list.id}})" v-if="!chooseCustomer&&inputIndex!=list.id">编辑</span>
+              <em v-if="chooseCustomer" class="list-option iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click.stop="chooseId=list.id;balance=list.balance;chooseName=list.name"></em>
+              <div  :class="{'option-con-list':!chooseCustomer&&inputIndex==list.id,'option-none':!(!chooseCustomer&&inputIndex==list.id)}" >
+                  <span @click="deleteCustomer(list.id)">删除</span>
+              </div>
+            </div>
+          </left-slider>
+        </li>
+        <p v-if="touchend" class="empty_data">没有更多了</p>
+      </div>
     </ul>
+     <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
     <div class="bottom" v-if="chooseCustomer" @click="save">
         保存
@@ -40,6 +45,8 @@
   import { get_customer,delete_customer } from 'src/service/getData';
   import LeftSlider from '../../components/common/slideLeft.vue';
   import alertTip from '../../components/common/alertTip'
+  import {loadMore} from 'src/components/common/mixin'
+  import loading from 'src/components/common/loading'
 
   export default {
     data(){
@@ -55,7 +62,13 @@
         chooseName:null,
         inputIndex:-1,
         showAlert:false,
-        alertText:''
+        alertText:'',
+        page:0,
+        pageSize:10,
+        preventRepeatReuqest: false, //到达底部加载数据，防止重复加载
+			  showBackStatus: false, //显示返回顶部按钮
+			  showLoading: true, //显示加载动画
+			  touchend: false, //没有更多数据
       }
     },
     created(){
@@ -69,8 +82,9 @@
     mounted(){
 
     },
+    mixins: [loadMore],
     components: {
-      headTop,LeftSlider,alertTip
+      headTop,LeftSlider,alertTip,loading
     },
     computed: {
       ...mapState([
@@ -89,19 +103,44 @@
           this.showAlert = true;
       },
       getCustomer(){
-        get_customer(this.userId,'',0,1000).then((res)=>{
+        get_customer(this.userId,'',this.page,this.pageSize).then((res)=>{
           this.customerList=res.data.info;
+          if (res.data.info.length < this.pageSize) {
+              this.touchend = true;
+            }
+            this.showLoading = false
         }).catch((err)=>{
 
         })
       },
+      //到达底部加载更多数据
+      async loaderMore(){
+        if (this.touchend) {
+          return
+        }
+        //防止重复请求
+        if (this.preventRepeatReuqest) {
+          return 
+        }
+        this.showLoading = true;
+        this.preventRepeatReuqest = true;
+        //数据的定位加20位
+        this.page++;
+        let res = await get_customer(this.userId,'',this.page,this.pageSize)
+        this.showLoading = false;
+        this.preventRepeatReuqest = false;
+        if (res.data.info.length < this.pageSize) {
+          this.touchend = true;
+        }
+        this.customerList = [...this.customerList,...res.data.info]
+      },
       goBack(){
-        this.$router.replace({name:this.fromPage})
-          // if(this.chooseCustomer){
-          //     this.$router.replace({name:this.fromPage})
-          // }else{
-          //     this.$router.push({name:'msite'})
-          // }
+        // this.$router.replace({name:this.fromPage})
+          if(this.fromPage){
+              this.$router.replace({name:this.fromPage})
+          }else{
+              this.$router.push({name:'msite'})
+          }
       },
       swipe(id){
         this.inputIndex = id;
@@ -138,7 +177,6 @@
   .customer-list{
     .customer-content{
       @include same_ul_style;
-      overflow: hidden;
       li{
         height: 1.8rem;
         margin-top: 0.1rem;
@@ -146,6 +184,8 @@
         .list_left{
           float: left;
           padding-top:.3rem;
+          float: left;
+          width:80%;
           h4{
             font-size: 16px;
             color: #444444;
@@ -164,7 +204,9 @@
         .list_right{
           display: block;
           float: right;
-          margin-right:.4rem;
+          // margin-right:.4rem;
+          width:20%;
+          text-align: center;;
           span{
             color: #999;
             font-size: 14px;
@@ -180,6 +222,7 @@
     }
   }
   .list-option{
-    @include sc(.4rem,$green)
+    @include sc(.4rem,$green);
+    line-height:1.8rem;
   }
 </style>

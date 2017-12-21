@@ -11,6 +11,8 @@ const sale = r => require.ensure([], () => r(require('../page/home/children/sale
 const basic = r => require.ensure([], () => r(require('../page/home/children/basic')), 'basic')
 
 const selMenu = r => require.ensure([], () => r(require('../page/home/selMenu')), 'selMenu')
+const todayAccount = r => require.ensure([], () => r(require('../page/home/todayAccount')), 'todayAccount')
+const todayAccountDetail = r => require.ensure([], () => r(require('../page/home/todayAccountDetail')), 'todayAccountDetail')
 
 
 const store = r => require.ensure([], () => r(require('../page/storeManage/store')), 'store')
@@ -118,7 +120,7 @@ export default [{
                 //基础查看（主菜单）
                 {
                     name: 'basic',
-                    path: 'basic',
+                    path: '/basic',
                     component: basic
                 }
             ]
@@ -127,6 +129,16 @@ export default [{
             path: '/menu',
             name: 'selMenu',
             component: selMenu
+        },
+        {
+            path: '/today/account',
+            name: 'todayAccount',
+            component: todayAccount
+        },
+        {
+            path: '/today/account/detail',
+            name: 'todayAccountDetail',
+            component: todayAccountDetail
         },
         {
             path: '/store',
