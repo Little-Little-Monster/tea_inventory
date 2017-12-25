@@ -206,6 +206,7 @@ export default {
             //编辑商品获取信息
             get_goods_info(this.$route.query.goodsId).then((res)=>{
                  this.goodsInfo = res.data;
+                 this.imgUrl = this.goodsInfo.attachmentUrl;
             })
         },
         async saveGoods(){
@@ -223,6 +224,7 @@ export default {
                     element.downLimit = this.downLimit;
                 });
             }
+            this.goodsInfo.attachmentUrl = this.imgUrl;
             save_goods(this.userId,this.goodsInfo).then((res)=>{
                 this.$router.push({name:"goodsManage"});
                 this.RECORD_GOODSINFO({})
@@ -388,8 +390,13 @@ export default {
           img{
               width:1rem;
               height:1rem;
-              align-items: flex-start;
+              margin-right:.5rem;
+              border:none!important;
           }
+            img[src=""],
+            img:not([src]) {
+                opacity: 0;
+            }
         }
       }
      }

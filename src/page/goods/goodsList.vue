@@ -25,7 +25,7 @@
                 <div class="list goods-con" v-for="goods in goodsList"  @click="editGoods(goods.id)">
                     <left-slider class="parentType" :index="goods.id" @swipe="swipe"  @swipeRight="inputIndex=-1">
                         <div class="header">
-                            <img :src="goods.attachmentUrl" alt="">
+                            <img :src="goods.attachmentUrl">
                         </div>
                         <div class="goods-detail">
                             <p>{{goods.name}}</p>
@@ -229,8 +229,12 @@ export default {
         @include wh(1.8rem,100%);
         margin-right:.47rem;
         float: left;
+        border:none;
         img{
             @include wh(1.8rem,1.8rem);
+        }
+        img[src=""]{
+            opacity: 0;
         }
     }
     .goods-detail{

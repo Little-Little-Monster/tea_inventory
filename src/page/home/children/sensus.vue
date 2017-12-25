@@ -47,13 +47,17 @@
       <li @click="$router.push({name:'saleReport'})">
         <div class="li_left">
           <p><i class="iconfont icon-xiaoshoubaobiao"></i>销售报表</p>
-          <p>今日销售<span class="number"> {{saleInfo.size}}</span> 笔<b></b>销售金额<span class="price"> ￥{{saleInfo.totalAmount}}</span></p>
+          <p>今日销售<span class="number"> {{saleInfo.saleSize}}</span> 笔<b></b>销售金额<span class="price"> ￥{{saleInfo.saleAmount}}</span></p>
+          <p>今日退货<span class="number"> {{saleInfo.saleBackSize}}</span> 笔<b></b>退货金额<span class="price"> ￥{{saleInfo.saleBackAmount}}</span></p>
+          <p>今日撤销<span class="number"> {{saleInfo.saleCancelSize}}</span> 笔<b></b>撤销金额<span class="price"> ￥{{saleInfo.saleCancelAmount}}</span></p>
         </div>
       </li>
       <li @click="$router.push({name:'buyReport'})">
         <div class="li_left">
           <p><i class="iconfont icon-caigoubaobiao"></i>采购报表</p>
-          <p>今日采购<span class="number"> {{buyInfo.size}}</span> 笔<b></b>采购金额<span class="price"> ￥{{buyInfo.totalAmount}}</span></p>
+          <p>今日采购<span class="number"> {{buyInfo.buySize}}</span> 笔<b></b>采购金额<span class="price"> ￥{{buyInfo.buyAmount}}</span></p>
+          <p>今日退货<span class="number"> {{buyInfo.buyBackSize}}</span> 笔<b></b>退货金额<span class="price"> ￥{{buyInfo.buyBackAmount}}</span></p>
+          <p>今日撤销<span class="number"> {{buyInfo.buyCancelSize}}</span> 笔<b></b>撤销金额<span class="price"> ￥{{buyInfo.buyCancelAmount}}</span></p>
         </div>
       </li>
       <!-- <li @click="$router.push({name:'buyReport'})">
@@ -199,6 +203,7 @@
         }
         &>div{
           padding-top:.54rem;
+          padding-bottom:.34rem;
         }
         &.sensus_ul_detail{
           padding: 0;
@@ -229,25 +234,29 @@
         margin-bottom: 0.28rem;
       }
       &.sensus_content{
+        margin-bottom: .2rem;
+        
         li{
-            height: 2rem;
+            min-height: 2rem;
+            height:auto;
             .li_left{
+              padding-top:.24rem;
               p{
-                &:nth-child(2){
+                &:nth-child(n+1){
                   font-size: 0.26rem;
                   color: #ccc;
                   margin-top: 0.3rem;
                   margin-left: 0.42rem;
-                  b{
-                    margin-left: 0.4rem;
-                  }
+                }
+                b{
+                  margin-left: 0.4rem;
                 }
                 .number{
                   color: $green;
                   font-weight: 600;
                 }
                 .price{
-                  color: #e91e63c7;
+                  color: #e91e63;
                   font-weight: 600;
                 }
               }

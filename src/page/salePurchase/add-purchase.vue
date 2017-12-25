@@ -48,27 +48,32 @@
           </div>
         </li>
         <li class="good-con" v-if="saleOrderInfo.showGoodsList&&saleOrderInfo.showGoodsList.length!=0">
-          <div class="good-list goods-tit">
-            <span>名称</span>
-            <span>单价</span>
-            <span>数量</span>
-            <span>总价</span>
-          </div>
-          <!-- <div  v-for="(buyGoods,index2) in saleOrderInfo.buyGoods">
-            <div class="good-list" v-for="(list,index) in buyGoods.stockVos.length" v-if="buyGoods.stockVos[index].quantity!=0">
-              <span>{{buyGoods.stockVos[index].name}}</span>
-              <span>￥<input type="number" v-model="buyGoods.stockVos[index].buyAmount" @input="getTotal"></span>
-              <span><input type="number" v-model="buyGoods.stockVos[index].quantity" @input="getTotal"></span>
-              <span>{{Number(buyGoods.stockVos[index].buyAmount)*Number(buyGoods.stockVos[index].quantity)}}</span>
+           <div class="goods-lists" v-for="(buyGoods,index) in saleOrderInfo.showGoodsList" v-if="buyGoods.quantity!=0">
+            <div class="goods-left">
+              <p>
+                <i>商品名称：</i> 
+                {{buyGoods.goodsName}}
+              </p>
+              <p>
+                <i>商品单价：</i>
+                <!-- <em class="iconfont icon-icon02"  @click="buyGoods.unitAmount = Number(buyGoods.unitAmount)+1"></em>  -->
+                <input type="number" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.unitAmount" @blur="getTotal">
+                <!-- <em class="iconfont icon-jian" @click="buyGoods.unitAmount = Number(buyGoods.unitAmount)-1"></em> -->
+              </p>
+              <p>
+                <i>商品数量：</i>
+                <!-- <em class="iconfont icon-icon02" @click="buyGoods.quantity = Number(buyGoods.quantity)+1"></em>  -->
+                <input type="number" step="1" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.quantity" @blur="getTotal">
+                <!-- <em class="iconfont icon-jian"  @click="buyGoods.quantity = Number(buyGoods.quantity)-1"></em> -->
+              </p>
+              <p>
+                <i>商品总价：</i>
+                ￥{{(Number(buyGoods.unitAmount)*Number(buyGoods.quantity)).toFixed(2)}}
+              </p>
             </div>
-          </div> -->
-
-          <div  class="good-list list" v-for="(buyGoods,index) in saleOrderInfo.showGoodsList" >
-            <span>{{buyGoods.goodsName}}</span>
-            <span>￥<input type="number" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.unitAmount" @input="getTotal"></span>
-            <span><input type="number" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.quantity" @input="getTotal"></span>
-            <span>{{(Number(buyGoods.unitAmount)*Number(buyGoods.quantity)).toFixed(2)}}</span>
-            <span class="list-option iconfont icon-jian jian-goods" v-if="saleOrderInfo.status!=2&&saleOrderInfo.status!=3" @click="saleOrderInfo.showGoodsList.splice(index,1);getTotal()"></span>
+            <div class="goods-right" v-if="saleOrderInfo.status!=2&&saleOrderInfo.status!=3">
+              <span class="list-option iconfont icon-jian jian-goods" @click="saleOrderInfo.showGoodsList.splice(index,1);getTotal()"></span>
+            </div>
           </div>
         </li>
       </ul>
@@ -154,8 +159,8 @@
         <div class="bottom_left">合计：<span>￥{{Number(saleOrderInfo.totalAmount).toFixed(2)}}</span></div>
         <div class="bottom_right" v-if="saleOrderInfo.status!=3">
           <span @click="submitOrder(1)" class="model" v-if="!saleOrderInfo.status||saleOrderInfo.status!=1" v-show="saleOrderInfo.status!=2">草稿</span> 
-          <span @click="submitOrder(2)" v-if="saleOrderInfo.status==1" >销售</span> 
-          <button :class="{returnGoods: false}" v-if="saleOrderInfo.status&&saleOrderInfo.status!=1" v-show="saleOrderInfo.status!=2" @click="submitOrder(2)">销售</button>
+          <span @click="submitOrder(2)" class="model" v-if="saleOrderInfo.status==1" >{{$route.name=='saleTrade'?'销售':'退货'}}</span> 
+          <button :class="{returnGoods: false}" v-if="saleOrderInfo.status&&saleOrderInfo.status!=1" v-show="saleOrderInfo.status!=2" @click="submitOrder(2)">{{$route.name=='saleTrade'?'销售':'退货'}}</button>
         </div>
 
         <div class="bottom_right" v-if="saleOrderInfo.status==2">
@@ -170,7 +175,7 @@
         <div class="bottom_left">合计：<span>￥{{Number(saleOrderInfo.totalAmount).toFixed(2)}}</span></div>
         <div class="bottom_right" >
           <span @click="submitOrder(1)" class="model">草稿</span> 
-          <button :class="{returnGoods: false}"  v-show="saleOrderInfo.status!=1" @click="submitOrder(2)">销售</button>
+          <button :class="{returnGoods: false}"  v-show="saleOrderInfo.status!=1" @click="submitOrder(2)">{{$route.name=='saleTrade'?'销售':'退货'}}</button>
         </div>
       </div>
     </div>
@@ -476,56 +481,55 @@
         height: 1rem;
         height:auto;
         flex-wrap: wrap;
-        @include sc(.24rem,$text_light)
-        &>div{
+        padding:0;
+        @include sc(.24rem,$text_light);
+        .goods-lists{
+          display: flex;
+          height:2.5rem;
           width:100%;
-          min-height:0;
-        }
-        .good-list{
-          height:.8rem;
-          width:100%;
-          line-height:.8rem;
-          padding-left:0;
-          position:relative;
-          overflow:visible;
-          input{
-            width:1rem;
-            background: #fff;
-            @include borderRadius(.2rem);
-            border:1px solid #ccc;
-            text-align: center;
-            @include sc(.24rem,$text_light)
-          }
-          span{
-            &:nth-child(1){
-              width:20%;
-            }
-            &:nth-child(2){
-              width:30%;
-            }
-            &:nth-child(3){
-             width:12%;
+          padding-left:.4rem;
+          border-bottom:.01rem solid $green;
+          color:$text_light;
+          .goods-left{
+            flex:1;
+            border-right:.01rem solid $bc;
+            display: flex;
+            flex-direction: column;
+            p{
+              flex:1;
+              display: flex;
+              align-items: center;
+              color:$text_light;
+              i{
+                margin-right:.3rem;
+                color:$text_light;
+              }
+              em{
+                color:#E78787;
+                margin:0 .2rem;
+              }
               input{
-                width:100%;
+                background: #fff;
+                border:.01rem solid $bc;
+                width:2rem;
+                height: 0.4rem;
+                text-align: center;
+                color:$text_light;
+                @include borderRadius(.4rem);
               }
             }
-            &:nth-child(4){
-              width:28%;
+          }
+          .goods-right{
+            width:.8rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .jian-goods{
+              right:-.1rem;
+              color:#E78787 ;
+              font-size:.3rem;
             }
-            text-align: center;
-            display: inline-block;
-            height:100%;
-            line-height:.8rem;
-            @include sc(.24rem,$text_light)
           }
-          .jian-goods{
-            right:-.1rem;
-            color:#E78787 ;
-            font-size:.3rem;
-          }
-        }
-        .goods-tit{
-          border-bottom:1px solid $green;
         }
       }
       &.remark {
@@ -553,13 +557,12 @@
       position: fixed;
       bottom: 0;
       background: #fff;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       .bottom_left {
         font-size: .20rem;
         padding-left: 0.3rem;
         text-align: left;
+        float: left;
+        width:50%;
         span {
           color: #D38888;;
           margin-left: 0.14rem;
@@ -569,23 +572,26 @@
       .bottom_right {
         font-size: 16px;
         color: #A8A8A8;
+        width:auto;
+        float: right;
         button {
-          float: right;
-          width: 50%;
+          width: 1rem;
           height: 0.98rem;
           background: #9FC894;
           color: #fff;
           font-size: 16px;
+          float: right;
           // margin-left: 0.43rem;
           &.returnGoods {
             background: #E78787;
           }
         }
         .model{
-          @include wh(50%,.98rem);
-          float: left;
+          @include wh(1rem,.98rem);
+          display: inline-block;
           background: #F58095 ;
           color:#fff;
+          float: right;
         }
       }
     }

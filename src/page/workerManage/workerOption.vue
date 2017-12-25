@@ -33,6 +33,16 @@
                 </em>
                 <em class="list-option iconfont icon-qianjin"></em>
             </div>
+            <div class="list" v-if="!employeeId">
+                <em class="required">*</em>
+                <span>密码</span>
+                <input type="password" placeholder="请输入密码" v-model="worker.password">
+            </div>
+            <div class="list" v-if="!employeeId">
+                <em class="required">*</em>
+                <span>确认密码</span>
+                <input type="password" placeholder="请输入确认密码" v-model="secondPwd">
+            </div>
             <div class="list" @click="worker.status==0?worker.status=1:worker.status=0">
                 <span>账户是否启用</span>
                 <em class="user-satus list-option iconfont " :class="{'icon-radio-checked':worker.status==1,'icon-danxuanweizhong':worker.status==0}"></em>
@@ -47,17 +57,6 @@
             <div class="list worker-name">
                 <span>年龄</span>
                 <input type="number" placeholder="请输入年龄" v-model="worker.age">
-            </div>
-            
-            <div class="list" v-if="!employeeId">
-                <em class="required">*</em>
-                <span>密码</span>
-                <input type="password" placeholder="请输入密码" v-model="worker.password">
-            </div>
-            <div class="list" v-if="!employeeId">
-                <em class="required">*</em>
-                <span>确认密码</span>
-                <input type="password" placeholder="请输入确认密码" v-model="secondPwd">
             </div>
             
             <div class=" memo">
@@ -113,10 +112,12 @@ export default {
             this.employeeId = this.$route.query.employeeId;
             this.worker = JSON.parse(this.$route.query.worker);
             this.$set(this.worker,'storeIds', JSON.parse(this.$route.query.storeIds))
+            this.secondPwd = this.worker.secondPwd;
             // this.worker = this.$route.query.worker;
         }else if(!this.$route.query.employeeId && this.$route.query.worker){
             this.worker = JSON.parse(this.$route.query.worker);
             this.$set(this.worker,'storeIds', JSON.parse(this.$route.query.storeIds));
+            this.secondPwd = this.worker.secondPwd;
             //获取员工角色列表
             this.getRoleList();
         }
@@ -159,6 +160,7 @@ export default {
             })
         },
         goStore(){
+            this.worker.secondPwd = this.secondPwd
             this.$router.push(
                 {
                     name:'store',

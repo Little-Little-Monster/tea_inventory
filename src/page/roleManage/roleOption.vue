@@ -34,7 +34,7 @@
             <input type="checkbox" @click="setSubSel(role.selected,index)" class="check-box-input" :id="role.id" v-model="role.selected">
             <label :for="role.id"   :class="{'icon-radio-checked':role.selected,'icon-danxuanweizhong':!role.selected}" class="iconfont" ></label>
             <span @click="setRoleFather(index)">{{role.name}}</span>
-            <em @click="setRoleFather(index)" :class="{'icon-xiala2':fatherIndex==index,'icon-qianjin':fatherIndex!=index}" class="iconfont"></em>
+            <em @click="setRoleFather(index)" :class="{'icon-xiala2':fatherIndex!=index,'icon-qianjin':fatherIndex==index}" class="iconfont"></em>
           </div>
         </div>
         <div class="role-right">

@@ -178,6 +178,10 @@
               width: 1.4rem;
               height: 1.4rem;
               background: #D8D8D8;
+              img{
+                width:100%;
+                height:100%;
+              }
             }
             .goods_info {
               color: #999;

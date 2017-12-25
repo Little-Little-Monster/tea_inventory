@@ -6,8 +6,8 @@
             </div>
             <div class="info">
                 <p>春秋茗茶</p>
-                <p>张齐论</p>
-                <span class="jiantou iconfont icon-qianjin"></span>
+                <p>{{userName}}</p>
+                <!-- <span class="jiantou iconfont icon-qianjin"></span> -->
             </div>
         </section>
         <section class="option-con">
@@ -66,7 +66,8 @@ import footGuide from 'src/components/footer/footGuide'
 export default {
 	data(){
         return {
-			imgPath:'static/images/head.png'
+			imgPath:'static/images/head.png',
+            userName:getStore('userInfo').userName
         }
     },
     async beforeMount(){

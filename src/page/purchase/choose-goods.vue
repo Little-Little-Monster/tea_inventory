@@ -122,7 +122,7 @@
               goodsId:goods.goodsId,
               goodsName:goods.name,
               quantity:goods.quantity,
-              unitAmount:goods.buyAmount,
+              unitAmount:Number(goods.buyAmount).toFixed(2),
             })
           });
         });
@@ -175,6 +175,10 @@
               width: 1.4rem;
               height: 1.4rem;
               background: #D8D8D8;
+              img{
+                width:100%;
+                height:100%;
+              }
             }
             .goods_info {
               color: #999;
