@@ -1,13 +1,17 @@
 <template>
   <div class="main">
     <head-top signin-up='msite' goBack="" head-title="供应商列表">
-      <span v-if="!chooseSupplier" slot="right" class="iconfont icon-jia" @click="$router.push({name:'addEditUpplier'})" ></span>
+      <span slot="right" class="iconfont icon-jia" @click="$router.push({name:'addEditUpplier'})" ></span>
       <div slot="back" class="goback" @click="goBack" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
     <ul class="supplier_list paddingTop cneter-con" :style="{'margin-bottom':chooseSupplier?'1rem':''}">
+      <div class="search-goods">
+        <input type="text" v-model="params" placeholder="请输入供应商名称" @keydown.enter="getSupplier">
+        <em class="list-option iconfont icon-sousuo" @click="getSupplier"></em>
+      </div>
       <li class="supplier_info_list" v-for="list in suppList" @click="editSupp(list)">
         <div class="list_left">
           <h4>{{list.name}}</h4>
@@ -20,10 +24,15 @@
           <em v-if="chooseSupplier" class="iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click="chooseId=list.id;chooseName=list.name"></em>
         </div>
       </li>
+      <p class="empty_data">没有更多了</p>
     </ul>
-     <div class="bottom" v-if="chooseSupplier" @click="save">
+    <div class="bottom" v-if="chooseSupplier" @click="save">
           保存
-      </div>
+    </div>
+    <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
+    <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
 <script>
@@ -32,18 +41,23 @@
   import { get_supplier } from 'src/service/getData'
   import headTop from 'src/components/header/head'
   import footGuide from 'src/components/footer/footGuide'
+  import alertTip from '../../components/common/alertTip'
+  import loading from 'src/components/common/loading'
 
   export default {
     data(){
       return {
         imgPath: 'static/images/head.png',
         userId:getStore('userInfo').id,
-        parama:'',
+        params:'',
         chooseSupplier:this.$route.query.chooseSupplier,
         fromPage:this.$route.query.fromPage,
         suppList:null,
         chooseId:-1,
-        chooseName:null
+        chooseName:null,
+        showAlert:false,
+        alertText:'',
+        showLoading:true
       }
     },
     created(){
@@ -66,6 +80,8 @@
     components: {
       headTop,
       footGuide,
+      alertTip,
+      loading
     },
     computed: {
       ...mapState([
@@ -78,6 +94,10 @@
       ]),
       toAddress(name){
         this.$router.push(name)
+      },
+      showTip(msg){
+        this.showAlert = true;
+        this.alertText = msg;
       },
       goBack(){
           if(!this.chooseSupplier&&!this.fromPage){
@@ -119,10 +139,17 @@
         }
       },
       getSupplier(){
-        get_supplier(this.userId,this.parama).then((res)=>{
-          this.suppList=res.data;
+        this.showLoading = true
+        get_supplier(this.userId,this.params).then((res)=>{
+          if(res.code==200){
+            this.suppList=res.data;
+          }else{
+            this.showTip(res.message)
+          }
+           this.showLoading = false
         }).catch((err)=>{
-
+          this.showTip(err.message)
+          this.showLoading = false
         })
       },
       editSupp(list){
@@ -136,6 +163,7 @@
 </script>
 <style lang="scss" scoped>
   @import '../../../src/style/mixin';
+  @import '../../../src/style/common';
   .supplier_list{
     @include same_ul_style;
     .supplier_info_list{

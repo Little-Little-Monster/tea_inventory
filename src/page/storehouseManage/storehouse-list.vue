@@ -1,12 +1,16 @@
 <template>
   <div class="storehouse_list main">
     <head-top signin-up='msite' goBack="" head-title="仓库管理">
-      <router-link v-if="!chooseWareHouse" slot="right" class="iconfont icon-jia" :to="{name:'addEditStorehouse'}"></router-link>
+      <span slot="right" class="iconfont icon-jia" @click="toAddHouse"></span>
       <div slot="back" class="goback" @click="goBack" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
+    <div class="search-goods">
+      <input type="text" v-model="params" @keydown.enter="getStoreHouse" placeholder="请输入客户名称">
+      <em class="list-option iconfont icon-sousuo" @click="getStoreHouse"></em>
+    </div>
     <div class="cneter-con">
       <div class="storehouse-header  paddingTop">
         <div class="left_button" @click="flag=1">已启用 <span v-show="flag==1"></span></div>
@@ -29,12 +33,16 @@
             </div>
         </left-slider>
         </li>
+        <p class="empty_data">没有更多了</p>
       </ul>
     </div>
     
     <div class="bottom" v-if="chooseWareHouse" @click="save">
         保存
     </div>
+    <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
@@ -45,6 +53,7 @@
   import alertTip from '../../components/common/alertTip'
   import { get_storehouse,delete_warehouse } from 'src/service/getData';
   import LeftSlider from '../../components/common/slideLeft.vue';
+  import loading from 'src/components/common/loading'
 
   export default {
     data(){
@@ -60,7 +69,9 @@
         storeId:-1,
         inputIndex:-1,
         showAlert:false,
-        alertText:''
+        alertText:'',
+        params:"",
+        showLoading:false
       }
     },
     created(){
@@ -92,7 +103,7 @@
 
     },
     components: {
-      headTop,alertTip,LeftSlider
+      headTop,alertTip,LeftSlider,loading
     },
     computed: {
       ...mapState([
@@ -103,14 +114,24 @@
       ...mapMutations([
         'CHANGE_HEADER','RECORD_BUYORDER','RECORD_STOCK'
       ]),
-      toAddress(name){
-        this.$router.push(name)
+      toAddHouse(name){
+        this.$router.push({name:'addEditStorehouse',query:{
+          fromPage:this.fromPage,
+          chooseWareHouse:this.chooseWareHouse
+        }})
       },
       getStoreHouse(){
-        get_storehouse(this.userId).then((res)=>{
-          this.storeHousList=res.data;
+        this.showLoading = true
+        get_storehouse(this.userId,this.params).then((res)=>{
+          if(res.code==200){  
+            this.storeHousList=res.data;
+          }else{
+            this.showTip(res.message)
+          }
+          this.showLoading = false
         }).catch((err)=>{
-
+          this.showTip(err.message)
+          this.showLoading = false
         })
       },
       swipe(id){
@@ -131,6 +152,7 @@
         }
       },
       deleteWearhouse(id){
+         this.showLoading = true
           delete_warehouse(id,2).then((res)=>{
               if(res.code==200){
                   this.getStoreHouse();
@@ -139,33 +161,32 @@
               }else{
                   this.showTip(err.message)
               }
+               this.showLoading = false
           }).catch((err)=>{
               this.showTip(err.message)
+               this.showLoading = false
           })
       },
       goBack(){
-          if(!this.chooseWareHouse){
-          this.$router.push({name:'basic'})
-        }else{
-          switch (this.fromPage) {
-            case 'buyTrade':case 'buyBack':
-              this.$router.push({
-                name:this.fromPage
-              });
-              break;
-            case 'saleTrade':case 'saleBack':
-              this.$router.push({
-                name:this.fromPage
-              });
-              break;
-            case 'addStock':case 'editStock':
-              this.$router.push({
-                name:this.fromPage
-              });
-              break;
-            default:
-              break;
-          }
+        switch (this.fromPage) {
+          case 'buyTrade':case 'buyBack':
+            this.$router.push({
+              name:this.fromPage
+            });
+            break;
+          case 'saleTrade':case 'saleBack':
+            this.$router.push({
+              name:this.fromPage
+            });
+            break;
+          case 'addStock':case 'editStock':
+            this.$router.push({
+              name:this.fromPage
+            });
+            break;
+          default:
+          this.$router.push({name:"basic"})
+            break;
         }
       },
       save(){
@@ -230,6 +251,7 @@
 </script>
 <style lang="scss" scoped>
   @import '../../../src/style/mixin';
+  @import '../../../src/style/common';
   .storehouse_list{
     .storehouse-header{
       display: flex;

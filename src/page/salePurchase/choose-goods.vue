@@ -4,7 +4,12 @@
       <div slot="back" class="goback" @click="toAddress({name:fromPage})" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
+      <span slot="right" class="iconfont icon-jia" @click="toAddGoods" ></span>
     </head-top>
+    <div class="search-goods">
+      <input type="text" v-model="params"  @keydown.enter="getGoodsList" placeholder="请输入商品名称">
+      <em class="list-option iconfont icon-sousuo" @click="getGoodsList"></em>
+    </div>
     <div class="goods_classify  paddingTop">
       <div class="goods_classify_button">
         <ul v-for="(goodstype,index) in goodsList">
@@ -19,7 +24,7 @@
             </div>
             <div class="goods_info">
               <h3>{{goods.name}}</h3>
-              <p>采购价：<span class="price">￥{{goods.buyAmount}}/{{goods.goodsUnitName}}</span></p>
+              <p>销售价：<span class="price">￥{{goods.saleAmount}}/{{goods.goodsUnitName}}</span></p>
               <p>库存：{{goods.stockTotal}}</p>
               <p>
                 <span class="iconfont icon-jian" @click="goods.quantity>0?goods.quantity--:''"></span>
@@ -31,7 +36,7 @@
             </div>
           </li>
         </ul>
-        <div class="nothing" v-if="goodsList.length==0">
+        <div class="nothing" @click="toAddGoods" v-if="goodsList[typeShow].stockVos.length==0">
           <i class="iconfont icon-icon02"></i>
           <p>暂无商品，请前往添加</p>
         </div>
@@ -62,7 +67,8 @@
         goodsList:[],
         showAlert:false,
         alertText:'',
-        fromPage:this.$route.query.fromPage
+        fromPage:this.$route.query.fromPage,
+        params:""
       }
     },
     created(){
@@ -98,18 +104,28 @@
         this.showAlert = true;
         this.alertText = msg
       },
+      toAddGoods(){
+        this.$router.push({name:"addGoods",query:{
+          fromPage:this.$route.query.fromPage,
+          fromPage2:this.$route.name
+        }})
+      },
       getGoodsList(){
-        get_warehouse_goods_list(this.userId,0,this.buyOrder.warehouseId,0,1000).then((res)=>{
-          this.goodsList = res.data;
-          this.goodsList.forEach(element => {
-            element.stockVos.forEach(el=>{
-              this.$set(el,'quantity',0);
-            })
-          });
-          let orderInfo = this.buyOrder;
-          orderInfo.saleGoods = this.goodsList;
+        get_warehouse_goods_list(this.params,this.userId,0,this.buyOrder.warehouseId,0,1000).then((res)=>{
+          if(res.code==200){
+            this.goodsList = res.data;
+            this.goodsList.forEach(element => {
+              element.stockVos.forEach(el=>{
+                this.$set(el,'quantity',0);
+              })
+            });
+            let orderInfo = this.buyOrder;
+            orderInfo.saleGoods = this.goodsList;
 
-          this.RECORD_BUYORDER(orderInfo);
+            this.RECORD_BUYORDER(orderInfo);
+          }else{
+            this.showTip(res.message)
+          }
         }).catch((err)=>{
           this.showTip(err.message)
         })
@@ -124,7 +140,8 @@
                 goodsId:goods.goodsId,
                 goodsName:goods.name,
                 quantity:goods.quantity,
-                unitAmount:goods.buyAmount,
+                unitAmount:this.fromPage=='saleTrade'?goods.saleAmount:goods.buyAmount,
+                saleMode:1
               })
             }
           });
@@ -140,7 +157,7 @@
 </script>
 <style lang="scss" scoped>
   @import '../../../src/style/mixin';
-
+  @import '../../../src/style/common';
   .choose_goods {
     .goods_classify {
       display: flex;
@@ -160,6 +177,7 @@
               border-left: 4px solid #9FC894;
               border-bottom: none;
               border-right:0;
+              color:$green
             }
           }
         }

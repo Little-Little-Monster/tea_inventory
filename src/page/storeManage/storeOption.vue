@@ -22,6 +22,9 @@
         <div class="bottom" @click="addStore">
             保存
         </div>
+        <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
         <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
     </div>    
 </template>
@@ -33,6 +36,7 @@ import alertTip from '../../components/common/alertTip'
 import {store_handel} from 'src/service/getData'
 import headTop from 'src/components/header/head';
 import {omit} from 'lodash'
+import loading from 'src/components/common/loading'
 
 export default {
 	data(){
@@ -40,7 +44,8 @@ export default {
             store:{},
             userId:getStore('userInfo').id,
             alertText:null,
-            showAlert:false
+            showAlert:false,
+            showLoading:false
         }
     },
     created(){
@@ -53,7 +58,7 @@ export default {
 
     },
     components: {
-    	headTop,alertTip
+    	headTop,alertTip,loading
     },
     computed: {
 		...mapState([
@@ -65,15 +70,23 @@ export default {
             
     	]),
         addStore(){
+            this.showLoading = true
             this.store.status=1;
             if(this.$route.query.id){
                 this.store = omit(this.store,['createTime','updateTime','type']);
             }
             store_handel(this.store,this.userId).then((res)=>{
-                this.$router.go(-1)
+                if(res.code!=200){
+                    this.alertText = res.message;
+                    this.showAlert = true;
+                }else{
+                    this.$router.go(-1)
+                }
+                this.showLoading = false
             }).catch((err)=>{
                 this.alertText = err.message;
                 this.showAlert = true;
+                this.showLoading = false
             })
         }
     },
@@ -107,7 +120,7 @@ export default {
     .bottom{
         background: $green;
         text-align: center;
-        line-height:1rem;
+        line-height:.8rem;
         color:#fff;
     }
 

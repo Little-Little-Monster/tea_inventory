@@ -80,8 +80,8 @@
           生日
         </div>
         <div class="list_right">
-          <input type="date" placeholder="请选择生日"  v-model="customerInfo.birthdayStr">
-          <!-- <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i> -->
+          <input type="text" readonly="" id="time" name="input_date" placeholder="请选择生日" v-model="customerInfo.birthdayStr" />
+          <i class="time-xiala iconfont icon-xiala2"></i>
         </div>
       </li>
       <li class="address-con">
@@ -108,6 +108,9 @@
     <div class="bottom" @click="addCustomer">
             保存
     </div>
+    <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
@@ -119,7 +122,7 @@
   import footGuide from 'src/components/footer/footGuide'
   import alertTip from '../../components/common/alertTip'
   import kswitch from 'src/components/common/kswitch'
-
+  import loading from 'src/components/common/loading'
   export default {
     data(){
       return {
@@ -131,6 +134,7 @@
         sex:1,
         household:{province: '请选择',city:'请选择',district:'请选择'},
         optHosehold:{default:{province: '',city:'',district:''},noLabel: true,noDistrict:false},
+        showLoading:false
       }
     },
     created(){
@@ -142,7 +146,11 @@
         }
     },
     mounted(){
-      
+      var calendar = new LCalendar();
+        calendar.init({
+            'trigger': '#time',//标签id
+            'type': 'date',//date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择
+        });
     },
     beforeRouteLeave(to, from, next){
         if(to.name!='customerType'){
@@ -154,7 +162,8 @@
       headTop,
       footGuide,
       kswitch,
-      alertTip
+      alertTip,
+      loading
     },
     computed: {
         ...mapState([
@@ -170,18 +179,27 @@
       },
       goBack(){
           this.RECORD_CUSTOMER({});
-          this.$router.replace({name:'customerManage'});
+          this.$router.replace({name:'customerManage',query:{
+            fromPage:this.$route.query.fromPage,
+            chooseCustomer:this.$route.query.chooseCustomer
+          }});
       },
       toType(){
           this.RECORD_CUSTOMER(this.customerInfo);
-          this.$router.replace({name:'customerType'});
+          this.$router.replace({name:'customerType',query:{
+            fromPage:this.$route.query.fromPage,
+            chooseCustomer:this.$route.query.chooseCustomer
+          }});
       },
       getCustomer(){
+          this.showLoading = true
           get_customer_detail(this.$route.query.id).then((res)=>{
               this.customerInfo = res.data;
+              this.showLoading = false
           }).catch((err)=>{
               this.alertText = err.message;
               this.showAlert = true;
+              this.showLoading = false
           })
       },
       async addCustomer(){
@@ -206,16 +224,22 @@
               this.showAlert = true;
               return;
             }
+            this.showLoading = true
             this.enable?this.customerInfo.status=1:this.customerInfo.status=0;
             this.customerInfo.province =  this.household.province
             this.customerInfo.city =  this.household.city
             this.customerInfo.district =  this.household.district
             customer_handel(this.userId,this.customerInfo).then((res)=>{
-                this.$router.push({name:"customerManage"});
+                this.$router.push({name:"customerManage",query:{
+                  fromPage:this.$route.query.fromPage,
+                  chooseCustomer:this.$route.query.chooseCustomer
+                }});
                 this.RECORD_CUSTOMER({})
+                this.showLoading = false
             }).catch((err)=>{
                 this.alertText = err.message;
                 this.showAlert = true;
+                this.showLoading = false
             })
         }
     },
@@ -320,7 +344,10 @@
   .bottom{
       background: $green;
       text-align: center;
-      line-height:1rem;
+      line-height:.8rem;
       color:#fff;
+  }
+  .time-xiala{
+    position: static;
   }
 </style>

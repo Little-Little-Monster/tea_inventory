@@ -1,16 +1,20 @@
 <template>
   <div class="customer-list main paddingTop">
-    <head-top signin-up='msite' goBack="" head-title="全部分类">
-      <router-link slot="right" class="iconfont icon-jia" v-if="!chooseCustomer" :to="{name:'addCustomer'}"></router-link>
+    <head-top signin-up='msite' goBack="" head-title="客户管理">
+      <router-link slot="right" class="iconfont icon-jia" :to="{name:'addCustomer',query:{fromPage:$route.query.fromPage,chooseCustomer:$route.query.chooseCustomer}}"></router-link>
       <div slot="back" class="goback" @click="goBack" >
         <span class="iconfont icon-fanhui title_text"></span>
       </div>
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
+    <div class="search-goods">
+      <input type="text" v-model="params" placeholder="请输入客户名称" @keydown.enter="getCustomer">
+      <em class="list-option iconfont icon-sousuo" @click="getCustomer"></em>
+    </div>
     <ul class="customer-content cneter-con" v-load-more="loaderMore" type="2" :style="{'margin-bottom':chooseCustomer?'1rem':''}">
       <div style="auto">
         <li class="supplier_info_list" v-for="list in customerList">
-          <left-slider class="parentType" :index="list.id" @swipe="swipe" @swipeRight="inputIndex=-1">
+          <left-slider :index="list.id" @swipe="swipe" @swipeRight="inputIndex=-1">
             <div class="list_left">
               <h4>{{list.name}}</h4>
               <p>客户分类：{{list.customerClassName}}</p>
@@ -20,7 +24,7 @@
               <i @click="$router.push({name:'addCustomer',query:{id: list.id}})" v-if="!chooseCustomer&&inputIndex!=list.id" class="iconfont icon-bianji"></i>
               <span @click="$router.push({name:'addCustomer',query:{id: list.id}})" v-if="!chooseCustomer&&inputIndex!=list.id">编辑</span>
               <em v-if="chooseCustomer" class="list-option iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click.stop="chooseId=list.id;balance=list.balance;chooseName=list.name"></em>
-              <div  :class="{'option-con-list':!chooseCustomer&&inputIndex==list.id,'option-none':!(!chooseCustomer&&inputIndex==list.id)}" >
+              <div :class="{'option-con-list':!chooseCustomer&&inputIndex==list.id,'option-none':!(!chooseCustomer&&inputIndex==list.id)}" >
                   <span @click="deleteCustomer(list.id)">删除</span>
               </div>
             </div>
@@ -65,6 +69,7 @@
         alertText:'',
         page:0,
         pageSize:10,
+        params:'',
         preventRepeatReuqest: false, //到达底部加载数据，防止重复加载
 			  showBackStatus: false, //显示返回顶部按钮
 			  showLoading: true, //显示加载动画
@@ -103,14 +108,19 @@
           this.showAlert = true;
       },
       getCustomer(){
-        get_customer(this.userId,'',this.page,this.pageSize).then((res)=>{
-          this.customerList=res.data.info;
-          if (res.data.info.length < this.pageSize) {
-              this.touchend = true;
+        this.showLoading = true;
+        get_customer(this.userId,this.params,this.page,this.pageSize).then((res)=>{
+          if(res.code==200){
+            this.customerList=res.data.info;
+            if (res.data.info.length < this.pageSize) {
+                this.touchend = true;
             }
             this.showLoading = false
+          }else{
+            this,showTip(res.message)
+          }
         }).catch((err)=>{
-
+          this,showTip(err.message)
         })
       },
       //到达底部加载更多数据
@@ -174,9 +184,12 @@
 </script>
 <style lang="scss" scoped>
   @import '../../../src/style/mixin';
+  @import '../../../src/style/common';
   .customer-list{
     .customer-content{
       @include same_ul_style;
+      width:100%;
+      overflow: hidden;
       li{
         height: 1.8rem;
         margin-top: 0.1rem;

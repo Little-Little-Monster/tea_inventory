@@ -2,7 +2,7 @@
   <div class="add_edit_storehouse main">
     <head-top goBack="" :head-title="$route.query.edit?'编辑仓库':'新增仓库'">
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
-      <span  slot="back" @click="$router.push({name:'storehouseList'})">
+      <span  slot="back" @click="$router.push({name:'storehouseList',query:{fromPage:$route.query.fromPage,chooseWareHouse:$route.query.chooseWareHouse}})">
           <span class="back iconfont icon-fanhui"></span>
       </span>
     </head-top>
@@ -55,6 +55,9 @@
     <div class="bottom" @click="saveWireHouse">
       保存
     </div>
+    <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
@@ -65,6 +68,7 @@
   import { save_wirehouse } from 'src/service/getData';
   import kswitch from 'src/components/common/kswitch'
   import alertTip from '../../components/common/alertTip'
+  import loading from 'src/components/common/loading'
 
   export default {
     data(){
@@ -73,30 +77,42 @@
         enable: true,
         showAlert:false,
         alertText:null,
-        storeHouse:{}
+        storeHouse:{},
+        fromPage:this.$route.query.fromPage,
+        chooseWareHouse:this.$route.query.chooseWareHouse,
+        showLoading:false
       }
     },
     created(){
-      this.$set(this.storeHouse,'status',1);
-      if(this.$route.query.singleId){
+        this.$set(this.storeHouse,'status',1);
         this.$set(this.storeHouse,'storeName',this.$route.query.singleName)
         this.$set(this.storeHouse,'storeId',this.$route.query.singleId)
         this.$set(this.storeHouse,'workerId',this.$route.query.workerId)
         this.$set(this.storeHouse,'workerName',this.$route.query.workerName)
         this.$set(this.storeHouse,'memo',this.$route.query.memo)
-        this.$set(this.storeHouse,'status',this.$route.query.status)
+        if(this.$route.query.status==0||this.$route.query.status==1){
+          this.$set(this.storeHouse,'status',this.$route.query.status)
+        }
         this.$set(this.storeHouse,'warehouseName',this.$route.query.warehouseName)
-      }
-      if(this.$route.query.workerId){
+      // if(this.$route.query.singleId){
+      //   this.$set(this.storeHouse,'storeName',this.$route.query.singleName)
+      //   this.$set(this.storeHouse,'storeId',this.$route.query.singleId)
+      //   this.$set(this.storeHouse,'workerId',this.$route.query.workerId)
+      //   this.$set(this.storeHouse,'workerName',this.$route.query.workerName)
+      //   this.$set(this.storeHouse,'memo',this.$route.query.memo)
+      //   this.$set(this.storeHouse,'status',this.$route.query.status)
+      //   this.$set(this.storeHouse,'warehouseName',this.$route.query.warehouseName)
+      // }
+      // if(this.$route.query.workerId){
         
-        this.$set(this.storeHouse,'storeName',this.$route.query.singleName)
-        this.$set(this.storeHouse,'storeId',this.$route.query.singleId)
-        this.$set(this.storeHouse,'workerId',this.$route.query.workerId)
-        this.$set(this.storeHouse,'workerName',this.$route.query.workerName);
-        this.$set(this.storeHouse,'memo',this.$route.query.memo)
-        this.$set(this.storeHouse,'warehouseName',this.$route.query.warehouseName)
-        this.$set(this.storeHouse,'status',this.$route.query.status)
-      }
+      //   this.$set(this.storeHouse,'storeName',this.$route.query.singleName)
+      //   this.$set(this.storeHouse,'storeId',this.$route.query.singleId)
+      //   this.$set(this.storeHouse,'workerId',this.$route.query.workerId)
+      //   this.$set(this.storeHouse,'workerName',this.$route.query.workerName);
+      //   this.$set(this.storeHouse,'memo',this.$route.query.memo)
+      //   this.$set(this.storeHouse,'warehouseName',this.$route.query.warehouseName)
+      //   this.$set(this.storeHouse,'status',this.$route.query.status)
+      // }
       if(this.$route.query.edit){
         //编辑门店
         this.storeHouse = JSON.parse(this.$route.query.storeInfo);
@@ -110,7 +126,8 @@
     components: {
       headTop,
       kswitch,
-      alertTip
+      alertTip,
+      loading
     },
     computed: {},
     methods: {
@@ -134,7 +151,9 @@
               warehouseName:this.storeHouse.warehouseName,
               memo:this.storeHouse.memo,
               status:this.storeHouse.status,
-              edit:this.$route.query.edit
+              edit:this.$route.query.edit,
+              fromPage:this.fromPage,
+              chooseWareHouse:this.chooseWareHouse
             }
           }
         )
@@ -153,7 +172,9 @@
               warehouseName:this.storeHouse.warehouseName,
               memo:this.storeHouse.memo,
               status:this.storeHouse.status,
-              edit:this.$route.query.edit
+              edit:this.$route.query.edit,
+              fromPage:this.fromPage,
+              chooseWareHouse:this.chooseWareHouse
             }
           }
         )
@@ -163,13 +184,25 @@
         if(!this.storeHouse.warehouseName){
           this.showAlert = true;
           this.alertText="请输入仓库名称"
+          return;
         }
+        this.showLoading = true;
         this.storeHouse.warehouseHead = this.storeHouse.workerId
         save_wirehouse(this.storeHouse).then((res)=>{
-          this.$router.push({name:"storehouseList"})
+          if(res.code!=200){
+            this.showAlert = true;
+            this.alertText=res.message
+          }else{
+            this.$router.push({name:"storehouseList",query:{
+              fromPage:this.fromPage,
+              chooseWareHouse:this.$route.query.chooseWareHouse
+            }})
+          }
+          this.showLoading = false;
         }).catch((err)=>{
           this.showAlert = true;
           this.alertText=err.message
+          this.showLoading = false;
         })
       }
 
@@ -249,8 +282,8 @@
     }
   }
   .back{
-        font-size:.28rem;
-        color:#fff;
-        margin-left:.2rem;
+        font-size:.36rem;
+        color:#444;
+        margin-left:.1rem;
     }
 </style>

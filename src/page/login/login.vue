@@ -22,7 +22,7 @@
                 <span class="iconfont icon-lock"></span>
                 <input type="password" placeholder="请输入登陆密码"  v-model="passWord">
             </section>
-            <button type="submit" class="login_container">登录</button>
+            <button type="submit" class="login_container">{{loginContent}}</button>
         </form>
         <form class="loginForm" @submit.prevent="goRegist" v-if="!isLogin">
             <section class="input_container">
@@ -45,6 +45,9 @@
         </form>
         <!-- <router-link to="/forget" class="to_forget" v-if="!loginWay">重置密码？</router-link> -->
         <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="closeTip" :alertText="alertText"></alert-tip>
+        <!-- <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition> -->
     </div>
 </template>
 
@@ -56,7 +59,7 @@
     import md5 from "blueimp-md5";
     import {mapState, mapMutations} from 'vuex'
     import {mobile_code, checkExsis, send_login, get_captchas, account_login} from '../../service/getData'
-
+    import loading from 'src/components/common/loading'
     export default {
         data(){
             return {
@@ -73,7 +76,11 @@
 
                 showAlert: false, //显示提示组件
                 alertText: null, //提示的内容
-                isLogin:true//是否是登陆
+                isLogin:true,//是否是登陆
+
+                showLoading:false,
+                loginContent:'登陆',
+                timer:null
             }
         },
         beforeRouteEnter: (to, from, next) => {
@@ -83,12 +90,31 @@
                 next();
             }
         },
+        watch:{
+            'showLoading'(showLoading){
+                let _this = this
+                _this.loginContent = '登陆中'
+                if(showLoading){
+                    _this.timer = setInterval(function(){
+                        _this.loginContent = _this.loginContent + '.'
+                        if(_this.loginContent=='登陆中....'){
+                            _this.loginContent = '登陆中'
+                        }
+                        console.log(_this.loginContent);
+                    },500)
+                }else{
+                    // _this.loginContent = '登陆'
+                    // clearInterval(_this.timer);
+                }
+            }
+        },
         created(){
 
         },
         components: {
             headTop,
             alertTip,
+            loading
         },
         computed: {
             //判断手机号码
@@ -139,9 +165,12 @@
                     this.alertText = '请输入密码';
                     return
                 }
+                this.showLoading = true;
                 //用户名登录
                 this.userInfo = await account_login(this.userAccount, md5(this.passWord));
                 //如果返回的值不正确，则弹出提示框，返回的值正确则返回上一页
+                this.showLoading = false;
+                clearInterval(this.timer);
                 if (this.userInfo.code!=200) {
                     this.showAlert = true;
                     this.alertText = this.userInfo.message;
@@ -163,7 +192,7 @@
                 }
                 //用户名登录
                 this.userInfo = await account_login(this.userAccount, this.passWord, this.codeNumber);
-
+                
                 //如果返回的值不正确，则弹出提示框，返回的值正确则返回上一页
                 if (!this.userInfo.user_id) {
                     this.showAlert = true;

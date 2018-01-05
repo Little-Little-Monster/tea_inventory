@@ -9,10 +9,14 @@
         <div class="cneter-con paddingTop">
             <section class="title-choose">
                 <div class="login-tit">
-                    <input type="date" :class="{'full':startDate}" placeholder="开始时间" v-model="startDate">
+                    <!-- <input type="date" :class="{'full':startDate}" placeholder="开始时间" v-model="startDate"> -->
+                    <input type="text" readonly="" id="time" name="input_date" placeholder="开始时间" v-model="startDate" />
+                    <i class="time-xiala iconfont icon-xiala2"></i>
                 </div>
                 <div class="regist-tit">
-                    <input type="date" :class="{'full':endDate}" placeholder="结束时间" v-model="endDate">
+                    <!-- <input type="date" :class="{'full':endDate}" placeholder="结束时间" v-model="endDate"> -->
+                    <input type="text" readonly="" id="time2" name="input_date" placeholder="结束时间" v-model="endDate" />
+                    <i class="time-xiala iconfont icon-xiala2"></i>
                 </div>
                 <div class="store">
                     <select v-model="storeId">
@@ -31,7 +35,7 @@
                     <span>￥{{totalAmount.toFixed(2)}}</span> 
                 </section>
             </section>
-            <div class="worker-list list" v-for="list in reportList" @click="editWorker(list)">
+            <div class="worker-list list" v-for="list in reportList">
                 <span>
                     {{list.goodsName}} <i class="text-info">X{{list.quantity}}</i>
                 </span>
@@ -39,12 +43,15 @@
                 <p class="text-info">销售时间：<em>{{list.bizDateStr}}</em></p>
                 <em class="list-option">￥{{list.amount.toFixed(2)}}</em>
             </div>
+            <p class="empty_data">没有更多了</p>
         </div>
         <div class="bottom" @click="getReport">
             查询
         </div>
         <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
-
+        <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
     </div>    
 </template>
 
@@ -54,6 +61,7 @@ import {getStore} from 'src/config/mUtils'
 import {get_sale_report,get_store_detail} from 'src/service/getData'
 import headTop from 'src/components/header/head'
 import alertTip from '../../components/common/alertTip'
+import loading from 'src/components/common/loading'
 
 export default {
 	data(){
@@ -67,7 +75,8 @@ export default {
             endDate:"",
             storeId:0,
             showAlert:false,
-            alertText:''
+            alertText:'',
+            showLoading: true,
         }
     },
     created(){
@@ -75,10 +84,19 @@ export default {
         this.getReport()
     },
     mounted(){
-        
+        var calendar = new LCalendar();
+        var calendar2 = new LCalendar();
+        calendar.init({
+            'trigger': '#time',//标签id
+            'type': 'date',//date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择
+        });
+        calendar2.init({
+            'trigger': '#time2',//标签id
+            'type': 'date',//date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择
+        });
     },
     components: {
-    	headTop,alertTip
+    	headTop,alertTip,loading
     },
     computed: {
 		...mapState([
@@ -101,6 +119,7 @@ export default {
             })
         },
         getReport(){
+            this.showLoading = true;
             get_sale_report(this.userId,this.storeId,this.startDate,this.endDate).then((res)=>{
                 if(res.code!=200){
                     this.showTip(res.message)
@@ -109,8 +128,10 @@ export default {
                     this.totalQuantity = res.data.totalQuantity;
                     this.totalAmount = res.data.totalAmount;
                 }
+                this.showLoading = false;
             }).catch((err)=>{
                  this.showTip(err.message)
+                 this.showLoading = false;
             })
         },
         goBack(){

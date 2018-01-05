@@ -1,7 +1,7 @@
 <template>
   <div class="supplier_detail">
     <head-top signin-up='msite' goBack="true" :headTitle="userInfo.name">
-      <button slot="right" style="background: none;color: #fff;font-size: 0.28rem;margin-right: 0.16rem"
+      <button slot="right" style="background: none;color: #444;font-size: 0.24rem;margin-right: 0.46rem;width:.8rem"
         @click="$router.push({name:'addEditUpplier',query:userInfo})">编辑</button>
     </head-top>
     <ul class="supplier_detail_header paddingTop">

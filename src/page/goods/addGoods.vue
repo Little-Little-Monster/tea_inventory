@@ -48,7 +48,7 @@
                         <input type="number" step="0.01" v-model="goodsInfo.modelSize" placeholder="0.00" style="width: 2.99rem;">
                     </div>
                 </li>
-                <li class="margin-bot" @click="getAttr({name:'goodsAttrList',query:{type:'unit'}})">
+                <li class="margin-bot" @click="getAttr({name:'goodsAttrList',query:{type:'unit',fromPage:$route.query.fromPage,fromPage2:$route.query.fromPage2,fromPage3:$route.name}})">
                     <div class="list_left">
                     单位 <i></i>
                     </div>
@@ -73,12 +73,12 @@
                     商品图片 <i></i>
                     </div>
                     <div class="list_right">
-                        <img :src="imgUrl" alt="">
+                        <img :src="goodsInfo.attachmentUrl" alt="">
                         <i class="iconfont icon-jia" @click="$refs.input.click()" style="font-size:.4rem;font-weight:600;color:#999;position: relative;top: 1px;"></i>
                         <input type="file" ref="input" :value="files" v-show="" class="file-input" id="file-input" @change="getFile($event)">
                     </div>
                 </li>
-                 <li @click="getAttr({name:'goodsAttrList',query:{type:'goodsType'}})">
+                 <li @click="getAttr({name:'goodsAttrList',query:{type:'goodsType',fromPage:$route.query.fromPage,fromPage2:$route.query.fromPage2,fromPage3:$route.name}})">
                     <div class="list_left">
                     分类 <i></i>
                     </div>
@@ -88,7 +88,7 @@
                         <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
                     </div>
                 </li>
-                 <li class="margin-bot" @click="getAttr({name:'goodsAttrList',query:{type:'goodsBrand'}})">
+                 <li class="margin-bot" @click="getAttr({name:'goodsAttrList',query:{type:'goodsBrand',fromPage:$route.query.fromPage,fromPage2:$route.query.fromPage2,fromPage3:$route.name}})">
                     <div class="list_left">
                     品牌 <i></i>
                     </div>
@@ -143,6 +143,9 @@
         <div class="bottom" @click="saveGoods">
             保存
         </div>
+        <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
         <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
     </div>    
 </template>
@@ -155,6 +158,7 @@ import headTop from 'src/components/header/head'
 import kswitch from 'src/components/common/kswitch'
 import alertTip from '../../components/common/alertTip'
 import { baseUrl} from '../../config/env'
+import loading from 'src/components/common/loading'
 
 export default {
 	data(){
@@ -168,12 +172,13 @@ export default {
             downLimit:0,
             files:null,
             file:null,
-            imgUrl:''
+            imgUrl:'',
+            showLoading: false, //显示加载动画
         }
     },
     created(){
         this.$set(this.goodsInfo,"status",1);
-        if(this.storeGoodsInfo){
+        if(JSON.stringify(this.storeGoodsInfo)!='{}'){
             this.goodsInfo = this.storeGoodsInfo;
         }
         if(this.$route.query.edit){
@@ -187,16 +192,17 @@ export default {
     components: {
         headTop,
         kswitch,
-        alertTip
+        alertTip,
+        loading
     },
     computed: {
 		...mapState([
-			'headTitle','storeGoodsInfo'
+			'headTitle','storeGoodsInfo','buyOrder'
 		])
     },
     methods: {
     	...mapMutations([
-            'RECORD_GOODSINFO'
+            'RECORD_GOODSINFO','RECORD_BUYORDER'
         ]),
         getAttr(router){
             this.$router.push(router)
@@ -218,18 +224,27 @@ export default {
             //     this.showTip("名称格式不正确");
             //     return;
             // }
+            this.showLoading = true
             if(this.goodsInfo.warehouseStocks){
                 this.goodsInfo.warehouseStocks.forEach(element => {
                     element.upLimit = this.upLimit;
                     element.downLimit = this.downLimit;
                 });
             }
-            this.goodsInfo.attachmentUrl = this.imgUrl;
+            // this.goodsInfo.attachmentUrl = this.imgUrl;
             save_goods(this.userId,this.goodsInfo).then((res)=>{
-                this.$router.push({name:"goodsManage"});
                 this.RECORD_GOODSINFO({})
+                const warehouseId = this.buyOrder.warehouseId;
+                const warehouseName = this.buyOrder.warehouseName;
+                this.RECORD_BUYORDER({
+                    warehouseId:warehouseId,
+                    warehouseName:warehouseName
+                });
+                this.returnBack();
+                this.showLoading = false
             }).catch((err)=>{
                 this.showTip(err.message);
+                this.showLoading = false
             })
         },
         showTip(text){
@@ -239,7 +254,6 @@ export default {
         async getFile(event) {
             if(event.target.files[0]){
                 this.file = event.target.files[0];
-                console.log(this.file);
                 var reg = /^.*\.(?:jpg|png|jpeg|gif)$/i;//文件名可以带空格
                 if(!reg.test(this.file.name)){
                     this.file={
@@ -255,6 +269,7 @@ export default {
                     return;
                     
                 }
+                this.showLoading = true;
                 let formData = new FormData();
                 formData.append('files',this.file);
                 formData.append('type','application/octet-stream');
@@ -267,19 +282,26 @@ export default {
                     resJson.then((res2)=>{
                             if(res2.code==200){
                             this.imgUrl = res2.data.path;
+                            this.$set(this.goodsInfo,'attachmentUrl',this.imgUrl);
+                            this.showLoading = false
                         }else{
                             this.showTip(res2.message)
+                            this.showLoading = false
                         }
                     }).catch((err)=>{
                         this.showTip(err.message)
+                        this.showLoading = false
                     })
                 }).catch((err)=>{
                     this.showTip(err.message)
+                    this.showLoading = false
                 })
             }
         },
         returnBack(){
-            this.$router.push({name:"goodsManage"});
+            this.$router.push({name:this.$route.query.fromPage2?this.$route.query.fromPage2:this.$route.query.fromPage,query:{
+                fromPage:this.$route.query.fromPage?this.$route.query.fromPage:''
+            }});
             this.RECORD_GOODSINFO({})
         },
         uploadImage(url,params){

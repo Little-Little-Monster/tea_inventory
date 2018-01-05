@@ -307,7 +307,10 @@
         }
         this.RECORD_GOODSINFO(this.goodsInfo);
         if (!this.$route.query.getParent) {
-          this.$router.push({ name: "addGoods" })
+          this.$router.push({ name: "addGoods" ,query:{
+            fromPage:this.$route.query.fromPage,
+            fromPage2:this.$route.query.fromPage2
+          }})
         } else {
           this.attr = JSON.parse(this.$route.query.attr);
           this.attr.parentId = this.singleId;
@@ -315,20 +318,32 @@
           this.$router.push({
             name: 'goodsAddAttr', query: {
               type: this.queryType,
-              attr: JSON.stringify(this.attr)
+              attr: JSON.stringify(this.attr),
+              fromPage:this.$route.query.fromPage,
+              fromPage2:this.$route.query.fromPage2
             }
           })
         }
       },
       toAddAttr(){
         //跳转到添加页面
-        this.$router.push({ name: 'goodsAddAttr', query: { type: this.queryType } })
+        this.$router.push({ name: 'goodsAddAttr', query: { type: this.queryType ,
+            fromPage:this.$route.query.fromPage,
+            fromPage2:this.$route.query.fromPage2
+        }})
       },
       goBackRoute(){
         if (this.$route.query.getParent) {
-          this.$router.push({ name: 'goodsAddAttr', query: { type: this.queryType } })
+          this.$router.push({ name: 'goodsAddAttr', query: { 
+            type: this.queryType,
+            fromPage:this.$route.query.fromPage,
+            fromPage2:this.$route.query.fromPage2 } })
         } else {
-          this.$router.push({ name: 'addGoods' })
+          this.$router.push({ name: 'addGoods' ,query:{
+            fromPage:this.$route.query.fromPage,
+            fromPage2:this.$route.query.fromPage2
+            }
+          })
         }
       }
 

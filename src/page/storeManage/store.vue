@@ -21,10 +21,14 @@
                 </left-slider>
                 <!-- </v-touch> -->
             </div>
+            <p class="empty_data">没有更多了</p>
         </div>
         <div class="bottom" v-if="$route.query.getStore" @click="pushStore">
             保存
         </div>
+        <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
         <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
     </div>    
 </template>
@@ -36,6 +40,8 @@ import {get_store_detail,delete_store} from 'src/service/getData'
 import alertTip from '../../components/common/alertTip'
 import headTop from 'src/components/header/head'
 import LeftSlider from '../../components/common/slideLeft.vue';
+import loading from 'src/components/common/loading'
+
 
 export default {
 	data(){
@@ -47,7 +53,8 @@ export default {
             singleName:null,
             inputIndex:-1,
             showAlert:false,
-            alertText:''
+            alertText:'',
+            showLoading:false
         }
     },
     created(){
@@ -72,7 +79,7 @@ export default {
 
     },
     components: {
-      headTop,alertTip,LeftSlider
+      headTop,alertTip,LeftSlider,loading
     },
     computed: {
       ...mapState([
@@ -88,6 +95,7 @@ export default {
             this.showAlert = true;
         },
         getStore(){
+            this.showLoading = true
             get_store_detail(this.userId).then((res)=>{
                 if(res.code==200){
                     this.storeList = res.data;
@@ -118,9 +126,10 @@ export default {
                 }else{
                     this.showTip(err.mesage)
                 }
-                
+                this.showLoading = false
             }).catch((err)=>{
                 this.showTip(err.message)
+                this.showLoading = false
             })
         },
         swipe(id){
@@ -130,12 +139,28 @@ export default {
             if(this.$route.query.single){
                 if(this.$route.query.fromPage=='addBalanceAccount'){
                     //结算账户选择门店
-                    this.$router.push({name:this.$route.query.fromPage})
+                    // this.$router.push({name:this.$route.query.fromPage})
+                    this.$router.replace({name:this.$route.query.fromPage,query:{
+                        fromPage:this.$route.query.fromPage2,
+                        getAccount:this.$route.query.getAccount
+                    }})
                 }else{
                     //仓库选择门店
                     this.$router.push(
                         {
                             name:'addEditStorehouse',
+                            query:{
+                                singleId:this.singleId,
+                                singleName:this.singleName,
+                                workerId:this.$route.query.workerId,
+                                workerName:this.$route.query.workerName,
+                                warehouseName:this.$route.query.warehouseName,
+                                memo:this.$route.query.memo,
+                                edit:this.$route.query.edit,
+                                status:this.$route.query.status,
+                                fromPage:this.$route.query.fromPage,
+                                chooseWareHouse:this.$route.query.chooseWareHouse
+                            }
                         }
                     )
                 }
@@ -155,6 +180,7 @@ export default {
             }
         },
         deleteStore(id){
+            this.showLoading = true
             delete_store(id,2).then((res)=>{
                 if(res.code==200){
                     this.getStore();
@@ -163,8 +189,10 @@ export default {
                 }else{
                     this.showTip(err.message)
                 }
+                this.showLoading = false
             }).catch((err)=>{
                 this.showTip(err.message)
+                this.showLoading = false
             })
         },
         pushStore(){
@@ -175,7 +203,10 @@ export default {
                     account.storeId = this.singleId
                     account.storeName = this.singleName
                     this.RECORD_CUSTOMER(account);
-                    this.$router.push({name:this.$route.query.fromPage})
+                    this.$router.replace({name:this.$route.query.fromPage,query:{
+                        fromPage:this.$route.query.fromPage2,
+                        getAccount:this.$route.query.getAccount
+                    }})
                 }else{
                     //仓库选择门店
                     this.$router.push(
@@ -190,6 +221,8 @@ export default {
                                 memo:this.$route.query.memo,
                                 edit:this.$route.query.edit,
                                 status:this.$route.query.status,
+                                fromPage:this.$route.query.fromPage,
+                                chooseWareHouse:this.$route.query.chooseWareHouse
                             }
                         }
                     )
@@ -239,13 +272,13 @@ export default {
         text-align: center;
         .save{
             font-size:.28rem;
-            color:#fff;
+            color:#444;
             margin-left:.2rem;
         }
     }
     .save{
         font-size:.28rem;
-        color:#fff;
+        color:#444;
         margin-left:.2rem;
     }
 

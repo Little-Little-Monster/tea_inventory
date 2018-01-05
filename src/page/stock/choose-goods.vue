@@ -4,7 +4,12 @@
       <div slot="back" class="goback" @click="toAddress({name:fromPage})" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
+      <!-- <span slot="right" class="iconfont icon-jia" @click="toAddGoods" ></span> -->
     </head-top>
+     <div class="search-goods">
+      <input type="text" v-model="params" @keydown.enter="getGoodsList" placeholder="请输入商品名称">
+      <em class="list-option iconfont icon-sousuo" @click="getGoodsList"></em>
+    </div>
     <div class="goods_classify paddingTop">
       <div class="goods_classify_button">
         <ul v-for="(goodstype,index) in goodsList">
@@ -31,6 +36,7 @@
             </div>
           </li>
         </ul>
+        
         <div class="nothing" v-if="goodsList.length==0">
           <i class="iconfont icon-icon02"></i>
           <p>暂无商品，请前往添加</p>
@@ -70,7 +76,8 @@
         alertText:'',
         fromPage:this.$route.query.fromPage,
         allTotal:1,
-        isInput:false
+        isInput:false,
+        params:""
       }
     },
     created(){
@@ -107,7 +114,7 @@
         this.alertText = msg
       },
       getGoodsList(){
-        get_warehouse_goods_list(this.userId,0,this.stockState.warehouseId,0,1000).then((res)=>{
+        get_warehouse_goods_list(this.params,this.userId,0,this.stockState.warehouseId,0,1000).then((res)=>{
           this.goodsList = res.data;
           this.goodsList.forEach(element => {
             element.stockVos.forEach(el=>{
@@ -189,7 +196,7 @@
 </script>
 <style lang="scss" scoped>
   @import '../../../src/style/mixin';
-
+  @import '../../../src/style/common';
   .choose_goods {
     .goods_classify {
       display: flex;
@@ -209,6 +216,7 @@
               border-left: 4px solid #9FC894;
               border-bottom: none;
               border-right:0;
+              color:$green
             }
           }
         }
@@ -227,6 +235,10 @@
               width: 1.4rem;
               height: 1.4rem;
               background: #D8D8D8;
+              img{
+                width:100%;
+                height:100%;
+              }
             }
             .goods_info {
               color: #999;

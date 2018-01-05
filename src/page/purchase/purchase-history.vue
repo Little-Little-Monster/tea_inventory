@@ -31,6 +31,7 @@
     <transition name="loading">
 			<loading v-show="showLoading"></loading>
 		</transition>
+    <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
 <script>
@@ -41,6 +42,7 @@
   import {loadMore} from 'src/components/common/mixin'
   import loading from 'src/components/common/loading'
   import footGuide from 'src/components/footer/footGuide'
+  import alertTip from '../../components/common/alertTip'
 
   export default {
     data(){
@@ -56,13 +58,16 @@
        preventRepeatReuqest: false, //到达底部加载数据，防止重复加载
 			showBackStatus: false, //显示返回顶部按钮
 			showLoading: true, //显示加载动画
-			touchend: false, //没有更多数据
+      touchend: false, //没有更多数据
+      showAlert:false,
+      alertText:''
       }
     },
     components: {
       headTop,
       footGuide,
-      loading
+      loading,
+      alertTip
     },
     computed: {},
     created(){
@@ -83,15 +88,26 @@
           this.$router.push({name:'msite'})
         } 
       },
+      showTip(msg){
+        this.alertText = msg;
+        this.showAlert =true;
+      },
       getHistory(){
+        this.showLoading = true
         get_buy_history(this.userId,this.page,this.pageSize,this.status,this.type).then((res)=>{
-          this.historyList = res.data.info;
-          this.showLoading = false
-          if (res.data.info.length < this.pageSize) {
+          if(res.code==200){
+            this.historyList = res.data.info;
+            this.showLoading = false
+            if (res.data.info.length < this.pageSize) {
                 this.touchend = true;
+            }
+          }else{  
+            this.showTip(res.message)
           }
+          
         }).catch((err)=>{
           this.showLoading = false
+          this.showTip(err.message)
         })
       },
       //到达底部加载更多数据
@@ -108,12 +124,17 @@
         //数据的定位加20位
         this.page++;
         let res = await get_buy_history(this.userId,this.page,this.pageSize,this.status,this.type)
-              this.showLoading = false;
-              this.preventRepeatReuqest = false;
-              if (res.data.info.length < this.pageSize) {
-                this.touchend = true;
-              }
-              this.historyList = [...this.historyList,...res.data.info]
+        if(res.code!=200){
+          this.showTip(res.message)
+        }else{
+          this.preventRepeatReuqest = false;
+          if (res.data.info.length < this.pageSize) {
+            this.touchend = true;
+          }
+          this.historyList = [...this.historyList,...res.data.info]
+        }
+        this.showLoading = false;
+        
       },
       editBuyOrder(id){
         this.$router.push({name:this.$route.name=='buyBackHistory'?'buyBack':'buyTrade',query:{

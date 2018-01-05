@@ -97,10 +97,10 @@
 			margin-top: .2rem;
             fill: #ccc;
             color:$green;
-            @include sc(.32rem, #DCDDDB);
+            @include sc(.32rem, #999);
 		}
 		span{
-			@include sc(.28rem, #DCDDDB);
+			@include sc(.28rem, #999);
 		}
     }
     .select-item{

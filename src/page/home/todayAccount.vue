@@ -33,7 +33,11 @@
                     <em class="iconfont icon-qianjin"></em>
                 </em>
             </div>
+            <p class="empty_data">没有更多了</p>
         </div>
+        <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
         <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
     </div>    
 </template>
@@ -43,6 +47,7 @@ import {getStore} from 'src/config/mUtils'
 import {get_today_account} from 'src/service/getData'
 import headTop from 'src/components/header/head'
 import alertTip from '../../components/common/alertTip'
+import loading from 'src/components/common/loading'
 
 export default {
 	data(){
@@ -55,17 +60,23 @@ export default {
             fromPage:this.$route.query.fromPage,
             getAccount:this.$route.query.getAccount,
             chooseId:-1,
-            chooseName:null
+            chooseName:null,
+            showLoading:false
         }
     },
     created(){
         this.getAccountInfo()
+        this.accountInfo = {
+            totalIncomeMoney:0,
+            totalExpendMoney:0,
+            totalMergeMoney:0,
+        }
     },
     mounted(){
 
     },
     components: {
-      headTop,alertTip
+      headTop,alertTip,loading
     },
     computed: {
       ...mapState([
@@ -77,6 +88,7 @@ export default {
             'RECORD_BUYORDER'
         ]),
         getAccountInfo(){
+            this.showLoading = true;
             get_today_account(this.userId).then((res)=>{
                 if(res.code!=200){
                     this.showTip(res.message)
@@ -84,16 +96,23 @@ export default {
                     this.accountInfo = res.data;
                     this.accountList = this.accountInfo.vos
                 }
+                this.showLoading = false;
             }).catch((err)=>{
                 this.showTip(err.message)
+                this.showLoading = false;
             })
         },
         goBack(){
-            this.$router.replace({name:"sensus"})
+            if(this.fromPage){
+                this.$router.replace({name:this.fromPage})
+            }else{
+                this.$router.replace({name:"sensus"})
+            }
         },
         toEdit(id){
             this.$router.push({name:'todayAccountDetail',query:{
-                id:id
+                id:id,
+                fromPage:this.fromPage
             }})
         },
         showTip(msg){
@@ -139,13 +158,13 @@ export default {
         text-align: center;
         .save{
             font-size:.28rem;
-            color:#fff;
+            color:#444;
             margin-left:.2rem;
         }
     }
     .save{
         font-size:.28rem;
-        color:#fff;
+        color:#444;
         margin-left:.2rem;
     }
     .store{

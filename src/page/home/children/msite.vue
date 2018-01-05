@@ -26,21 +26,20 @@
         <em class="list-option iconfont icon-sousuo" @click="searchGoods"></em>
       </div> -->
     </nav>
-    <div class="content">
       <section class="user-info">
         <p class="user-name">
           <i v-if="6<clock&&clock<=12">上午好,</i> 
           <i v-if="12<clock&&clock<=18">下午好,</i> 
           <i v-if="18<clock&&clock<=24">晚上好,</i> 
           <i v-if="0<clock&&clock<=6">凌晨好,</i> 
-          {{userName}}
+          {{userName?userName:'老板'}}
         </p>
         <div class="user-detail">
           <div class="left">
             <p>今日收益</p>
             <span>{{date}}</span>
           </div>
-          <div class="right">
+          <div class="right" @click="toDetail">
             <span class="money"> ￥{{money.toFixed(2)}}</span>
           </div>
         </div>
@@ -55,7 +54,6 @@
           <p></p>
         </div>
       </div>
-    </div>
   </div>
 </template>
 <script>
@@ -114,6 +112,11 @@
       ]),
       searchGoods(){
         this.$router.push({name:"goodsManage",query:{fromPage:this.$route.name,goodsName:this.goodsName}})
+      },
+      toDetail(){
+        this.$router.push({name:'todayAccount',query:{
+          fromPage:this.$route.name
+        }})
       }
     },
     watch: {}
@@ -124,6 +127,7 @@
   .msite-con{
     display: flex;
     flex-direction: column;
+    overflow: auto;
   }
   .msite_title {
     @include center;
@@ -178,15 +182,15 @@
       }
     }
   }
-  .content{
-    flex:1;
-    overflow: auto;
-  }
+
   .user-info {
     @include wh(100%, 2rem);
     margin-bottom: 0.1rem;
     background: #fff;
     padding: 0.27rem 0.52rem 0 0.46rem;
+    .user-detail{
+      position: relative;
+    }
     .user-name {
       @include sc(.38rem, $text);
       font-weight: 600;
@@ -207,8 +211,9 @@
       }
     }
     .right {
-      float: left;
-      width:30%;
+     position: absolute;
+     right: 0.4rem;
+     width:auto;
       height:1rem;
       span {
         @include sc(.42rem, $text)

@@ -25,25 +25,39 @@
       <li class="tip">
        盘点明细
       </li>
-      <li class="goods-con" >
-        <div class="add-btn" v-if="status!=2" @click="getGoods">
+      <li class="goods-con" v-if="status!=2" >
+        <div class="add-btn"  @click="getGoods">
           <span class="iconfont icon-jia"></span>
           添加明细
         </div>
-        <div class="good-list goods-tit" v-if="stockInfo.inventoryGoods&&stockInfo.inventoryGoods.length!=0">
-          <span>名称</span>
-          <span>盘点单价</span>
-          <span>盘点量</span>
-          <span>库存量</span>
-        </div>
-        <div class="goods-list" v-for="(goods,index) in stockInfo.inventoryGoods">
-          <span>{{goods.goodsName}}</span>
-          <span>{{Number(goods.unitAmount).toFixed(2)}}</span>
-          <span><input type="number"  v-model="goods.quantity" @input="getTotal"></span>
-          <span>{{goods.currQuantity}}</span>
-          <i class="list-option iconfont icon-jian jian-goods"  v-if="status!=2" @click="stockInfo.inventoryGoods.splice(index,1);getTotal()"></i>
-        </div>
       </li>
+       <li class="good-con" v-if="stockInfo.inventoryGoods&&stockInfo.inventoryGoods.length!=0">
+           <div class="goods-lists" v-for="(goods,index) in stockInfo.inventoryGoods">
+            <div class="goods-left">
+              <p>
+                <i>商品名称：</i> 
+                {{goods.goodsName}}
+              </p>
+              <p>
+                <i>盘点单价：</i>
+                <span>￥{{Number(goods.unitAmount).toFixed(2)}}</span>
+              </p>
+              <p>
+                <i>盘点数量：</i>
+                <!-- <em class="iconfont icon-icon02" @click="buyGoods.quantity = Number(buyGoods.quantity)+1"></em>  -->
+                <input type="number" step="1" v-model="goods.quantity" @blur="getTotal"></span>
+                <!-- <em class="iconfont icon-jian"  @click="buyGoods.quantity = Number(buyGoods.quantity)-1"></em> -->
+              </p>
+              <p>
+                <i>库存量：</i>
+                {{goods.currQuantity}}
+              </p>
+            </div>
+            <div class="goods-right" v-if="status!=2">
+              <span class="list-option iconfont icon-jian jian-goods"  @click="stockInfo.inventoryGoods.splice(index,1);getTotal()"></span>
+            </div>
+          </div>
+        </li>
     </ul>
     <div class="bottom">
       <div class="bottom_left">总量：<span>{{stockInfo.totalQuantity}}</span></div>
@@ -53,6 +67,9 @@
         <button :class="{returnGoods: false}" @click="addStock(2)">盘点</button>
       </div>
     </div>
+    <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
@@ -64,6 +81,7 @@
   import footGuide from 'src/components/footer/footGuide'
   import alertTip from '../../components/common/alertTip'
   import kswitch from 'src/components/common/kswitch'
+  import loading from 'src/components/common/loading'
 
   export default {
     data(){
@@ -74,7 +92,9 @@
         stockInfo:{},
         showAlert:false,
         alertText:null,
-        status:0
+        status:0,
+        showLoading: false,
+        isback:false
       }
     },
     created(){
@@ -93,12 +113,19 @@
       headTop,
       footGuide,
       kswitch,
-      alertTip
+      alertTip,
+      loading
     },
     computed: {
       ...mapState([
         "stockState"
       ])
+    },
+    beforeRouteLeave(to,form,next){
+      if(to.name=='warehouseStock'){
+        this.RECORD_STOCK({})
+      }
+      next();
     },
     methods: {
       ...mapMutations([
@@ -110,6 +137,7 @@
       },
       getStockInfo(){
         //获取盘点基本信息
+        this.showLoading = true
         get_stock_info(this.$route.query.id).then((res)=>{
           if(res.code==200){
             this.stockInfo = res.data;
@@ -117,8 +145,10 @@
           }else{
             this.showTip(res.message)
           }
+          this.showLoading = false
         }).catch((err)=>{
           this.showTip(err.message)
+          this.showLoading = false
         })
       },
       getWearhouse(){
@@ -157,25 +187,41 @@
             this.showTip('请添加盘点明细')
             return;
           }
+          this.isback = false;
+          this.stockInfo.inventoryGoods.forEach(goods => {
+            if(goods.quantity==''){
+              this.showTip('请输入盘点数量！')
+              this.isback = true;
+            }
+          });
+          if(this.isback){
+            return;
+          }
+          this.showLoading = true;
           this.stockInfo.status = status;
           this.stockInfo.operatorId = this.userId;
           stock_handel(this.userId,this.stockInfo).then((res)=>{
               this.$router.push({name:"warehouseStock"})
+              this.showLoading = false
           }).catch((err)=>{
               this.alertText = err.message;
               this.showAlert = true;
               this.stockInfo.status = this.status;
+              this.showLoading = false
           })
       },
       deleteStock(){
+        this.showLoading = true
         delete_stock(this.$route.query.id).then((res)=>{
           if(res.code==200){
             this.$router.push({name:"warehouseStock"})
           }else{
             this.showTip(res.message)
           }
+          this.showLoading = false
         }).catch((err)=>{
           this.showTip(err.message)
+          this.showLoading = false
         })
       }
     },
@@ -251,18 +297,67 @@
     .tip{
       background: inherit;
     }
-    .goods-con{
-      flex-direction: column;
-      align-items: flex-start;
-      min-height:1rem;
-      height: 1rem;
-      height:auto;
-      .add-btn{
-        width:100%;
-        height: 1rem;
-        line-height: 1rem;
-      }
+    .add-btn{
+      line-height: 1rem;
     }
+    .good-con{
+        width:100%;
+        min-height:1rem;
+        height: 1rem;
+        height:auto;
+        flex-wrap: wrap;
+        padding:0;
+        margin-bottom:1.1rem;
+        @include sc(.24rem,$text_light);
+        .goods-lists{
+          display: flex;
+          height:2.5rem;
+          width:100%;
+          padding-left:.4rem;
+          border-bottom:.01rem solid $green;
+          color:$text_light;
+          .goods-left{
+            flex:1;
+            border-right:.01rem solid $bc;
+            display: flex;
+            flex-direction: column;
+            p{
+              flex:1;
+              display: flex;
+              align-items: center;
+              color:$text_light;
+              i{
+                margin-right:.3rem;
+                color:$text_light;
+              }
+              em{
+                color:#E78787;
+                margin:0 .2rem;
+              }
+              input{
+                background: #fff;
+                border:.01rem solid $bc;
+                width:2rem;
+                height: 0.4rem;
+                text-align: center;
+                color:$text_light;
+                @include borderRadius(.4rem);
+              }
+            }
+          }
+          .goods-right{
+            width:.8rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            .jian-goods{
+              right:-.1rem;
+              color:#E78787 ;
+              font-size:.3rem;
+            }
+          }
+        }
+      }
     .goods-list{
       height:.8rem;
       width:100%;
@@ -340,6 +435,7 @@
           float: left;
           background: #F58095 ;
           color:#fff;
+          line-height: .98rem;
         }
       }
     }

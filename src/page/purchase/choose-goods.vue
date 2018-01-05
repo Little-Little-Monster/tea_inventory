@@ -4,7 +4,12 @@
       <div slot="back" class="goback" @click="toAddress({name:$route.query.fromPage})" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
+      <span slot="right" class="iconfont icon-jia" @click="toAddGoods" ></span>
     </head-top>
+    <div class="search-goods">
+      <input type="text" v-model="params" @keydown.enter="getGoodsList" placeholder="请输入商品名称">
+      <em class="list-option iconfont icon-sousuo" @click="getGoodsList"></em>
+    </div>
     <div class="goods_classify paddingTop">
       <div class="goods_classify_button">
         <ul v-for="(goodstype,index) in goodsList">
@@ -31,7 +36,7 @@
             </div>
           </li>
         </ul>
-        <div class="nothing" v-if="goodsList.length==0">
+        <div class="nothing"  @click="toAddGoods" v-if="goodsList.length==0">
           <i class="iconfont icon-icon02"></i>
           <p>暂无商品，请前往添加</p>
         </div>
@@ -61,7 +66,8 @@
         typeShow:0,
         goodsList:[],
         showAlert:false,
-        alertText:''
+        alertText:'',
+        params:''
       }
     },
     created(){
@@ -97,18 +103,28 @@
         this.showAlert = true;
         this.alertText = msg
       },
+      toAddGoods(){
+        this.$router.push({name:"addGoods",query:{
+          fromPage:this.$route.query.fromPage,
+          fromPage2:this.$route.name
+        }})
+      },
       getGoodsList(){
-        get_warehouse_goods_list(this.userId,0,this.buyOrder.warehouseId,0,1000).then((res)=>{
-          this.goodsList = res.data;
-          this.goodsList.forEach(element => {
-            element.stockVos.forEach(el=>{
-              this.$set(el,'quantity',0);
-            })
-          });
-          let orderInfo = this.buyOrder;
-          orderInfo.buyGoods = this.goodsList;
+        get_warehouse_goods_list(this.params,this.userId,0,this.buyOrder.warehouseId,0,1000).then((res)=>{
+          if(res.code==200){
+            this.goodsList = res.data;
+            this.goodsList.forEach(element => {
+              element.stockVos.forEach(el=>{
+                this.$set(el,'quantity',0);
+              })
+            });
+            let orderInfo = this.buyOrder;
+            orderInfo.buyGoods = this.goodsList;
+            this.RECORD_BUYORDER(orderInfo);
+          }else{
+            this.showTip(res.message)
+          }
 
-          this.RECORD_BUYORDER(orderInfo);
         }).catch((err)=>{
           this.showTip(err.message)
         })
@@ -122,7 +138,7 @@
               goodsId:goods.goodsId,
               goodsName:goods.name,
               quantity:goods.quantity,
-              unitAmount:Number(goods.buyAmount).toFixed(2),
+              unitAmount:Number(goods.buyAmount).toFixed(2)
             })
           });
         });
@@ -137,7 +153,7 @@
 </script>
 <style lang="scss" scoped>
   @import '../../../src/style/mixin';
-
+  @import '../../../src/style/common';
   .choose_goods {
     .goods_classify {
       display: flex;
@@ -157,6 +173,7 @@
               border-left: 4px solid #9FC894;
               border-bottom: none;
               border-right:0;
+              color:$green
             }
           }
         }

@@ -29,11 +29,13 @@
                     </div>
                     <div class="search">
                         <div class="search-name">开始日期</div>
-                        <input :class="{'full':startDate}" placeholder="请选择开始日期" type="date" v-model="startDate">
+                        <input type="text" readonly="" id="time" name="input_date" :placeholder="startDate" v-model="startDate" />
+                        <i class="time-xiala iconfont icon-xiala2"></i>
                     </div>
                     <div class="search">
                         <div class="search-name">结束日期</div>
-                        <input :class="{'full':endDate}" placeholder="请选择结束日期" type="date" v-model="endDate">
+                        <input type="text" readonly="" id="time2" name="input_date" :placeholder="endDate" v-model="endDate" />
+                        <i class="time-xiala iconfont icon-xiala2"></i>
                     </div>
                     
                 </section>
@@ -135,8 +137,15 @@ export default {
     created(){
         this.searchInfo.warehouseId = 0
         this.searchInfo.goodsName = ""
-        this.searchInfo.startDate = ""
-        this.searchInfo.endDate = ""
+        var date = new Date();
+        var startDate =  new Date(Date.parse(date) - (86400000 * 7))
+
+        
+        this.startDate = this.formatDate(startDate)
+        this.endDate = this.formatDate(date)
+
+        this.searchInfo.startDate = this.startDate
+        this.searchInfo.endDate = this.endDate
         this.searchInfo.page = this.page;
         this.searchInfo.pageSize = this.pageSize
         this.searchInfo.userId = this.userId;
@@ -149,7 +158,16 @@ export default {
         }
     },
     mounted(){
-        
+        var calendar = new LCalendar();
+        var calendar2 = new LCalendar();
+        calendar.init({
+            'trigger': '#time',//标签id
+            'type': 'date',//date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择
+        });
+        calendar2.init({
+            'trigger': '#time2',//标签id
+            'type': 'date',//date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择
+        });
     },
     mixins: [loadMore],
     components: {
@@ -165,7 +183,7 @@ export default {
             'RECORD_BUYORDER'
         ]),
         getStoreHouse(){
-            get_storehouse(this.userId).then((res)=>{
+            get_storehouse(this.userId,'').then((res)=>{
                 if(res.code!=200){
                     this.showTip(res.message)
                 }else{
@@ -187,6 +205,7 @@ export default {
         getQuery(){
             this.searchInfo.startDate = this.startDate
             this.searchInfo.endDate = this.endDate
+             this.showLoading = true
             get_inventory_query(this.searchInfo).then((res)=>{
                 if(res.code!=200){
                     this.showTip(res.message)
@@ -232,12 +251,15 @@ export default {
             this.showLoading = false;
             this.preventRepeatReuqest = false;
             if (res.data.info.length < this.pageSize) {
-            this.touchend = true;
+                this.touchend = true;
             }
             this.queryList = [...this.queryList,...res.data.info]
+            this.totalQuantity = res.data.totalQuantity
+            this.totalAmount = res.data.totalAmount
         },
         getFlower(){
             this.searchInfo.goodsId = this.goodsId;
+            this.showLoading = true;
             get_inventory_flow(this.searchInfo).then((res)=>{
                 if(res.code!=200){
                     this.showTip(res.message)
@@ -255,9 +277,10 @@ export default {
                     }
                      this.showLoading = false
                 }
+                this.showLoading = false;
             }).catch((err)=>{
-                 this.showTip(err.message)
-                  this.showLoading = false
+                this.showTip(err.message)
+                this.showLoading = false
             })
         },
         goBack(){
@@ -422,6 +445,9 @@ export default {
         i{
             color:#fff;
         }
+    }
+    .time-xiala{
+        position: static;
     }
     
 </style>

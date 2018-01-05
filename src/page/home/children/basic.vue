@@ -6,41 +6,41 @@
             </div>
             <div class="info">
                 <p>春秋茗茶</p>
-                <p>{{userName}}</p>
+                <p>{{userName?userName:'老板'}}</p>
                 <!-- <span class="jiantou iconfont icon-qianjin"></span> -->
             </div>
         </section>
         <section class="option-con">
             <div class="option-list" @click="toAddress({name:'store'})">
-                <span>
+                <span class="option-name">
                     <i class="iconfont icon-mendianguanli"></i>
                     门店管理
                 </span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
             <div class="option-list" @click="toAddress({name:'worker'})">
-                <span> 
+                <span class="option-name"> 
                     <i class="iconfont icon-kehuguanli"></i>
                     员工管理
                 </span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
             <div class="option-list" @click="toAddress({name:'supplierList'})">
-                <span> 
+                <span class="option-name"> 
                     <i class="iconfont icon-gongyingshangguanli"></i>
                     供应商管理
                 </span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
             <div class="option-list" @click="toAddress({name: 'storehouseList'})">
-                <span>
+                <span class="option-name">
                      <i class="iconfont icon-depot1"></i>
                      仓库管理
                 </span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
             <div class="option-list" @click="toAddress({name: 'accountManage'})">
-                <span> 
+                <span class="option-name"> 
                     <i class="iconfont icon-account"></i>
                     账户管理
                 </span>
@@ -141,30 +141,30 @@ export default {
     }
     .option-list{
         position: relative;
-        height: 1.2rem;
+        height: 1rem;
         width:100%;
         background: #fff;
-        line-height:1.2rem;
+        line-height:1rem;
         padding-left:.4rem;
         margin-bottom:.02rem;
         .option-name{
-            @include sc(.32rem,$text)
+            @include sc(.28rem,$text)
         }
         i{
-            @include sc(.4rem,#97D4BF);
+            @include sc(.28rem,#97D4BF);
             margin-right:.2rem;
         }
     }
     .login-out{
-        @include wh(80%,.8rem);
+        @include wh(80%,.6rem);
         background: #F58095;
         margin:0 auto;
-        margin-top:.2rem;
+        margin-top:.8rem;
         margin-bottom:.2rem;
         @include borderRadius(1rem);
         text-align: center;
-        line-height: .8rem;
-        @include sc(.3rem,#fff)
+        line-height: .6rem;
+        @include sc(.26rem,#fff)
     }
 
 </style>

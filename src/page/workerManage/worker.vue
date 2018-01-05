@@ -32,10 +32,14 @@
                     <!-- <em v-if="!$route.query.single" class="list-option iconfont check-icon" :class="{'icon-radio-checked':list.selected,'icon-danxuanweizhong':!list.selected}" @click="list.selected?list.selected=false:list.selected=true"></em> -->
                 </left-slider>
             </div>
+            <p class="empty_data">没有更多了</p>
         </div>
         <div class="bottom" v-if="$route.query.getWorker" @click="save">
             保存
         </div>
+         <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
         <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
     </div>    
 </template>
@@ -47,6 +51,7 @@ import {get_worker_list,delete_worker} from 'src/service/getData'
 import headTop from 'src/components/header/head'
 import alertTip from '../../components/common/alertTip'
 import LeftSlider from '../../components/common/slideLeft.vue';
+import loading from 'src/components/common/loading'
 export default {
 	data(){
         return {
@@ -57,7 +62,8 @@ export default {
             workerName:null,
             showAlert:false,
             alertText:'',
-            inputIndex:-1
+            inputIndex:-1,
+            showLoading:true
         }
     },
     created(){
@@ -80,7 +86,7 @@ export default {
         
     },
     components: {
-    	headTop,alertTip,LeftSlider
+    	headTop,alertTip,LeftSlider,loading
     },
     computed: {
 		...mapState([
@@ -94,7 +100,18 @@ export default {
         goBack(){
             if(this.$route.query.getWorker){
                 if(this.$route.query.from=='wireHouse'){
-                    this.$router.push({name:'addEditStorehouse'})
+                    this.$router.push({name:'addEditStorehouse',query:{
+                            workerId:this.workerId,
+                            workerName:this.workerName,
+                            singleId:this.$route.query.singleId,
+                            singleName:this.$route.query.singleName,
+                            warehouseName:this.$route.query.warehouseName,
+                            memo:this.$route.query.memo,
+                            edit:this.$route.query.edit,
+                            status:this.$route.query.status,
+                            fromPage:this.$route.query.fromPage,
+                            chooseWareHouse:this.$route.query.chooseWareHouse
+                    }})
                 }else if(this.$route.query.fromPage){
                     this.$router.push({name:this.$route.query.fromPage})
                 }
@@ -105,14 +122,17 @@ export default {
             }
         },
         getWorker(){
+            this.showLoading = true;
             get_worker_list(this.userId).then((res)=>{
                 if(res.code==200){
                     this.workerList = res.data;
                 }else{
                     this.showTip(res.message)
                 }
+                this.showLoading = false;
             }).catch((err)=>{
                 this.showTip(err.message)
+                this.showLoading = false;
             })
         },
         swipe(id){
@@ -131,6 +151,8 @@ export default {
                             memo:this.$route.query.memo,
                             edit:this.$route.query.edit,
                             status:this.$route.query.status,
+                            fromPage:this.$route.query.fromPage,
+                            chooseWareHouse:this.$route.query.chooseWareHouse
                         }
                     })
                 }else if(this.$route.query.fromPage){
@@ -145,6 +167,7 @@ export default {
             }
         },
         deleteWorker(id){
+            this.showLoading = true;
             delete_worker(id,2).then((res)=>{
                 if(res.code==200){
                     this.getWorker();
@@ -153,8 +176,10 @@ export default {
                 }else{
                     this.showTip(err.message)
                 }
+                this.showLoading = false;
             }).catch((err)=>{
                 this.showTip(err.message)
+                this.showLoading = false;
             })
         },
         showTip(msg){

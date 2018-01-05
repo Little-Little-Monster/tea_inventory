@@ -18,10 +18,15 @@
           <em v-if="chooseRule" class="iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click="chooseId=list.id;chooseName=list.name"></em>
         </div>
       </li>
+      <p class="empty_data">没有更多了</p>
     </ul>
+     <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
      <div class="bottom" v-if="chooseRule" @click="save">
           保存
       </div>
+      <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
 <script>
@@ -30,6 +35,8 @@
   import { get_role_list } from 'src/service/getData'
   import headTop from 'src/components/header/head'
   import footGuide from 'src/components/footer/footGuide'
+  import loading from 'src/components/common/loading'
+  import alertTip from '../../components/common/alertTip'
 
   export default {
     data(){
@@ -41,7 +48,10 @@
         fromPage:this.$route.query.fromPage,
         roleList:null,
         chooseId:-1,
-        chooseName:null
+        chooseName:null,
+        showLoading:false,
+        showAlert:false,
+        alertText:''
       }
     },
     created(){
@@ -64,6 +74,8 @@
     components: {
       headTop,
       footGuide,
+      loading,
+      alertTip
     },
     computed: {
       ...mapState([
@@ -115,10 +127,14 @@
         }
       },
       getRole(){
+        this.showLoading = true;
         get_role_list(this.userId).then((res)=>{
           this.roleList=res.data;
+          this.showLoading = false;
         }).catch((err)=>{
-
+          this.showLoading = false;
+          this.showAlert = true;
+          this.showAlert = err.message
         })
       },
       editRole(roleId,roleName,memo){

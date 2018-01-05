@@ -8,13 +8,13 @@
         <span class="delete">删除</span>
       </div>
     </head-top>
-    <ul class="add-edit-upplier cneter-con paddingTop">
+    <ul class="add-edit-upplier cneter-con paddingTop" :class="{'marginBottom0':!isFocus}">
       <li>
         <div class="list_left">
           名称 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
-          <input type="text" v-model="accountInfo.accountName" placeholder="请输入账户名称" style="width: 2.27rem;">
+          <input type="text" @focus="isFocus=false"  @blur="isFocus=true" v-model="accountInfo.accountName" placeholder="请输入账户名称" style="width: 2.27rem;">
         </div>
       </li>
       <li>
@@ -22,7 +22,7 @@
           账号<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
-          <input type="text" v-model="accountInfo.account" placeholder="请输入账户" style="width: 2.27rem;">
+          <input type="text"  @focus="isFocus=false"  @blur="isFocus=true" v-model="accountInfo.account" placeholder="请输入账户" style="width: 2.27rem;">
         </div>
       </li>
       <li>
@@ -30,7 +30,7 @@
           开户人<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
-          <input type="text" v-model="accountInfo.accountHolder" placeholder="请输入开户人" style="width: 1.99rem;">
+          <input type="text"  @focus="isFocus=false"  @blur="isFocus=true" v-model="accountInfo.accountHolder" placeholder="请输入开户人" style="width: 1.99rem;">
         </div>
       </li>
       <li @click="toStore" style="margin:.1rem 0;">
@@ -103,13 +103,16 @@
         <div class="list_left">
           <p>备注</p>
           <!-- <input type="text" placeholder="请输入备注信息"> -->
-          <textarea  v-model="accountInfo.memo" placeholder="请输入备注信息"></textarea>
+          <textarea  @focus="isFocus=false"  @blur="isFocus=true" v-model="accountInfo.memo" placeholder="请输入备注信息"></textarea>
         </div>
       </li>
     </ul>
     <div class="bottom" @click="addAccount">
             保存
     </div>
+     <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
@@ -120,6 +123,7 @@
   import headTop from 'src/components/header/head'
   import alertTip from '../../components/common/alertTip'
   import kswitch from 'src/components/common/kswitch'
+  import loading from 'src/components/common/loading'
 
   export default {
     data(){
@@ -131,6 +135,8 @@
         accountInfo:{},
         alertText:'',
         showAlert:false,
+        isFocus:true,
+        showLoading:false
       }
     },
     created(){
@@ -154,7 +160,8 @@
     components: {
       headTop,
       kswitch,
-      alertTip
+      alertTip,
+      loading
     },
     computed: {
         ...mapState([
@@ -167,26 +174,35 @@
       ]),
       goBack(){
           this.RECORD_CUSTOMER({});
-          this.$router.replace({name:'balanceAccount'});
+          this.$router.replace({name:'balanceAccount',query:{
+            'fromPage':this.$route.query.fromPage,
+            'getAccount':this.$route.query.getAccount
+          }});
       },
       toStore(){
           this.RECORD_CUSTOMER(this.accountInfo);
           this.$router.replace({name:'store',query:{
             single:true,
             fromPage:this.$route.name,
+            fromPage2:this.$route.query.fromPage,
             getStore:true,
+            getAccount:this.$route.query.getAccount
           }});
       },
       getAccount(){
+          this.showLoading = true;
           get_balance_account_detail(this.$route.query.id).then((res)=>{
               this.accountInfo = res.data;
               this.accountInfo.status?this.enable=1:this.enable=0;
+              this.showLoading = false;
           }).catch((err)=>{
               this.alertText = err.message;
               this.showAlert = true;
+              this.showLoading = false;
           })
       },
       deleteBalance(){
+        this.showLoading = true;
         balance_account_delete(this.$route.query.id).then((res)=>{
           if(res.code==200){
            this.goBack()
@@ -194,9 +210,11 @@
             this.alertText = res.message;
             this.showAlert = true;
           }
+          this.showLoading = false;
         }).catch((err)=>{
           this.alertText = err.message;
           this.showAlert = true;
+          this.showLoading = false;
         })
       },
       async addAccount(){
@@ -220,18 +238,24 @@
               this.showAlert = true;
               return;
             }
+            this.showLoading = true;
             this.enable?this.accountInfo.status=1:this.accountInfo.status=0;
             balance_account_handel(this.accountInfo).then((res)=>{
               if(res.code!=200){
                 this.alertText = res.message;
                 this.showAlert = true;
               }else{
-                this.$router.push({name:"balanceAccount"});
+                this.$router.replace({name:'balanceAccount',query:{
+                  'fromPage':this.$route.query.fromPage,
+                  'getAccount':this.$route.query.getAccount
+                }});
                 this.RECORD_CUSTOMER({})
               }
+              this.showLoading = false;
             }).catch((err)=>{
                 this.alertText = err.message;
                 this.showAlert = true;
+                this.showLoading = false;
             })
         }
     },
@@ -241,7 +265,7 @@
   @import '../../../src/style/mixin';
   .right{
     .delete{
-      @include sc(.3rem,#fff)
+      @include sc(.28rem,#444)
     }
   }
   .add-edit-upplier {
@@ -266,6 +290,9 @@
           background: none;
         }
       }
+    }
+    .check-icon{
+      font-size:.4rem;
     }
     li {
       height: 1rem;
@@ -320,7 +347,7 @@
   .bottom{
       background: $green;
       text-align: center;
-      line-height:1rem;
+      line-height:.8rem;
       color:#fff;
   }
 </style>

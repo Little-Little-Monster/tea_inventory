@@ -56,6 +56,9 @@
         </div>
       </li>
     </ul>
+    <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
     <div class="bottom" @click="saveRole">
             保存
     </div>
@@ -70,6 +73,7 @@
   import footGuide from 'src/components/footer/footGuide'
   import alertTip from '../../components/common/alertTip'
   import kswitch from 'src/components/common/kswitch'
+  import loading from 'src/components/common/loading'
 
   export default {
     data(){
@@ -83,7 +87,8 @@
         resource:[],
         fatherIndex:0,
         subIndex:-1,
-        roleId:this.$route.query.roleId?this.$route.query.roleId:0
+        roleId:this.$route.query.roleId?this.$route.query.roleId:0,
+        showLoading:false
       }
     },
     created(){
@@ -101,7 +106,8 @@
       headTop,
       footGuide,
       kswitch,
-      alertTip
+      alertTip,
+      loading
     },
     computed: {},
     methods: {
@@ -109,14 +115,17 @@
         'CHANGE_HEADER'
       ]),
       getResouce(){
+        this.showLoading = true;
         get_role_resource(this.userId,this.roleId).then((res)=>{
           if(res.code!=200){
             this.showTip(res.message)
           }else{
             this.resource = res.data;
           }
+          this.showLoading = false;
         }).catch((err)=>{
           this.showTip(err.message)
+           this.showLoading = false;
         })
       },
       setRoleFather(index){
@@ -158,6 +167,7 @@
               this.showAlert = true;
               return;
             }
+            this.showLoading = true;
             this.userInfo.menuVos = this.resource;
             role_handel(this.userId,this.userInfo).then((res)=>{
               if(res.code!=200){
@@ -166,9 +176,11 @@
               }else{
                 this.$router.go(-1)
               }
+               this.showLoading = false;
             }).catch((err)=>{
                 this.alertText = err.message;
                 this.showAlert = true;
+                this.showLoading = false;
             })
         }
     },
@@ -335,7 +347,7 @@
   .bottom{
       background: $green;
       text-align: center;
-      line-height:1rem;
+      line-height:.8rem;
       color:#fff;
   }
 </style>

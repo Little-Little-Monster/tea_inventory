@@ -1,7 +1,7 @@
 <template>
     <div class="main">
     	<head-top signin-up='msite' goBack="" :headTitle="headTit">
-            <router-link slot="right" class="iconfont icon-jia" v-if="!isGetGoods" :to="{name:'addGoods'}"></router-link>
+            <router-link slot="right" class="iconfont icon-jia" v-if="!isGetGoods" :to="{name:'addGoods',query:{fromPage:$route.query.fromPage,fromPage2:$route.name}}"></router-link>
             <div slot="back" class="goback" @click="save" >
                 <span class="iconfont icon-fanhui title_text"></span>
             </div>
@@ -20,7 +20,7 @@
                 </select>
             </div>
         </section>
-        <div class="cneter-con " v-load-more="loaderMore" type="2">
+        <div class="cneter-con" v-load-more="loaderMore" type="2" :style="{'margin-bottom':isGetGoods?'1rem':0}">
             <div class="load-more" style="height:auto">
                 <div class="list goods-con" v-for="goods in goodsList"  @click="editGoods(goods.id)">
                     <left-slider class="parentType" :index="goods.id" @swipe="swipe"  @swipeRight="inputIndex=-1">
@@ -33,7 +33,7 @@
                             <p>售价：<em>{{goods.saleAmount}}</em></p>
                             <p>品牌：{{goods.goodsBrandName}}</p>
                         </div>
-                        <em v-if="!isGetGoods && inputIndex!=goods.id" class="list-option iconfont icon-qianjin"></em>
+                        <em v-if="!isGetGoods  " class="list-option iconfont icon-qianjin"></em>
                         <em v-if="isGetGoods" class="list-option iconfont check-icon" :class="{'icon-radio-checked':chooseId==goods.id,'icon-danxuanweizhong':chooseId!=goods.id}" @click="chooseId=goods.id;chooseName=goods.name"></em>
                         <div  :class="{'option-con-list':!isGetGoods&&inputIndex==goods.id,'option-none':!(!isGetGoods&&inputIndex==goods.id)}" >
                             <span>删除</span>
@@ -80,7 +80,7 @@ export default {
 
             preventRepeatReuqest: false, //到达底部加载数据，防止重复加载
 			showBackStatus: false, //显示返回顶部按钮
-			showLoading: true, //显示加载动画
+			showLoading: false, //显示加载动画
 			touchend: false, //没有更多数据
         }
     },
@@ -88,26 +88,27 @@ export default {
         //获取商品列表
         get_goods_type(this.userId).then((res)=>{
             this.goodsType = res.data;
-            if(this.$route.query.goodsName){
-                get_goods_by_name(this.userId,this.$route.query.goodsName).then((res)=>{
-                     this.goodsList = res.data
-                }).catch((err)=>{
+            // if(this.$route.query.goodsName){
+            //     get_goods_by_name(this.userId,this.$route.query.goodsName).then((res)=>{
+            //          this.goodsList = res.data
+            //     }).catch((err)=>{
 
-                })
-            }else{
-                this.getGoods();
-            }
+            //     })
+            // }else{
+            //     this.getGoods();
+            // }
+            this.getGoods();
         }).catch((err)=>{
 
         })
     },
     watch:{
-        'priceFlag':function(){
-            this.listenPropChange();
-        },
-        "goodsClassId":function(){
-             this.listenPropChange();
-        }
+        // 'priceFlag':function(){
+        //     this.listenPropChange();
+        // },
+        // "goodsClassId":function(){
+        //      this.listenPropChange();
+        // }
     },
     mounted(){
         
@@ -126,6 +127,7 @@ export default {
             'RECORD_GOODSINFO'
         ]),
         getGoods(){
+            this.showLoading = true;
             get_goods_list(this.userId,this.goodsClassId,this.priceFlag,this.page,this.pageSize).then((res)=>{
                 if(res.code==200){
                     this.goodsList = res.data.info;
@@ -138,9 +140,9 @@ export default {
                     //     this.showBackStatus = status;
                     // });
                 }
-                // this.showLoading = false;
+                this.showLoading = false;
             }).catch((err)=>{
-
+                this.showLoading = true;
             })
         },
         save(){
@@ -163,7 +165,7 @@ export default {
         editGoods(goodsId){
             // this.RECORD_GOODSINFO(list)
             if(!this.isGetGoods&&this.inputIndex!=goodsId){
-                this.$router.push({name:"addGoods",query:{edit:true,goodsId:goodsId}});
+                this.$router.push({name:"addGoods",query:{edit:true,goodsId:goodsId,fromPage:this.$route.name}});
             }
         },
         async listenPropChange(){

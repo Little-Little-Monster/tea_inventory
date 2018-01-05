@@ -93,7 +93,7 @@
       <ul>
         <li>
           <div class="list_left">
-            实付 <i class="required" style="position:absolute;top:.3rem;left:1rem">{{buyOrderInfo.realAmount.toFixed(2)}}</i>
+            实付 <i class="required" style="position:absolute;top:.3rem;left:1rem">{{Number(buyOrderInfo.realAmount).toFixed(2)}}</i>
           </div>
           <div class="list_right">
             <input type="number" placeholder="未付" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyOrderInfo.realAmount" @input="getTotal">
@@ -112,8 +112,8 @@
             业务日期
           </div>
           <div class="list_right">
-            <input type="date" placeholder="请选择日期" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyOrderInfo.bizDateStr">
-            <!-- <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i> -->
+            <input type="text" readonly="" id="time" name="input_date" :placeholder="buyOrderInfo.bizDateStr" v-model="buyOrderInfo.bizDateStr" />
+            <i class="time-xiala iconfont icon-xiala2"></i>
           </div>
         </li>
       </ul>
@@ -138,19 +138,18 @@
           <button v-if="buyOrderInfo.status==2" :class="{returnGoods: false}" @click="cancel">撤销</button>
           <button v-if="buyOrderInfo.status==1" :class="{returnGoods: false}" @click="deleteOrder">删除</button>
         </div>
-
-        <!-- <div class="bottom_right" v-if="buyOrderInfo.status==1">
-          
-        </div> -->
       </div>
       <div class="bottom" v-if="!edit">
         <div class="bottom_left">合计：<span>￥{{buyOrderInfo.totalAmount.toFixed(2)}}</span></div>
         <div class="bottom_right" >
-          <span @click="submitOrder(1)" class="model">草稿</span> 
           <button :class="{returnGoods: false}"  v-show="buyOrderInfo.status!=2" @click="submitOrder(2)">{{$route.name=='buyTrade'?'采购':'退货'}}</button>
+          <span @click="submitOrder(1)" class="model">草稿</span> 
         </div>
       </div>
     </div>
+    <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
@@ -161,6 +160,7 @@
   import alertTip from '../../components/common/alertTip'
   import {save_buy_order,get_buy_order,delete_buy_order,cancel_buy_order} from 'src/service/getData'
   import footGuide from 'src/components/footer/footGuide'
+  import loading from 'src/components/common/loading'
 
   export default {
     data(){
@@ -173,7 +173,8 @@
         userId:getStore('userInfo').id,
         edit:this.$route.query.edit,
         fromPage:this.$route.query.fromPage,
-        status:null//采购单当前状态（1为草稿，2为已销售，3为撤销）
+        status:null,//采购单当前状态（1为草稿，2为已销售，3为撤销）
+        showLoading:false
       }
     },
     created(){
@@ -196,19 +197,29 @@
         if(!this.buyOrderInfo.realAmount){
           this.buyOrderInfo.realAmount = 0;
         }
+        
         // this.buyOrderInfo.debtAmount = 0;
+        if(!this.buyOrderInfo.bizDateStr){
+          var date = new Date();
+          this.buyOrderInfo.bizDateStr = this.formatDate(date)
+        }
         if(this.buyOrderInfo.showGoodsList&&this.buyOrderInfo.showGoodsList.length!=0){
           this.getTotal();
         }
       }
     },
     mounted(){
-
+      var calendar = new LCalendar();
+      calendar.init({
+        'trigger': '#time',//标签id
+        'type': 'date',//date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择
+      });
     },
     components: {
       headTop,
       footGuide,
-      alertTip
+      alertTip,
+      loading
     },
     computed: {
       ...mapState([
@@ -256,7 +267,7 @@
       },
       toAccount(){
         if(!this.buyOrderInfo.status || this.buyOrderInfo.status!=2&& this.buyOrderInfo.status!=3){
-          this.$router.replace({name:"balanceAccount",query:{
+          this.$router.push({name:"balanceAccount",query:{
             getAccount:true,
             fromPage:this.$route.name
           }})
@@ -279,15 +290,22 @@
       },
       getBuyOrder(){
         //编辑采购单时获取信息
+        this.showLoading = true;
         get_buy_order(this.$route.query.id).then((res)=>{
-          this.buyOrderInfo = res.data;
-          this.buyOrderInfo.showGoodsList = res.data.buyGoods;
-          if(this.buyOrderInfo.status==1){
-             this.RECORD_BUYORDER(this.buyOrderInfo)
+          if(res.code==200){
+             this.buyOrderInfo = res.data;
+            this.buyOrderInfo.showGoodsList = res.data.buyGoods;
+            if(this.buyOrderInfo.status==1){
+              this.RECORD_BUYORDER(this.buyOrderInfo)
+            }
+            this.status = this.buyOrderInfo.status;
+          }else{
+            this.showTip(res.message)
           }
-          this.status = this.buyOrderInfo.status;
+          this.showLoading = false;
         }).catch((err)=>{
-
+          this.showTip(err.message)
+          this.showLoading = false;
         })
       },
       async submitOrder(status){
@@ -312,6 +330,7 @@
         }else{
           this.buyOrderInfo.type=5//采购回退
         }
+        this.showLoading = true;
         this.buyOrderInfo.status=status//1提交，0草稿
         this.buyOrderInfo.operatorId = this.userId;
         let submitOrder = this.buyOrderInfo;
@@ -323,24 +342,32 @@
           }else{
             this.returnBack();
           }
+          this.showLoading = false;
         }).catch((err)=>{
           this.showTip(err.message);
+          this.showLoading = false;
         })
       },
       cancel(){
         //撤销已采购订单
+        this.showLoading = true;
         cancel_buy_order(this.userId,this.buyOrderInfo.id).then((res)=>{
           this.returnBack()
+          this.showLoading = false;
         }).catch((err)=>{
            this.showTip(err.message)
+           this.showLoading = false;
         })
       },
       deleteOrder(){
         //删除草稿订单
+        this.showLoading = true;
         delete_buy_order(this.buyOrderInfo.id).then((res)=>{
           this.returnBack()
+          this.showLoading = false;
         }).catch((err)=>{
           this.showTip(err.message)
+          this.showLoading = false;
         })
       },
       getTotal(){
@@ -453,6 +480,12 @@
                 @include borderRadius(.4rem);
               }
             }
+            .sale-type{
+              em{
+                color:$green;
+                font-size:.24rem;
+              }
+            }
           }
           .goods-right{
             width:.8rem;
@@ -468,7 +501,7 @@
         }
       }
       &.remark {
-        height: 2.8rem;
+        height: 2rem;
         margin-bottom: 1.16rem;
         li {
           display: block;
@@ -477,7 +510,7 @@
           background: #fff;
           .list_left {
             textarea{
-              margin-top: 0.63rem;
+              margin-top: 0.33rem;
               width: 100%;
               height:1rem;
               resize: none;
@@ -489,7 +522,8 @@
     }
     .bottom {
       height: 0.98rem;
-      position: fixed;
+      position: absolute;
+      position: none;
       bottom: 0;
       background: #fff;
       .bottom_left {
@@ -510,7 +544,7 @@
         width:auto;
         float: right;
         button {
-          width: 1rem;
+          width: 1.5rem;
           height: 0.98rem;
           background: #9FC894;
           color: #fff;
@@ -522,13 +556,17 @@
           }
         }
         .model{
-          @include wh(1rem,.98rem);
+          @include wh(1.5rem,.98rem);
           display: inline-block;
           background: #F58095 ;
+          line-height: .98rem;
           color:#fff;
           float: right;
         }
       }
     }
+  }
+  .time-xiala{
+    position: static;
   }
 </style>

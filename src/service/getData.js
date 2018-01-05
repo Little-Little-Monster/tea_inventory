@@ -132,7 +132,7 @@ export const supplier_handel = (userId, suppInfo) => fetch('/api/invoicing/suppl
  * 获取仓库列表
  */
 
-export const get_storehouse = (userId) => fetch('/api/invoicing/warehouse/query/list', { userId });
+export const get_storehouse = (userId, params) => fetch('/api/invoicing/warehouse/query/list', { userId, params });
 /**
  * 添加或更新仓库
  */
@@ -228,7 +228,8 @@ export const get_goods_by_name = (userId, goodsName) => fetch('/api/invoicing/go
  * 采购时根据仓库以及分类获取商品列表
  */
 
-export const get_warehouse_goods_list = (userId, goodsClassId, warehouseId, page, pageSize) => fetch('/api/invoicing/goods/class/query/list', {
+export const get_warehouse_goods_list = (params, userId, goodsClassId, warehouseId, page, pageSize) => fetch('/api/invoicing/goods/class/query/list', {
+    params,
     userId,
     goodsClassId,
     warehouseId,

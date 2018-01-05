@@ -58,6 +58,9 @@
     <div class="bottom" @click="addSupp">
             保存
     </div>
+    <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
@@ -69,6 +72,7 @@
   import footGuide from 'src/components/footer/footGuide'
   import alertTip from '../../components/common/alertTip'
   import kswitch from 'src/components/common/kswitch'
+  import loading from 'src/components/common/loading'
 
   export default {
     data(){
@@ -77,7 +81,8 @@
         imgPath: 'static/images/head.png',
         userId:getStore("userInfo").id,
         userInfo:{},
-        showAlert:false
+        showAlert:false,
+        showLoading:false
       }
     },
     created(){
@@ -92,7 +97,8 @@
       headTop,
       footGuide,
       kswitch,
-      alertTip
+      alertTip,
+      loading
     },
     computed: {},
     methods: {
@@ -119,12 +125,21 @@
               this.showAlert = true;
               return;
             }
+            this.showLoading = true;
             this.enable?this.userInfo.status=1:this.userInfo.status=0;
             supplier_handel(this.userId,this.userInfo).then((res)=>{
-                this.$router.push({name:"supplierList"})
+                // this.$router.push({name:"supplierList"})
+                if(res.code!=200){
+                  this.alertText = res.message;
+                  this.showAlert = true;
+                }else{
+                  this.$router.go(-1);
+                }
+                this.showLoading = false;
             }).catch((err)=>{
                 this.alertText = err.message;
                 this.showAlert = true;
+                this.showLoading = false;
             })
         }
     },
@@ -187,7 +202,7 @@
   .bottom{
       background: $green;
       text-align: center;
-      line-height:1rem;
+      line-height:.8rem;
       color:#fff;
   }
 </style>

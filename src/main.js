@@ -15,43 +15,55 @@ Vue.use(VueTouch, { name: 'v-touch' })
 import "./iconfont/iconfont.css";
 
 if ('addEventListener' in document) {
-    document.addEventListener('DOMContentLoaded', function() {
-        FastClick.attach(document.body);
-    }, false);
+  document.addEventListener('DOMContentLoaded', function() {
+    FastClick.attach(document.body);
+  }, false);
 }
-//引入地址插件
+Vue.prototype.formatDate = (date) => {
+    var year = date.getFullYear();
+    var month = date.getMonth();
+    var day = date.getDate();
+    if (month < 10) {
+      month = '0' + String(month + 1);
+    }
+    if (day < 10) {
+      day = '0' + String(day);
+    }
+    return year + '-' + month + '-' + day;
+  }
+  //引入地址插件
 import addressPicker from "vue-address-picker";
 Vue.use(addressPicker);
 
 Vue.use(VueRouter)
 const router = new VueRouter({
-        routes,
-        mode: routerMode,
-        strict: process.env.NODE_ENV !== 'production',
-        scrollBehavior(to, from, savedPosition) {
-            if (savedPosition) {
-                return savedPosition
-            } else {
-                if (from.meta.keepAlive) {
-                    from.meta.savedPosition = document.body.scrollTop;
-                }
-                return { x: 0, y: to.meta.savedPosition || 0 }
-            }
+    routes,
+    mode: routerMode,
+    strict: process.env.NODE_ENV !== 'production',
+    scrollBehavior(to, from, savedPosition) {
+      if (savedPosition) {
+        return savedPosition
+      } else {
+        if (from.meta.keepAlive) {
+          from.meta.savedPosition = document.body.scrollTop;
         }
-    })
-    //未登录只能路由到登录页
-router.beforeEach((to, from, next) => {
-    if (!sessionStorage.getItem('token') &&
-        to.path !== "/login"
-    ) {
-        next({
-            path: '/login'
-        });
-    } else {
-        next()
+        return { x: 0, y: to.meta.savedPosition || 0 }
+      }
     }
+  })
+  //未登录只能路由到登录页
+router.beforeEach((to, from, next) => {
+  if (!sessionStorage.getItem('token') &&
+    to.path !== "/login"
+  ) {
+    next({
+      path: '/login'
+    });
+  } else {
+    next()
+  }
 });
 new Vue({
-    router,
-    store,
+  router,
+  store,
 }).$mount('#app')

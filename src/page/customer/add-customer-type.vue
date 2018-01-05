@@ -2,7 +2,7 @@
   <div class="add_customer_type paddingTop main">
     <head-top goBack="" :headTitle="$route.query.id?'编辑分类':'添加分类'">
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
-      <span slot="back" @click="$router.push({name:'customerType'})">
+      <span slot="back" @click="$router.push({name:'customerType',query:{fromPage:$route.query.fromPage,chooseCustomer:$route.query.chooseCustomer}})">
           <span class="back iconfont icon-fanhui"></span>
       </span>
     </head-top>
@@ -37,6 +37,9 @@
     <div@click="saveCustomerType" class="bottom">
       保存
     </div>
+    <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
@@ -47,6 +50,7 @@
   import { save_customer_type,get_customer_type_detail } from 'src/service/getData';
   import kswitch from 'src/components/common/kswitch'
   import alertTip from '../../components/common/alertTip'
+  import loading from 'src/components/common/loading'
 
   export default {
     data(){
@@ -56,7 +60,8 @@
         enable: true,
         showAlert: false,
         alertText: null,
-        typeInfo: {}
+        typeInfo: {},
+        showLoading:false
       }
     },
     created(){
@@ -70,7 +75,8 @@
     components: {
       headTop,
       kswitch,
-      alertTip
+      alertTip,
+      loading
     },
     computed: {},
     methods: {
@@ -87,21 +93,30 @@
           this.alertText = "请输入名称";
           return;
         }
+        this.showLoading = true
         this.typeInfo.status = this.enable?1:0;
         save_customer_type(this.userId,this.typeInfo).then((res) => {
-          this.$router.replace({name:'customerType'})
+          this.$router.replace({name:'customerType',query:{
+            fromPage:this.$route.query.fromPage,
+            chooseCustomer:this.$route.query.chooseCustomer,
+            }})
+            this.showLoading = false
         }).catch((err) => {
           this.showAlert = true;
           this.alertText = err.message
+          this.showLoading = false
         })
       },
       getCustomerType(){
+        this.showLoading = true
         get_customer_type_detail(this.$route.query.id).then((res)=>{
           this.typeInfo = res.data;
           this.enable = Boolean(this.typeInfo.status);
+          this.showLoading = false
         }).catch((err)=>{
           this.showAlert = true;
           this.alertText = err.message
+          this.showLoading = false
         })
       }
 
@@ -190,7 +205,7 @@
 
   .back {
     font-size: 14px;
-    color: #fff;
+    color: #444;
     margin-left: .3rem;
   }
 </style>

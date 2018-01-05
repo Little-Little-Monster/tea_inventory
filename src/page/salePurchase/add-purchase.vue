@@ -70,6 +70,11 @@
                 <i>商品总价：</i>
                 ￥{{(Number(buyGoods.unitAmount)*Number(buyGoods.quantity)).toFixed(2)}}
               </p>
+              <p class="sale-type">
+                <i>售出方式：</i>
+                <em class="iconfont check-icon" :class="{'icon-radio-checked':showList[index].saleMode==1,'icon-danxuanweizhong':showList[index].saleMode==2}" @click="changeType(index,1)">正常出售</em>
+                <em class="iconfont check-icon" :class="{'icon-radio-checked':showList[index].saleMode==2,'icon-danxuanweizhong':showList[index].saleMode==1}" @click="changeType(index,2)">赠品</em>
+              </p>
             </div>
             <div class="goods-right" v-if="saleOrderInfo.status!=2&&saleOrderInfo.status!=3">
               <span class="list-option iconfont icon-jian jian-goods" @click="saleOrderInfo.showGoodsList.splice(index,1);getTotal()"></span>
@@ -80,7 +85,7 @@
       <ul>
         <li>
           <div class="list_left">
-            折扣 <i class="required" style="position:absolute;top:.4rem;left:.8rem">%</i>
+            折扣 <i class="required" style="position:absolute;top:.3rem;left:.8rem">%</i>
           </div>
           <div class="list_right">
             <input type="number" placeholder="未付" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="saleOrderInfo.discount" @input="getTotal">
@@ -101,8 +106,9 @@
             业务日期
           </div>
           <div class="list_right">
-            <input type="date" placeholder="请选择日期" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="saleOrderInfo.bizDateStr">
-            <!-- <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i> -->
+            <!-- <input type="date" placeholder="请选择日期" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="saleOrderInfo.bizDateStr"> -->
+            <input type="text" readonly="" id="time" name="input_date" :placeholder="saleOrderInfo.bizDateStr" v-model="saleOrderInfo.bizDateStr" />
+            <i class="time-xiala iconfont icon-xiala2"></i>
           </div>
         </li>
         <li style="margin-bottom:0" @click="showPay = !showPay">
@@ -174,11 +180,14 @@
       <div class="bottom" v-if="!edit">
         <div class="bottom_left">合计：<span>￥{{Number(saleOrderInfo.totalAmount).toFixed(2)}}</span></div>
         <div class="bottom_right" >
-          <span @click="submitOrder(1)" class="model">草稿</span> 
           <button :class="{returnGoods: false}"  v-show="saleOrderInfo.status!=1" @click="submitOrder(2)">{{$route.name=='saleTrade'?'销售':'退货'}}</button>
+          <span @click="submitOrder(1)" class="model">草稿</span> 
         </div>
       </div>
     </div>
+    <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
@@ -189,6 +198,7 @@
   import alertTip from '../../components/common/alertTip'
   import {save_sale_order,get_sale_order,delete_sale_order,cancel_sale_order} from 'src/service/getData'
   import footGuide from 'src/components/footer/footGuide'
+  import loading from 'src/components/common/loading'
 
   export default {
     data(){
@@ -202,7 +212,9 @@
         edit:this.$route.query.edit,
         fromPage:this.$route.query.fromPage,
         showPay:false,
-        status:null//采购单当前状态（1为草稿，2为已销售，3为撤销）
+        showList:[],
+        status:null,//采购单当前状态（1为草稿，2为已销售，3为撤销）
+        showLoading:false
       }
     },
     created(){
@@ -236,19 +248,29 @@
         if(!this.saleOrderInfo.payType){
           this.$set(this.saleOrderInfo,'payType',0);
         }
+        if(!this.saleOrderInfo.bizDateStr){
+          var date = new Date();
+          this.$set(this.saleOrderInfo,'bizDateStr',this.formatDate(date));
+        }
         // this.saleOrderInfo.debtAmount = 0;
         if(this.saleOrderInfo.showGoodsList&&this.saleOrderInfo.showGoodsList.length!=0){
+          this.showList = this.saleOrderInfo.showGoodsList;
           this.getTotal();
         }
       }
     },
     mounted(){
-
+      var calendar = new LCalendar();
+      calendar.init({
+        'trigger': '#time',//标签id
+        'type': 'date',//date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择
+      });
     },
     components: {
       headTop,
       footGuide,
-      alertTip
+      alertTip,
+      loading
     },
     beforeRouteLeave(to,form,next){
       if(to.name=='msite'){
@@ -278,13 +300,16 @@
           }})
         }
       },
+      changeType(index,flag){
+        Object.assign(this.showList[index],{},{saleMode:flag})
+        this.saleOrderInfo.showGoodsList = this.showList;
+      },
       returnBack(){
         switch (this.fromPage) {
           case 'saleHistory':
           case 'saleBackHistory':
             this.toAddress({name:this.fromPage});
             break;
-        
           default:
           this.toAddress({name:'msite'});
             break;
@@ -327,6 +352,7 @@
       },
       getSaleOrder(){
         //编辑采购单时获取信息
+        this.showLoading = true;
         get_sale_order(this.$route.query.id).then((res)=>{
           this.saleOrderInfo = res.data;
           this.saleOrderInfo.showGoodsList = res.data.saleGoods;
@@ -334,8 +360,11 @@
              this.RECORD_BUYORDER(this.saleOrderInfo)
           }
           this.status = this.saleOrderInfo.status;
+          this.showList = this.saleOrderInfo.saleGoods
+          this.showLoading = false;
         }).catch((err)=>{
-
+          this.showLoading = false;
+          this.showTip(err.message)
         })
       },
       toAccount(){
@@ -373,7 +402,7 @@
           this.saleOrderInfo.type=3//销售退货
         }
         this.saleOrderInfo.status=status//1提交，0草稿
-
+        this.showLoading = true;
         this.saleOrderInfo.operatorId = this.userId;
         let submitOrder = this.saleOrderInfo;
         submitOrder.saleGoods = this.saleOrderInfo.showGoodsList;
@@ -384,25 +413,32 @@
           }else{
             this.returnBack();
           }
+          this.showLoading = false;
         }).catch((err)=>{
-          console.log(err);
           this.showTip(err.message);
+          this.showLoading = false;
         })
       },
       cancel(){
         //撤销已采购订单
+        this.showLoading = true;
         cancel_sale_order(this.userId,this.saleOrderInfo.id).then((res)=>{
           this.returnBack()
+          this.showLoading = false;
         }).catch((err)=>{
            this.showTip(err.message)
+           this.showLoading = false;
         })
       },
       deleteOrder(){
         //删除草稿订单
+        this.showLoading = true;
         delete_sale_order(this.saleOrderInfo.id).then((res)=>{
           this.returnBack()
+          this.showLoading = false;
         }).catch((err)=>{
           this.showTip(err.message)
+          this.showLoading = false;
         })
       },
       getTotal(){
@@ -485,7 +521,7 @@
         @include sc(.24rem,$text_light);
         .goods-lists{
           display: flex;
-          height:2.5rem;
+          height:3rem;
           width:100%;
           padding-left:.4rem;
           border-bottom:.01rem solid $green;
@@ -516,6 +552,12 @@
                 text-align: center;
                 color:$text_light;
                 @include borderRadius(.4rem);
+              }
+            }
+            .sale-type{
+              em{
+                color:$green;
+                font-size:.24rem;
               }
             }
           }
@@ -575,7 +617,7 @@
         width:auto;
         float: right;
         button {
-          width: 1rem;
+          width: 1.5rem;
           height: 0.98rem;
           background: #9FC894;
           color: #fff;
@@ -587,13 +629,17 @@
           }
         }
         .model{
-          @include wh(1rem,.98rem);
+          @include wh(1.5rem,.98rem);
           display: inline-block;
           background: #F58095 ;
           color:#fff;
+          line-height: .98rem;
           float: right;
         }
       }
     }
+  }
+  .time-xiala{
+    position: static;
   }
 </style>

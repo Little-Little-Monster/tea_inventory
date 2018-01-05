@@ -46,46 +46,48 @@
     @import '../../style/mixin';
     .iconfont{
         display: inline;
-        color: #fff;
+        color: $text;
+        font-size:.38rem;
     }
     #head_top{
-        background-color: $black;
+        background-color: #fff;
         // position: fixed;
         // z-index: 100;
         // left: 0;
         // top: 0;
         position: relative;
-        @include wh(100%, 0.88rem);
-        line-height: 0.88rem;
+        @include wh(100%, 0.68rem);
+        line-height: 0.68rem;
+        border-bottom: .001rem solid #ccc;
     }
     .head_goback{
         left: 0.259rem;
-        @include wh(0.6rem, 0.88rem);
-        line-height: 0.88rem;
+        @include wh(0.6rem, 0.68rem);
+        line-height: 0.68rem;
         margin-left: .2rem;
     }
     .head_login{
         right: 0.55rem;
-        @include sc(0.65rem, #fff);
+        @include sc(0.65rem, $text);
         @include ct;
         .login_span{
-            color: #fff;
+            color: $text;
         }
         .user_avatar{
-            fill: #fff;
-            @include wh(.8rem, .8rem);
+            fill: $text;
+            @include wh(.8rem, .68rem);
         }
     }
     .title_head{
         @include center;
         width: 50%;
-        color: #fff;
-        height:0.88rem;
+        color: $text;
+        height:0.68rem;
         text-align: center;
-        line-height: 0.88rem;
+        line-height: 0.68rem;
         .title_text{
-            @include sc(0.34rem, #fff);
-            line-height: 0.88rem;
+            @include sc(0.28rem, $text);
+            line-height: 0.68rem;
             text-align: center;
             display: block;
         }
@@ -93,15 +95,15 @@
     .right{
         right: .1rem;
         @include ct;
-        height: .8rem;
-        width:.8rem;
+        height: .6rem;
+        width:.6rem;
         text-align: center;
         span{
-            @include sc(0.34rem, #fff);
-            line-height: 100%;
+            @include sc(0.34rem, $text);
+            line-height: .5rem;
         };
         .icon-jia{
-            font-size:.4rem;
+            font-size:.45rem;
         }
     }
 </style>

@@ -27,9 +27,10 @@
         <p v-if="touchend" class="empty_data">没有更多了</p>
       </div>
     </div>
-     <transition name="loading">
+    <transition name="loading">
 			<loading v-show="showLoading"></loading>
 		</transition>
+    <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
   </div>
 </template>
 <script>
@@ -40,6 +41,7 @@
   import footGuide from 'src/components/footer/footGuide'
   import {loadMore} from 'src/components/common/mixin'
   import loading from 'src/components/common/loading'
+  import alertTip from '../../components/common/alertTip'
   export default {
     data(){
       return {
@@ -54,13 +56,16 @@
         preventRepeatReuqest: false, //到达底部加载数据，防止重复加载
 			  showBackStatus: false, //显示返回顶部按钮
 			  showLoading: true, //显示加载动画
-			  touchend: false, //没有更多数据
+        touchend: false, //没有更多数据
+        showAlert:false,
+        alertText:''
       }
     },
     components: {
       headTop,
       footGuide,
-      loading
+      loading,
+      alertTip
     },
     mixins: [loadMore],
     computed: {},
@@ -77,15 +82,25 @@
       toAddress(name){
         this.$router.push(name)
       },
+      showTip(msg){
+        this.alertText = msg;
+        this.showAlert =true;
+      },
       getHistory(){
+        this.showLoading = true;
         get_sale_history(this.userId,this.page,this.pageSize,this.status,this.type).then((res)=>{
-          this.historyList = res.data.info;
-           if (res.data.info.length < this.pageSize) {
-              this.touchend = true;
-            }
-            this.showLoading = false
+          if(res.code!=200){
+            this.showTip(res.message)
+          }else{
+            this.historyList = res.data.info;
+            if (res.data.info.length < this.pageSize) {
+                this.touchend = true;
+              }
+          }
+          this.showLoading = false
         }).catch((err)=>{
            this.showLoading = false
+           this.showTip(err.message)
         })
       },
       //到达底部加载更多数据
@@ -102,12 +117,16 @@
         //数据的定位加20位
         this.page++;
         let res = await get_sale_history(this.userId,this.page,this.pageSize,this.status,this.type)
-              this.showLoading = false;
-              this.preventRepeatReuqest = false;
-              if (res.data.info.length < this.pageSize) {
-                this.touchend = true;
-              }
-              this.historyList = [...this.historyList,...res.data.info]
+        this.showLoading = false;
+        if(res.code!=200){
+           this.showTip(res.message)
+        }else{
+          this.preventRepeatReuqest = false;
+          if (res.data.info.length < this.pageSize) {
+            this.touchend = true;
+          }
+          this.historyList = [...this.historyList,...res.data.info]
+        }
       },
       editSaleOrder(id){
         this.$router.push({name:this.$route.name=='saleBackHistory'?'saleBack':'saleTrade',query:{

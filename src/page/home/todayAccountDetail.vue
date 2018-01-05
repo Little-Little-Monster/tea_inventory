@@ -10,10 +10,12 @@
             <div style="height:auto">
                 <section class="title-choose">
                     <div class="login-tit">
-                        <input type="date" :class="{'full':startDate}" placeholder="开始时间" v-model="startDate">
+                        <input type="text" readonly="" id="time" name="input_date" placeholder="开始时间" v-model="startDate" />
+                        <i class="time-xiala iconfont icon-xiala2"></i>
                     </div>
                     <div class="regist-tit">
-                        <input type="date" :class="{'full':endDate}" placeholder="结束时间" v-model="endDate">
+                        <input type="text" readonly="" id="time2" name="input_date" placeholder="结束时间" v-model="endDate" />
+                        <i class="time-xiala iconfont icon-xiala2"></i>
                     </div>
                 </section>
                 <section class="total-info">
@@ -88,7 +90,16 @@ export default {
         this.getAccountDetail()
     },
     mounted(){
-        
+        var calendar = new LCalendar();
+        var calendar2 = new LCalendar();
+        calendar.init({
+            'trigger': '#time',//标签id
+            'type': 'date',//date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择
+        });
+        calendar2.init({
+            'trigger': '#time2',//标签id
+            'type': 'date',//date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择
+        });
     },
     mixins: [loadMore],
     components: {
@@ -111,6 +122,7 @@ export default {
                 page:this.page,
                 pageSize:this.pageSize
             }
+            this.showLoading = true
             get_today_account_detail(this.info).then((res)=>{
                 if(res.code!=200){
                     this.showTip(res.message)
@@ -132,6 +144,7 @@ export default {
                 }
             }).catch((err)=>{
                  this.showTip(err.message)
+                 this.showLoading = false
             })
         },
         //到达底部加载更多数据
@@ -164,7 +177,9 @@ export default {
             this.accountInfo.info = [...this.accountInfo.info,...res.data.info]
         },
         goBack(){
-            this.$router.push({name:"todayAccount"})
+            this.$router.push({name:"todayAccount",query:{
+                fromPage:this.$route.query.fromPage
+            }})
         },
         showTip(msg){
             this.alertText = msg;

@@ -59,13 +59,13 @@ export default {
         text-align: center;
         .save{
             font-size:.28rem;
-            color:#fff;
+            color:#444;
             margin-left:.2rem;
         }
     }
     .save{
         font-size:.28rem;
-        color:#fff;
+        color:#444;
         margin-left:.2rem;
     }
 

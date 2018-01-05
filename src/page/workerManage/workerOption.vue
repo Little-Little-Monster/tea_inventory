@@ -74,6 +74,9 @@
         <div class="bottom"  @click="saveWorker">
             保存
         </div>
+        <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
         <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
     </div>    
 </template>
@@ -86,6 +89,7 @@ import {worker_handel,get_rolelist,get_employee} from 'src/service/getData'
 import headTop from 'src/components/header/head';
 import {omit} from 'lodash'
 import md5 from "blueimp-md5"
+import loading from 'src/components/common/loading'
 
 export default {
 	data(){
@@ -96,7 +100,8 @@ export default {
             showAlert:false,
             secondPwd:null,
             roleList:null,
-            employeeId:null
+            employeeId:null,
+            showLoading:false
         }
     },
     created(){
@@ -126,7 +131,7 @@ export default {
 
     },
     components: {
-    	headTop,alertTip
+    	headTop,alertTip,loading
     },
     computed: {
 		...mapState([
@@ -142,6 +147,7 @@ export default {
             this.alertText = text
         },
         getEmployee(){
+            this.showLoading = true
             get_employee(this.userId,this.employeeId).then((res)=>{
                 this.worker = res.data;
                 this.worker.storeIds = [];
@@ -154,9 +160,11 @@ export default {
                         })
                     }
                 })
+                this.showLoading = false
                 // this.worker.storeIds = this.worker.storeVos;
             }).catch((err)=>{
-
+                this.showTip(err.message)
+                this.showLoading = false
             })
         },
         goStore(){
@@ -213,6 +221,7 @@ export default {
                     this.worker.password = md5(this.secondPwd)
                 }
             }
+            this.showLoading = true
             
             this.worker.roles =  this.roleList
             // this.roleList.forEach(el=>{
@@ -222,9 +231,11 @@ export default {
             // });
             worker_handel(this.userId,this.worker).then((res)=>{
                 this.$router.push({name:"worker"})
+                this.showLoading = false
             }).catch((err)=>{
                 this.alertText = err.message;
                 this.showAlert = true;
+                this.showLoading = false
             })
         },
         getRoleList(){
@@ -287,7 +298,7 @@ export default {
     .bottom{
         background: $green;
         text-align: center;
-        line-height:1rem;
+        line-height:.8rem;
         color:#fff;
     }
     .right{
@@ -295,6 +306,7 @@ export default {
         text-align: center;
         .save{
             font-size:.28rem;
+            color:#444;
         }
     }
     .worker-name{

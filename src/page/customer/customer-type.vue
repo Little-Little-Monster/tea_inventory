@@ -1,14 +1,14 @@
 <template>
     <div class="main">
     	<head-top signin-up='msite' goBack="" head-title="选择客户分类">
-            <router-link slot="right" class="iconfont icon-jia" :to="{name:'addCustomerType'}"></router-link>
+            <router-link slot="right" class="iconfont icon-jia" :to="{name:'addCustomerType',query:{fromPage:$route.query.fromPage,chooseCustomer:$route.query.chooseCustomer}}"></router-link>
             <span slot="back" @click="pushStore">
                 <span class="save iconfont icon-fanhui"></span>
             </span>
     	</head-top>
 
         <div class="cneter-con paddingTop">
-            <div class="store-list list" v-for="list in typeList" @click="$router.replace({name:'addCustomerType',query:{id:list.id}})">
+            <div class="store-list list" v-for="list in typeList" @click="toEdit(list)">
                 <span>{{list.name}}</span>
                 <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click.stop="chooseId=list.id;chooseName=list.name"></em>
             </div>
@@ -69,8 +69,16 @@ export default {
             'RECORD_CUSTOMER'
         ]),
         pushStore(){
-            this.$router.push({name:"addCustomer"});
+            this.$router.push({name:"addCustomer",query:{
+            fromPage:this.$route.query.fromPage,
+            chooseCustomer:this.$route.query.chooseCustomer
+          }});
             this.pushCustomer()
+        },
+        toEdit(list){
+            if(!this.$route.query.chooseCustomer){
+                this.$router.replace({name:'addCustomerType',query:{id:list.id}})
+            }
         },
         pushCustomer(){
             let info = this.customer;
@@ -92,13 +100,13 @@ export default {
         text-align: center;
         .save{
             font-size:.28rem;
-            color:#fff;
+            color:#444;
             margin-left:.2rem;
         }
     }
     .save{
         font-size:.28rem;
-        color:#fff;
+        color:#444;
         margin-left:.2rem;
     }
 

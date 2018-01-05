@@ -93,7 +93,12 @@ export default {
             this.alertText = tip;
         },
         toType(){
-            this.$router.push({name:'goodsAttrList',query:{type:'goodsType',getParent:true,attr:JSON.stringify(this.attr)}})
+            this.$router.push({name:'goodsAttrList',query:{
+                type:'goodsType',getParent:true,
+                attr:JSON.stringify(this.attr),
+                fromPage:this.$route.query.fromPage,
+                fromPage2:this.$route.query.fromPage2
+            }})
         },
         async saveAttr(){
             if(!this.attr.name){
@@ -103,28 +108,44 @@ export default {
             if(this.queryType=='goodsBrand'){
                 //添加品牌
                 save_goods_brand(this.userId,this.attr).then((res)=>{
-                    this.$router.push({name:"goodsAttrList",query:{type:this.queryType}})
+                    if(res.code==200){
+                        this.goBackRoute()
+                    }else{
+                        this.showTip(res.message)
+                    }
                 }).catch((err)=>{
                     this.showTip(err.message)
                 })
             }else if(this.queryType=='goodsType'){
                 //添加分类
                 save_goods_type(this.userId,this.attr).then((res)=>{
-                    this.$router.push({name:"goodsAttrList",query:{type:this.queryType}})
+                   if(res.code==200){
+                        this.goBackRoute()
+                    }else{
+                        this.showTip(res.message)
+                    }
                 }).catch((err)=>{
                     this.showTip(err.message)
                 })
             }else if(this.queryType=='unit'){
                 //添加单位
                 save_goods_unit(this.userId,this.attr).then((res)=>{
-                    this.$router.push({name:"goodsAttrList",query:{type:this.queryType}})
+                   if(res.code==200){
+                        this.goBackRoute()
+                    }else{
+                        this.showTip(res.message)
+                    }
                 }).catch((err)=>{
                     this.showTip(err.message)
                 })
             }
         },
         goBackRoute(){
-            this.$router.push({name:"goodsAttrList",query:{type:this.queryType}})
+            this.$router.push({name:"goodsAttrList",query:{
+                type:this.queryType,
+                fromPage:this.$route.query.fromPage,
+                fromPage2:this.$route.query.fromPage2
+            }})
         }
 
     }
