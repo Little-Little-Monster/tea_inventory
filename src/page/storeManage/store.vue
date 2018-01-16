@@ -171,7 +171,9 @@ export default {
                         name:'workerOption',
                         query:{
                             worker:this.$route.query.worker,
-                            employeeId:this.$route.query.employeeId
+                            employeeId:this.$route.query.employeeId,
+                            'fromPage':this.$route.query.fromPage,
+                            'getWorker':this.$route.query.getWorker
                         }
                     }
                 )
@@ -244,7 +246,9 @@ export default {
                         query:{
                             worker:this.$route.query.worker,
                             storeIds:JSON.stringify(this.storeIds),
-                            employeeId:this.$route.query.employeeId
+                            employeeId:this.$route.query.employeeId,
+                            'fromPage':this.$route.query.fromPage,
+                            'getWorker':this.$route.query.getWorker
                         }
                     }
                 )

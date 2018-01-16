@@ -15,7 +15,7 @@
                 </section>
                 <section>
                     <span>总余额（仅启用）</span> 
-                    <span>￥{{accountInfo.totalBalance}}</span> 
+                    <span>￥{{accountInfo.totalBalance.toFixed(2)}}</span> 
                 </section>
             </section>
             <div class="balance-list" v-for="account in accountInfo.vos">
@@ -25,7 +25,7 @@
                 <div class="list-con" v-for="list in account.list" @click="toEdit(list.id)">
                     <div class="list">
                         <span>{{list.accountName}}</span> 
-                        <em class="list-option" :style="{'right':getAccount?'.8rem':''}">￥{{list.balance}}</em>
+                        <em class="list-option" :style="{'right':getAccount?'.8rem':''}">￥{{list.balance.toFixed(2)}}</em>
                         <em v-if="getAccount" class="list-option iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click="chooseId=list.id;chooseName=list.accountName"></em>
                     </div>    
                 </div>
@@ -53,7 +53,9 @@ export default {
 	data(){
         return {
             accountList:[],
-            accountInfo:{},
+            accountInfo:{
+                totalBalance:0
+            },
             userId:getStore('userInfo').id,
             showAlert:false,
             alertText:'',

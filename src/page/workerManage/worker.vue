@@ -1,7 +1,7 @@
 <template>
     <div class="main">
     	<head-top signin-up='msite' goBack="" head-title="员工管理">
-            <router-link v-if="!$route.query.getWorker" slot="right" class="iconfont icon-jia" :to="{name:'workerOption'}"></router-link>
+            <span  slot="right" class="iconfont icon-jia" @click="$router.push({name:'workerOption',query:{fromPage:$route.query.fromPage,getWorker:$route.query.getWorker}})"></span>
             <div slot="back" class="goback" @click="goBack" >
                 <span class="iconfont icon-fanhui title_text"></span>
             </div>

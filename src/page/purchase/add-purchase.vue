@@ -61,7 +61,7 @@
             <span>{{(Number(buyGoods.unitAmount)*Number(buyGoods.quantity)).toFixed(2)}}</span>
             <span class="list-option iconfont icon-jian jian-goods" v-if="buyOrderInfo.status!=2&&buyOrderInfo.status!=3" @click="buyOrderInfo.showGoodsList.splice(index,1);getTotal()"></span>
           </div> -->
-          <div class="goods-lists" v-for="(buyGoods,index) in buyOrderInfo.showGoodsList" v-if="buyGoods.quantity!=0">
+          <div class="goods-lists" v-for="(buyGoods,index) in buyOrderInfo.showGoodsList">
             <div class="goods-left">
               <p>
                 <i>商品名称：</i> 
@@ -93,7 +93,7 @@
       <ul>
         <li>
           <div class="list_left">
-            实付 <i class="required" style="position:absolute;top:.3rem;left:1rem">{{Number(buyOrderInfo.realAmount).toFixed(2)}}</i>
+            实付 <i class="required" style="position:absolute;top:.3rem;left:1rem" v-if="Number(buyOrderInfo.realAmount)">{{Number(buyOrderInfo.realAmount).toFixed(2)}}</i>
           </div>
           <div class="list_right">
             <input type="number" placeholder="未付" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyOrderInfo.realAmount" @input="getTotal">
@@ -127,23 +127,23 @@
         </li>
       </ul>
       <div class="bottom" v-if="edit">
-        <div class="bottom_left">合计：<span>￥{{buyOrderInfo.totalAmount.toFixed(2)}}</span></div>
+        <div class="bottom_left" v-if="Number(buyOrderInfo.totalAmount)">合计：<span>￥{{buyOrderInfo.totalAmount.toFixed(2)}}</span></div>
         <div class="bottom_right" v-if="buyOrderInfo.status!=3">
-          <span @click="submitOrder(1)" class="model" v-if="!buyOrderInfo.status||buyOrderInfo.status!=1" v-show="buyOrderInfo.status!=2">草稿</span> 
-          <span @click="submitOrder(2)" class="model" v-if="buyOrderInfo.status==1" >{{$route.name=='buyTrade'?'采购':'退货'}}</span> 
-          <button :class="{returnGoods: false}" v-if="buyOrderInfo.status&&buyOrderInfo.status!=1" v-show="buyOrderInfo.status!=2" @click="submitOrder(2)">{{$route.name=='buyTrade'?'采购':'退货'}}</button>
+          <span @click="submitOrder(1)" class="model" v-if="!buyOrderInfo.status||buyOrderInfo.status!=1&&fromPage!='todayAccountDetail'" v-show="buyOrderInfo.status!=2">草稿</span> 
+          <span @click="submitOrder(2)" class="model" v-if="buyOrderInfo.status==1&&fromPage!='todayAccountDetail'" >{{$route.name=='buyTrade'?'采购':'退货'}}</span> 
+          <button :class="{returnGoods: false}" v-if="buyOrderInfo.status&&buyOrderInfo.status!=1&&fromPage!='todayAccountDetail'" v-show="buyOrderInfo.status!=2" @click="submitOrder(2)">{{$route.name=='buyTrade'?'采购':'退货'}}</button>
         </div>
 
         <div class="bottom_right" v-if="buyOrderInfo.status==2||buyOrderInfo.status==1">
-          <button v-if="buyOrderInfo.status==2" :class="{returnGoods: false}" @click="cancel">撤销</button>
-          <button v-if="buyOrderInfo.status==1" :class="{returnGoods: false}" @click="deleteOrder">删除</button>
+          <button v-if="buyOrderInfo.status==2&&fromPage!='todayAccountDetail'" :class="{returnGoods: false}" @click="cancel">撤销</button>
+          <button v-if="buyOrderInfo.status==1&&fromPage!='todayAccountDetail'" :class="{returnGoods: false}" @click="deleteOrder">删除</button>
         </div>
       </div>
       <div class="bottom" v-if="!edit">
         <div class="bottom_left">合计：<span>￥{{buyOrderInfo.totalAmount.toFixed(2)}}</span></div>
         <div class="bottom_right" >
-          <button :class="{returnGoods: false}"  v-show="buyOrderInfo.status!=2" @click="submitOrder(2)">{{$route.name=='buyTrade'?'采购':'退货'}}</button>
-          <span @click="submitOrder(1)" class="model">草稿</span> 
+          <button :class="{returnGoods: false}"  v-show="buyOrderInfo.status!=2&&fromPage!='todayAccountDetail'" @click="submitOrder(2)">{{$route.name=='buyTrade'?'采购':'退货'}}</button>
+          <span @click="submitOrder(1)" v-if="fromPage!='todayAccountDetail'" class="model">草稿</span> 
         </div>
       </div>
     </div>
@@ -182,6 +182,7 @@
         switch (this.fromPage) {
           case 'buyHistory':
           case 'buyBackHistory':
+          case 'todayAccountDetail':
             //编辑采购单
             this.getBuyOrder()
             break;
@@ -239,7 +240,9 @@
           case 'buyBackHistory':
             this.toAddress({name:this.fromPage});
             break;
-        
+          case 'todayAccountDetail':
+            this.toAddress({name:this.fromPage,query:{id:this.$route.query.detailId}});
+            break;
           default:
           this.toAddress({name:'msite'});
             break;
@@ -330,11 +333,23 @@
         }else{
           this.buyOrderInfo.type=5//采购回退
         }
-        this.showLoading = true;
+        this.empty = false;
+        this.buyOrderInfo.showGoodsList.forEach(goods=>{
+          if(goods.quantity==''){
+            this.empty = true;
+          }
+        })
+        if(this.empty){
+          this.showTip("商品数量不能为空！");
+          return;
+        }
+
         this.buyOrderInfo.status=status//1提交，0草稿
         this.buyOrderInfo.operatorId = this.userId;
         let submitOrder = this.buyOrderInfo;
         submitOrder.buyGoods = this.buyOrderInfo.showGoodsList;
+        
+        this.showLoading = true;
         save_buy_order(this.userId,submitOrder).then((res)=>{
           if(res.code==600){
             this.buyOrderInfo.status=this.status;
@@ -535,7 +550,9 @@
         span {
           color: #D38888;;
           margin-left: 0.14rem;
-          font-size: .26rem
+          font-size: .26rem;
+          line-height: .98rem;
+
         }
       }
       .bottom_right {

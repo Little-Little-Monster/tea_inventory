@@ -11,7 +11,7 @@
       <em class="list-option iconfont icon-sousuo" @click="getGoodsList"></em>
     </div>
     <div class="goods_classify paddingTop">
-      <div class="goods_classify_button">
+      <div class="goods_classify_button" v-if="goodsList.length!=0">
         <ul v-for="(goodstype,index) in goodsList">
           <li :class="{'active':typeShow==index}" @click="typeShow=index">{{goodstype.goodsClassficationName}}</li>
         </ul>
@@ -24,7 +24,7 @@
             </div>
             <div class="goods_info">
               <h3>{{goods.name}}</h3>
-              <p>采购价：<span class="price">￥{{goods.buyAmount}}/{{goods.goodsUnitName}}</span></p>
+              <p>采购价：<span class="price">￥{{goods.buyAmount.toFixed(2)}}/{{goods.goodsUnitName}}</span></p>
               <p>库存：{{goods.stockTotal}}</p>
               <p>
                 <span class="iconfont icon-jian" @click="goods.quantity>0?goods.quantity--:''"></span>
@@ -133,13 +133,15 @@
         let buyGoods = []
         this.goodsList.forEach(element => {
           element.stockVos.forEach(goods => {
-             buyGoods.push({
-              amount:Number(goods.buyAmount)*Number(goods.quantity),
-              goodsId:goods.goodsId,
-              goodsName:goods.name,
-              quantity:goods.quantity,
-              unitAmount:Number(goods.buyAmount).toFixed(2)
-            })
+            if(goods.quantity!=0){
+                buyGoods.push({
+                amount:Number(goods.buyAmount)*Number(goods.quantity),
+                goodsId:goods.goodsId,
+                goodsName:goods.name,
+                quantity:goods.quantity,
+                unitAmount:Number(goods.buyAmount).toFixed(2)
+              })
+            }
           });
         });
         let orderInfo = this.buyOrder;

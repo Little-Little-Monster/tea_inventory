@@ -32,14 +32,18 @@
                         <span>￥{{accountInfo.totalMergeMoney.toFixed(2)}}</span> 
                     </section>
                 </section>
-                <div class="worker-list list" v-for="list in accountInfo.info">
+                <div class="worker-list list" v-for="list in accountInfo.info" @click="toDetail(list.type,list.tradeId)">
                     <span>
                         {{list.settleAccountName}}
                     </span>
                     <p class="text-info">账户余额：<em>￥{{list.surplusAmount.toFixed(2)}}</em></p>
                     <p class="text-info">操作员：<em>{{list.operatorName}}</em></p>
                     <p class="text-info">创建时间：<em>{{list.createDate}}</em></p>
-                    <em class="list-option">￥{{list.tradeAmount.toFixed(2)}}</em>
+                    <em class="list-option">
+                        <b v-if="list.type==0||list.type==4||list.type==5">-￥</b>
+                        <b v-if="list.type==1||list.type==2||list.type==3">+￥</b>
+                        {{list.tradeAmount.toFixed(2)}}
+                    </em>
                     <em class="list-type">{{list.typeName}}</em>
                 </div>
                 <p v-if="touchend" class="empty_data">没有更多了</p>
@@ -184,6 +188,27 @@ export default {
         showTip(msg){
             this.alertText = msg;
             this.showAlert = true;
+        },
+        toDetail(type,id){
+            if(type!=11){
+                if(type<3){
+                    //购买
+                    this.$router.push({name:type==1?'buyBack':'buyTrade',query:{
+                        edit:true,
+                        fromPage:this.$route.name,
+                        id:id,
+                        detailId:this.$route.query.id
+                    }})
+                }else if(type>=3){
+                    //销售
+                    this.$router.push({name:type==4?'saleBack':'saleTrade',query:{
+                        edit:true,
+                        fromPage:this.$route.name,
+                        id:id,
+                        detailId:this.$route.query.id
+                    }})
+                }
+            }
         }
 
     }
@@ -260,6 +285,9 @@ export default {
         };
         .list-option{
             @include sc(.28rem,#E78787);
+            b{
+                color:#E78787;
+            }
             right:.4rem;
         }
         .list-type{

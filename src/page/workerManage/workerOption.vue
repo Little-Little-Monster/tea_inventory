@@ -4,7 +4,7 @@
             <!-- <div slot="right" >
                 <span class="save" @click="saveWorker">保存</span>
             </div> -->
-            <div slot="back" class="goback" @click="$router.push({name:'worker'})" >
+            <div slot="back" class="goback" @click="$router.push({name:'worker',query:{fromPage:$route.query.fromPage,getWorker:$route.query.getWorker}})">
                 <span class="iconfont icon-fanhui title_text"></span>
             </div>
     	</head-top>
@@ -12,7 +12,7 @@
         <div class="cneter-con paddingTop">
             <div class="list">
                 <em class="required">*</em>
-                <span>账号</span>
+                <span>登陆账号</span>
                 <input type="text" maxlength="16" placeholder="由数字或字母组成，用于员工登录" v-model="worker.account">
             </div>
             <div class="list">
@@ -175,7 +175,9 @@ export default {
                     query:{
                         'getStore':true,
                         'worker':JSON.stringify(this.worker),
-                        'employeeId':this.employeeId
+                        'employeeId':this.employeeId,
+                        'fromPage':this.$route.query.fromPage,
+                        'getWorker':this.$route.query.getWorker
                     }
                 })
         },
@@ -230,7 +232,7 @@ export default {
             //     }
             // });
             worker_handel(this.userId,this.worker).then((res)=>{
-                this.$router.push({name:"worker"})
+                this.$router.push({name:"worker",query:{fromPage:this.$route.query.fromPage,getWorker:this.$route.query.getWorker}})
                 this.showLoading = false
             }).catch((err)=>{
                 this.alertText = err.message;

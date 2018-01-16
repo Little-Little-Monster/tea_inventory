@@ -409,6 +409,7 @@
         font-size: .20rem;
         padding-left: 0.3rem;
         text-align: left;
+        line-height: .98rem;
         span {
           color: #D38888;;
           margin-left: 0.14rem;

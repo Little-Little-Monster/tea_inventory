@@ -48,7 +48,7 @@
           </div>
         </li>
         <li class="good-con" v-if="saleOrderInfo.showGoodsList&&saleOrderInfo.showGoodsList.length!=0">
-           <div class="goods-lists" v-for="(buyGoods,index) in saleOrderInfo.showGoodsList" v-if="buyGoods.quantity!=0">
+           <div class="goods-lists" v-for="(buyGoods,index) in saleOrderInfo.showGoodsList">
             <div class="goods-left">
               <p>
                 <i>商品名称：</i> 
@@ -68,7 +68,8 @@
               </p>
               <p>
                 <i>商品总价：</i>
-                ￥{{(Number(buyGoods.unitAmount)*Number(buyGoods.quantity)).toFixed(2)}}
+                ￥<b v-if="showList[index].saleMode==1">{{(Number(buyGoods.unitAmount)*Number(buyGoods.quantity)).toFixed(2)}}</b> 
+                <b v-if="showList[index].saleMode==2">0.00</b> 
               </p>
               <p class="sale-type">
                 <i>售出方式：</i>
@@ -143,12 +144,20 @@
             <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':saleOrderInfo.payType==2,'icon-danxuanweizhong':saleOrderInfo.payType!=2}" @click="(saleOrderInfo.payType!=2)?saleOrderInfo.payType=2:''"></em>
           </div>
         </li>
-        <li v-show="showPay">
+        <li style="margin-bottom:0" v-show="showPay">
           <div class="list_left">
             POS
           </div>
           <div class="list_right">
             <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':saleOrderInfo.payType==3,'icon-danxuanweizhong':saleOrderInfo.payType!=3}" @click="(saleOrderInfo.payType!=3)?saleOrderInfo.payType=3:''"></em>
+          </div>
+        </li>
+        <li v-show="showPay">
+          <div class="list_left">
+            余额
+          </div>
+          <div class="list_right">
+            <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':saleOrderInfo.payType==4,'icon-danxuanweizhong':saleOrderInfo.payType!=4}" @click="(saleOrderInfo.payType!=4)?saleOrderInfo.payType=4:''"></em>
           </div>
         </li>
       </ul>
@@ -162,33 +171,58 @@
         </li>
       </ul>
       <div class="bottom" v-if="edit">
-        <div class="bottom_left">合计：<span>￥{{Number(saleOrderInfo.totalAmount).toFixed(2)}}</span></div>
+        <div class="bottom_left">合计：<span v-if="Number(saleOrderInfo.totalAmount)">￥{{Number(saleOrderInfo.totalAmount).toFixed(2)}}</span></div>
         <div class="bottom_right" v-if="saleOrderInfo.status!=3">
-          <span @click="submitOrder(1)" class="model" v-if="!saleOrderInfo.status||saleOrderInfo.status!=1" v-show="saleOrderInfo.status!=2">草稿</span> 
-          <span @click="submitOrder(2)" class="model" v-if="saleOrderInfo.status==1" >{{$route.name=='saleTrade'?'销售':'退货'}}</span> 
-          <button :class="{returnGoods: false}" v-if="saleOrderInfo.status&&saleOrderInfo.status!=1" v-show="saleOrderInfo.status!=2" @click="submitOrder(2)">{{$route.name=='saleTrade'?'销售':'退货'}}</button>
+          <span @click="submitOrder(1)" class="model" v-if="!saleOrderInfo.status||saleOrderInfo.status!=1&&fromPage!='todayAccountDetail'" v-show="saleOrderInfo.status!=2">草稿</span> 
+          <span @click="submitOrder(2)" class="model" v-if="saleOrderInfo.status==1&&fromPage!='todayAccountDetail'" >{{$route.name=='saleTrade'?'销售':'退货'}}</span> 
+          <button :class="{returnGoods: false}" v-if="saleOrderInfo.status&&saleOrderInfo.status!=1&&fromPage!='todayAccountDetail'" v-show="saleOrderInfo.status!=2" @click="submitOrder(2)">{{$route.name=='saleTrade'?'销售':'退货'}}</button>
         </div>
 
-        <div class="bottom_right" v-if="saleOrderInfo.status==2">
+        <div class="bottom_right" v-if="saleOrderInfo.status==2&&fromPage!='todayAccountDetail'">
           <button :class="{returnGoods: false}" @click="cancel">撤销</button>
         </div>
 
-        <div class="bottom_right" v-if="saleOrderInfo.status==1">
+        <div class="bottom_right" v-if="saleOrderInfo.status==1&&fromPage!='todayAccountDetail'">
           <button :class="{returnGoods: false}" @click="deleteOrder">删除</button>
         </div>
       </div>
       <div class="bottom" v-if="!edit">
-        <div class="bottom_left">合计：<span>￥{{Number(saleOrderInfo.totalAmount).toFixed(2)}}</span></div>
+        <div class="bottom_left">合计：<span v-if="Number(saleOrderInfo.totalAmount)">￥{{Number(saleOrderInfo.totalAmount).toFixed(2)}}</span></div>
         <div class="bottom_right" >
-          <button :class="{returnGoods: false}"  v-show="saleOrderInfo.status!=1" @click="submitOrder(2)">{{$route.name=='saleTrade'?'销售':'退货'}}</button>
-          <span @click="submitOrder(1)" class="model">草稿</span> 
+          <button :class="{returnGoods: false}"  v-show="saleOrderInfo.status!=1&&fromPage!='todayAccountDetail'" @click="submitOrder(2)">{{$route.name=='saleTrade'?'销售':'退货'}}</button>
+          <span @click="submitOrder(1)" v-if="fromPage!='todayAccountDetail'" class="model">草稿</span> 
         </div>
       </div>
     </div>
     <transition name="loading">
 			<loading v-show="showLoading"></loading>
 		</transition>
-    <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
+    
+    <alert-tip v-if="showAlert" :showHide="showAlert" @cancelTip="cancelTip" @closeTip="closeTip" :isInput="showPayWay" :alertText="alertText">
+      <div slot="inputVal" v-if="showPayWay" class="input-con">
+          <h4 style="text-align:center;position:relative;bottom:.4rem;">选择退款方式</h4>
+          <div class="pay-type-con">
+            <span>支付宝</span>
+            <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':payType==0,'icon-danxuanweizhong':payType!=0}" @click="payType=0"></em>
+          </div>
+          <div class="pay-type-con">
+            <span>微信</span>
+            <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':payType==1,'icon-danxuanweizhong':payType!=1}" @click="payType=1"></em>
+          </div>
+          <div class="pay-type-con">
+            <span>现金</span>
+            <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':payType==2,'icon-danxuanweizhong':payType!=2}" @click="payType=2"></em>
+          </div>
+          <div class="pay-type-con">
+            <span>POS</span>
+            <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':payType==3,'icon-danxuanweizhong':payType!=3}" @click="payType=3"></em>
+          </div>
+          <div class="pay-type-con">
+            <span>余额</span>
+            <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':payType==4,'icon-danxuanweizhong':payType!=4}" @click="payType=4"></em>
+          </div>
+      </div>
+    </alert-tip>
   </div>
 </template>
 <script>
@@ -214,7 +248,9 @@
         showPay:false,
         showList:[],
         status:null,//采购单当前状态（1为草稿，2为已销售，3为撤销）
-        showLoading:false
+        showLoading:false,
+        showPayWay:false,
+        payType:0
       }
     },
     created(){
@@ -222,6 +258,7 @@
         switch (this.fromPage) {
           case 'saleHistory':
           case 'saleBackHistory':
+          case 'todayAccountDetail':
             //编辑采购单
             this.getSaleOrder()
             break;
@@ -300,6 +337,24 @@
           }})
         }
       },
+      closeTip(){
+        if(this.showPayWay){
+        this.showLoading = true;
+          cancel_sale_order(this.userId,this.saleOrderInfo.id,this.payType).then((res)=>{
+            this.returnBack()
+            this.showLoading = false;
+          }).catch((err)=>{
+             this.showTip(err.message)
+             this.showLoading = false;
+          })
+        }else{
+          this.showAlert = false;
+        }
+      },
+      cancelTip(){
+        this.showAlert = false;
+        this.payType = 0
+      },
       changeType(index,flag){
         Object.assign(this.showList[index],{},{saleMode:flag})
         this.saleOrderInfo.showGoodsList = this.showList;
@@ -310,11 +365,13 @@
           case 'saleBackHistory':
             this.toAddress({name:this.fromPage});
             break;
+          case 'todayAccountDetail':
+            this.toAddress({name:this.fromPage,query:{id:this.$route.query.detailId}});
+            break;
           default:
           this.toAddress({name:'msite'});
             break;
         }
-        
         this.RECORD_BUYORDER({})
       },
       goCustomer(){
@@ -401,11 +458,29 @@
         }else{
           this.saleOrderInfo.type=3//销售退货
         }
+        this.empty = false;
+        this.saleOrderInfo.showGoodsList.forEach(goods=>{
+          if(goods.quantity==''){
+            this.empty = true;
+          }
+        })
+
+        if(this.empty){
+          this.showTip("商品数量不能为空！");
+          return;
+        }
+
         this.saleOrderInfo.status=status//1提交，0草稿
-        this.showLoading = true;
         this.saleOrderInfo.operatorId = this.userId;
         let submitOrder = this.saleOrderInfo;
         submitOrder.saleGoods = this.saleOrderInfo.showGoodsList;
+        submitOrder.saleGoods.forEach(goods=>{
+          if(goods.saleMode==2){
+            goods.amount=0;
+          }
+        })
+        
+        this.showLoading = true;
         save_sale_order(this.userId,submitOrder).then((res)=>{
           if(res.code==600){
             this.showTip(res.message);
@@ -421,14 +496,8 @@
       },
       cancel(){
         //撤销已采购订单
-        this.showLoading = true;
-        cancel_sale_order(this.userId,this.saleOrderInfo.id).then((res)=>{
-          this.returnBack()
-          this.showLoading = false;
-        }).catch((err)=>{
-           this.showTip(err.message)
-           this.showLoading = false;
-        })
+        this.showPayWay = true;
+        this.showAlert = true;
       },
       deleteOrder(){
         //删除草稿订单
@@ -605,6 +674,7 @@
         text-align: left;
         float: left;
         width:50%;
+        line-height: .98rem;
         span {
           color: #D38888;;
           margin-left: 0.14rem;
@@ -641,5 +711,20 @@
   }
   .time-xiala{
     position: static;
+  }
+  .pay-type-con{
+    display: flex;
+    padding:0 .4rem;
+    @include sc(.28rem,$text);
+    @include wh(100%,.6rem);
+    align-items: center;
+    span{
+      flex:4
+    }
+    em{
+      flex:1;
+      text-align: right;
+      font-size:.36rem;
+    }
   }
 </style>

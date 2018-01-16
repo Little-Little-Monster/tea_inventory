@@ -16,9 +16,11 @@
         <li class="supplier_info_list" v-for="list in customerList">
           <left-slider :index="list.id" @swipe="swipe" @swipeRight="inputIndex=-1">
             <div class="list_left">
-              <h4>{{list.name}}</h4>
+              <h4>{{list.name}}
+                <span class="charge-btn" @click="$router.push({name:'customerCharge',query:{id: list.id,name:list.name}})">充值</span>
+              </h4>
               <p>客户分类：{{list.customerClassName}}</p>
-              <p>客户欠款：￥0.00</p>
+              <p>客户余额：￥{{list.balance.toFixed(2)}}</p>
             </div>
             <div class="list_right" >
               <i @click="$router.push({name:'addCustomer',query:{id: list.id}})" v-if="!chooseCustomer&&inputIndex!=list.id" class="iconfont icon-bianji"></i>
@@ -77,7 +79,7 @@
       }
     },
     created(){
-      this.getCustomer()
+      this.getCustomer();
       if(this.buyOrder.customerId||this.buyOrder.customerId==0){
         this.chooseId = this.buyOrder.customerId
         this.chooseName = this.buyOrder.customerName
@@ -189,7 +191,8 @@
     .customer-content{
       @include same_ul_style;
       width:100%;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
       li{
         height: 1.8rem;
         margin-top: 0.1rem;
@@ -212,6 +215,20 @@
             &:nth-child(2){
               margin-bottom: 0.1rem;
             }
+          }
+          .charge-btn{
+            display: inline-block;
+            width:.8rem;
+            position: relative;
+            bottom:.05rem;
+            margin-left:.3rem;
+            height:.3rem;
+            line-height: .35rem;
+            text-align: center;
+            background: $green;
+            font-size:.16rem;
+            color:#fff;
+            @include borderRadius(.3rem);
           }
         }
         .list_right{

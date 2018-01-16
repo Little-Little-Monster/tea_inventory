@@ -236,9 +236,25 @@ export default {
                 this.RECORD_GOODSINFO({})
                 const warehouseId = this.buyOrder.warehouseId;
                 const warehouseName = this.buyOrder.warehouseName;
+                const settleAccountId = this.buyOrder.settleAccountId;
+                const settleAccountName = this.buyOrder.settleAccountName;
+                const supplierId = this.buyOrder.supplierId;
+                const supplierName = this.buyOrder.supplierName;
+                const customerId = this.buyOrder.customerId;
+                const customerName = this.buyOrder.customerName;
+                const saleName = this.buyOrder.saleName;
+                const saleId = this.buyOrder.saleId;
                 this.RECORD_BUYORDER({
                     warehouseId:warehouseId,
-                    warehouseName:warehouseName
+                    warehouseName:warehouseName,
+                    settleAccountId:settleAccountId,
+                    settleAccountName:settleAccountName,
+                    supplierId:supplierId,
+                    supplierName:supplierName,
+                    saleId:saleId,
+                    saleName:saleName,
+                    customerName:customerName,
+                    customerId:customerId
                 });
                 this.returnBack();
                 this.showLoading = false

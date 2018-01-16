@@ -46,7 +46,7 @@
                     </section>
                     <section>
                         <span>总金额</span> 
-                        <span>￥{{totalAmount}}</span> 
+                        <span>￥{{totalAmount.toFixed(2)}}</span> 
                     </section>
                 </section>
                 <div v-if="$route.name!='inventoryFlow'" class="worker-list list" v-for="list in queryList">
@@ -56,7 +56,7 @@
                     <p class="text-info">采购单价：<em>￥{{list.buyAmount}}</em></p>
                     <p class="text-info">销售单价：<em>￥{{list.saleAmount}}</em></p>
                     <em class="list-option">
-                        <i class="list-sub">当前库存量</i> 
+                        <i class="list-sub">当前库存量</i>
                         {{list.total}}
                     </em>
                 </div>
@@ -64,7 +64,7 @@
                     <span>
                         {{list.goodsName}}
                     </span>
-                    <p class="text-info">剩余数量： <em>{{list.leftQuantity}}</em></p>
+                    <p class="text-info">库存数量： <em>{{list.leftQuantity}}</em></p>
                     <p class="text-info">创建时间： <em>{{list.createTimeStr}}</em></p>
                     <p class="text-info">类型： 
                         <em v-if="list.type==0">商品初始化</em>
@@ -81,6 +81,8 @@
                     </p>
                     <em class="list-option">
                         <i class="list-sub">发生数量</i> 
+                        <b v-show="list.type==2||list.type==5||list.type==7">-</b>
+                        <b v-show="list.type==4||list.type==3||list.type==8">+</b>
                         {{list.quantity}}
                     </em>
                 </div>
@@ -386,6 +388,9 @@ export default {
         };
         .list-option{
             @include sc(.34rem,#E78787);
+            b{
+                color:#E78787;
+            }
             right:.4rem;
             .list-sub{
                 @include sc(.24rem,$text_light);

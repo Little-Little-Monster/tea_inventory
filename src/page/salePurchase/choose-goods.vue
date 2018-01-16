@@ -11,7 +11,7 @@
       <em class="list-option iconfont icon-sousuo" @click="getGoodsList"></em>
     </div>
     <div class="goods_classify  paddingTop">
-      <div class="goods_classify_button">
+      <div class="goods_classify_button" v-if="goodsList.length!=0">
         <ul v-for="(goodstype,index) in goodsList">
           <li :class="{'active':typeShow==index}" @click="typeShow=index">{{goodstype.goodsClassficationName}}</li>
         </ul>
@@ -24,7 +24,7 @@
             </div>
             <div class="goods_info">
               <h3>{{goods.name}}</h3>
-              <p>销售价：<span class="price">￥{{goods.saleAmount}}/{{goods.goodsUnitName}}</span></p>
+              <p>销售价：<span class="price">￥{{goods.saleAmount.toFixed(2)}}/{{goods.goodsUnitName}}</span></p>
               <p>库存：{{goods.stockTotal}}</p>
               <p>
                 <span class="iconfont icon-jian" @click="goods.quantity>0?goods.quantity--:''"></span>
@@ -74,7 +74,7 @@
     created(){
       if(this.buyOrder.saleGoods && this.buyOrder.saleGoods.length!=0){
         this.goodsList = this.buyOrder.saleGoods;
-      }if(this.buyOrder.warehouseId){
+      }else if(this.buyOrder.warehouseId){
         this.getGoodsList();
       }else{
         this.toAddress({name:this.$route.query.fromPage})
@@ -136,11 +136,11 @@
           element.stockVos.forEach(goods => {
             if(goods.quantity!=0){
               saleGoods.push({
-                amount:Number(goods.buyAmount)*Number(goods.quantity),
+                amount:Number(goods.saleAmount)*Number(goods.quantity),
                 goodsId:goods.goodsId,
                 goodsName:goods.name,
                 quantity:goods.quantity,
-                unitAmount:this.fromPage=='saleTrade'?goods.saleAmount:goods.buyAmount,
+                unitAmount:this.fromPage=='saleTrade'?goods.saleAmount.toFixed(2):goods.buyAmount.toFixed(2),
                 saleMode:1
               })
             }

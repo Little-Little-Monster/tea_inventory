@@ -187,6 +187,7 @@ export default {
                 background: #fff;
                 @include ct;
                 right:0;
+                color:#999;
             }
         }
     }

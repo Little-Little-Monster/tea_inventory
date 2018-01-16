@@ -17,7 +17,7 @@
           <p>{{history.supplierName}}</p>
           <p class="text-info">{{history.createDate}}</p>
           <div class="list-more">
-            <em>￥{{history.totalAmount}}</em><br>
+            <em>￥{{history.totalAmount.toFixed(2)}}</em><br>
             <em>{{history.warehouseName}}</em>
           </div>
           <span class="list-option">
@@ -196,8 +196,8 @@
       }
       .list-more{
         @include ct;
-        @include sc(.28rem,#666)
-        @include wh(1.5rem,.8rem);
+        @include sc(.28rem,#666);
+        @include wh(1.5rem,.75rem);
         right:.8rem;
         text-align:center;
         em:nth-child(1){

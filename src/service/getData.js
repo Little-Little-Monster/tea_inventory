@@ -6,9 +6,9 @@ import { getStore } from '../config/mUtils'
  */
 
 export const mobile_code = phone => fetch('/v4/mobile/verify_code/send', {
-    mobile: phone,
-    scene: 'login',
-    type: 'sms'
+  mobile: phone,
+  scene: 'login',
+  type: 'sms'
 }, 'POST');
 
 
@@ -48,9 +48,9 @@ export const get_today_account_detail = (info) => fetch('/api/invoicing/settle/a
  */
 
 var send_login = (code, mobile, validate_token) => fetch('/v1/login/app_mobile', {
-    code,
-    mobile,
-    validate_token
+  code,
+  mobile,
+  validate_token
 }, 'POST');
 
 /**
@@ -64,7 +64,7 @@ export const store_handel = (store, userId) => fetch('/api/invoicing/store/' + u
  */
 
 export const get_store_detail = (userId) => fetch('/api/invoicing/store/query/list', {
-    userId
+  userId
 });
 
 /**
@@ -72,8 +72,8 @@ export const get_store_detail = (userId) => fetch('/api/invoicing/store/query/li
  */
 
 export const delete_store = (storeId, status) => fetch('/api/invoicing/store/update/status', {
-    storeId,
-    status
+  storeId,
+  status
 });
 
 /**
@@ -81,8 +81,8 @@ export const delete_store = (storeId, status) => fetch('/api/invoicing/store/upd
  */
 
 export const delete_worker = (id, status) => fetch('/api/invoicing/store/employee/infos/update', {
-    id,
-    status
+  id,
+  status
 });
 
 
@@ -118,8 +118,8 @@ export const get_rolelist = (userId) => fetch('/api/invoicing/role/query/list', 
  */
 
 export const get_supplier = (userId, params) => fetch('/api/invoicing/supplier/query/list', {
-    userId,
-    params
+  userId,
+  params
 });
 
 /**
@@ -143,8 +143,8 @@ export const save_wirehouse = (wirehouse) => fetch('/api/invoicing/warehouse/han
  */
 
 export const delete_warehouse = (id, status) => fetch('/api/invoicing/warehouse/update/status', {
-    id,
-    status
+  id,
+  status
 });
 
 /**
@@ -152,29 +152,41 @@ export const delete_warehouse = (id, status) => fetch('/api/invoicing/warehouse/
  */
 
 export const get_customer = (userId, params, page, pageSize) => fetch('/api/invoicing/customer/' + userId + '/list', {
-    params,
-    page,
-    pageSize
+  params,
+  page,
+  pageSize
 });
 /**
  * 获取客户分类列表
  */
 
 export const get_customer_type = (userId) => fetch('/api/invoicing/customer/class/query/list', {
-    userId
+  userId
 });
 /**
  * 获取客户分类详情
  */
 
 export const get_customer_type_detail = (id) => fetch('/api/invoicing/customer/class/query/edit', {
-    id
+  id
 });
 /**
  * 添加客户分类
  */
 
 export const save_customer_type = (userId, typeInfo) => fetch('/api/invoicing/customer/class/handler/' + userId, typeInfo, 'POST');
+
+/**
+ * 客户充值列表
+ */
+
+export const customer_charge = (id, amount, payType, accountId, operatorId) => fetch('/api/invoicing/customer/deposit/status', {
+  id,
+  amount,
+  payType,
+  accountId,
+  operatorId
+}, 'POST');
 
 /**
  * 添加/更新客户
@@ -186,8 +198,8 @@ export const customer_handel = (userId, customerInfo) => fetch('/api/invoicing/c
  */
 
 export const delete_customer = (id, status) => fetch('/api/invoicing/customer/update/status', {
-    id,
-    status
+  id,
+  status
 });
 
 /**
@@ -208,11 +220,11 @@ export const get_goods_type = (userId) => fetch('/api/invoicing/goods/classifica
  */
 
 export const get_goods_list = (userId, goodsClassId, priceFlag, page, pageSize) => fetch('/api/invoicing/goods/query/list', {
-    userId,
-    goodsClassId,
-    priceFlag,
-    page,
-    pageSize
+  userId,
+  goodsClassId,
+  priceFlag,
+  page,
+  pageSize
 });
 
 /**
@@ -220,8 +232,8 @@ export const get_goods_list = (userId, goodsClassId, priceFlag, page, pageSize) 
  */
 
 export const get_goods_by_name = (userId, goodsName) => fetch('/api/invoicing/goods/query/like', {
-    userId,
-    goodsName
+  userId,
+  goodsName
 });
 
 /**
@@ -229,12 +241,12 @@ export const get_goods_by_name = (userId, goodsName) => fetch('/api/invoicing/go
  */
 
 export const get_warehouse_goods_list = (params, userId, goodsClassId, warehouseId, page, pageSize) => fetch('/api/invoicing/goods/class/query/list', {
-    params,
-    userId,
-    goodsClassId,
-    warehouseId,
-    page,
-    pageSize
+  params,
+  userId,
+  goodsClassId,
+  warehouseId,
+  page,
+  pageSize
 });
 
 /**
@@ -242,7 +254,7 @@ export const get_warehouse_goods_list = (params, userId, goodsClassId, warehouse
  */
 
 export const get_goods_info = (id) => fetch('/api/invoicing/goods/edit', {
-    id
+  id
 });
 
 /**
@@ -311,32 +323,31 @@ export const save_buy_order = (userId, buyOrder) => fetch('/api/invoicing/' + us
  */
 
 export const get_buy_history = (userId, page, pageSize, status, type) => fetch('/api/invoicing/' + userId + '/buy/trade/query/list', {
-    page,
-    pageSize,
-    status,
-    type
+  page,
+  pageSize,
+  status,
+  type
 });
 
 /**
  * 编辑采购单，获取采购单详细信息
  */
-
 export const get_buy_order = (id) => fetch('/api/invoicing/buy/trade/query/edit', {
-    id
+  id
 });
 /**
  * 删除采购单（草稿）
  */
 
 export const delete_buy_order = (id) => fetch('/api/invoicing/buy/trade/query/delete', {
-    id
+  id
 });
 /**
  * 撤销采购单（已采购）
  */
 
 export const cancel_buy_order = (userId, id) => fetch('/api/invoicing/cancel/goods/buy/' + userId, {
-    id
+  id
 });
 
 
@@ -350,12 +361,11 @@ export const save_sale_order = (userId, saleOrder) => fetch('/api/invoicing/' + 
 /**
  * 销售历史查询
  */
-
 export const get_sale_history = (userId, page, pageSize, status, type) => fetch('/api/invoicing/' + userId + '/sale/trade/query/list', {
-    page,
-    pageSize,
-    status,
-    type
+  page,
+  pageSize,
+  status,
+  type
 });
 
 /**
@@ -363,24 +373,23 @@ export const get_sale_history = (userId, page, pageSize, status, type) => fetch(
  */
 
 export const get_sale_order = (id) => fetch('/api/invoicing/sale/trade/query/edit', {
-    id
+  id
 });
 /**
  * 删除销售单（草稿）
  */
 
 export const delete_sale_order = (id) => fetch('/api/invoicing/sale/trade/query/delete', {
-    id
+  id
 });
 /**
  * 撤销销售单（已采购）
  */
 
-export const cancel_sale_order = (userId, id) => fetch('/api/invoicing/cancel/goods/sale/' + userId, {
-    id
+export const cancel_sale_order = (userId, id, payType) => fetch('/api/invoicing/cancel/goods/sale/' + userId, {
+  id,
+  payType
 });
-
-
 
 /**
  * 结算账户查询
@@ -457,10 +466,10 @@ export const delete_stock = (id) => fetch('/api/invoicing/inventory/delete', { i
  * 获取盘点列表
  */
 export const get_stock_list = (userId, status, page, pageSize) => fetch('/api/invoicing/inventory/list', {
-    userId,
-    status,
-    page,
-    pageSize
+  userId,
+  status,
+  page,
+  pageSize
 });
 
 
@@ -476,20 +485,20 @@ export const stock_handel = (userId, stockInfo) => fetch('/api/invoicing/' + use
  * 销售报表查询
  */
 export const get_sale_report = (userId, storeId, startDate, endDate) => fetch('/api/invoicing/sale/report/query', {
-    userId,
-    storeId,
-    startDate,
-    endDate
+  userId,
+  storeId,
+  startDate,
+  endDate
 });
 
 /**
  * 采购报表查询
  */
 export const get_buy_report = (userId, storeId, startDate, endDate) => fetch('/api/invoicing/buy/report/query', {
-    userId,
-    storeId,
-    startDate,
-    endDate
+  userId,
+  storeId,
+  startDate,
+  endDate
 });
 
 /**

@@ -57,6 +57,7 @@ const customerManage = r => require.ensure([], () => r(require('../page/customer
 const addCustomer = r => require.ensure([], () => r(require('../page/customer/add-customer')), 'addCustomer')
 const customerType = r => require.ensure([], () => r(require('../page/customer/customer-type')), 'customerType')
 const addCustomerType = r => require.ensure([], () => r(require('../page/customer/add-customer-type')), 'addCustomerType')
+const customerCharge = r => require.ensure([], () => r(require('../page/customer/customer-charge')), 'customerCharge')
 
 const inventoryQuery = r => require.ensure([], () => r(require('../page/inventory/inventoryQuery')), 'inventoryQuery')
 const inventoryFlow = r => require.ensure([], () => r(require('../page/inventory/inventoryFlow')), 'inventoryFlow')
@@ -69,302 +70,307 @@ const stockOption = r => require.ensure([], () => r(require('../page/stock/stock
 const stockGoods = r => require.ensure([], () => r(require('../page/stock/choose-goods')), 'stockGoods')
 
 export default [{
-    path: '/',
-    component: App, //顶层路由，对应index.html
-    children: [
-        //二级路由。对应App.vue
-        //地址为空时跳转login页面
+  path: '/',
+  component: App, //顶层路由，对应index.html
+  children: [
+    //二级路由。对应App.vue
+    //地址为空时跳转login页面
+    {
+      path: '',
+      redirect: '/login'
+    },
+    //登录注册页
+    {
+      path: '/login',
+      component: login
+    },
+    //修改密码页
+    {
+      path: '/forget',
+      component: forget
+    },
+    //主界面
+    {
+      path: '/home',
+      component: home,
+      children: [
+        //首页（主菜单）
         {
-            path: '',
-            redirect: '/login'
+          name: 'msite',
+          path: 'msite',
+          component: msite
         },
-        //登录注册页
+        //库存查看（主菜单）
         {
-            path: '/login',
-            component: login
+          name: 'wirehouse',
+          path: 'wirehouse',
+          component: wirehouse
         },
-        //修改密码页
+        //统计查看（主菜单）
         {
-            path: '/forget',
-            component: forget
+          name: 'sensus',
+          path: 'sensus',
+          component: sensus
         },
-        //主界面
+        //销售查看（主菜单）
         {
-            path: '/home',
-            component: home,
-            children: [
-                //首页（主菜单）
-                {
-                    name: 'msite',
-                    path: 'msite',
-                    component: msite
-                },
-                //库存查看（主菜单）
-                {
-                    name: 'wirehouse',
-                    path: 'wirehouse',
-                    component: wirehouse
-                },
-                //统计查看（主菜单）
-                {
-                    name: 'sensus',
-                    path: 'sensus',
-                    component: sensus
-                },
-                //销售查看（主菜单）
-                {
-                    name: 'sale',
-                    path: 'sale',
-                    component: sale
-                },
-                //基础查看（主菜单）
-                {
-                    name: 'basic',
-                    path: '/basic',
-                    component: basic
-                }
-            ]
+          name: 'sale',
+          path: 'sale',
+          component: sale
         },
+        //基础查看（主菜单）
         {
-            path: '/menu',
-            name: 'selMenu',
-            component: selMenu
-        },
-        {
-            path: '/today/account',
-            name: 'todayAccount',
-            component: todayAccount
-        },
-        {
-            path: '/today/account/detail',
-            name: 'todayAccountDetail',
-            component: todayAccountDetail
-        },
-        {
-            path: '/store',
-            name: 'store',
-            component: store
-        },
-        {
-            path: '/worker',
-            name: 'worker',
-            component: worker
-        },
-        {
-            path: '/workerOption',
-            name: 'workerOption',
-            component: workerOption
-        },
-        {
-            path: '/storeOption',
-            name: 'storeOption',
-            component: storeOption
-        },
-        {
-            path: '/addGoods',
-            name: 'addGoods',
-            component: addGoods
-        },
-        {
-            path: '/goods',
-            name: 'goodsManage',
-            component: goodsList
-        },
-        {
-            path: '/goods/attr',
-            name: 'goodsAttrList',
-            component: goodsAttrList
-        },
-        {
-            path: '/goods/addAttr',
-            name: 'goodsAddAttr',
-            component: goodsAddAttr
-        },
-        {
-            path: '/supplierList',
-            name: 'supplierList',
-            component: supplierList
-        },
-        {
-            path: '/addEditUpplier',
-            name: 'addEditUpplier',
-            component: addEditUpplier
-        },
-        {
-            path: '/supplierDetail',
-            name: 'supplierDetail',
-            component: supplierDetail
-        },
-        {
-            path: '/storehouseList',
-            name: 'storehouseList',
-            component: storehouseList
-        },
-        {
-            path: '/addEditStorehouse',
-            name: 'addEditStorehouse',
-            component: addEditStorehouse
-        },
-        {
-            path: '/addPurchase',
-            name: 'buyTrade',
-            component: addPurchase
-        },
-        {
-            path: '/backPurchase',
-            name: 'buyBack',
-            component: addPurchase
-        },
-        {
-            path: '/purchasedetail',
-            name: 'purchasedetail',
-            component: purchasedetail
-        },
-        {
-            path: '/purchasehistory',
-            name: 'buyHistory',
-            component: purchasehistory
-        },
-        {
-            path: '/buyBackHistory',
-            name: 'buyBackHistory',
-            component: purchasehistory
-        },
-        {
-            path: '/choosegoods',
-            name: 'choosegoods',
-            component: choosegoods
-        },
-        {
-            path: '/addSalePurchase',
-            name: 'saleTrade',
-            component: addSalePurchase
-        },
-        {
-            path: '/backSalePurchase',
-            name: 'saleBack',
-            component: addSalePurchase
-        },
-        {
-            path: '/saleDetail',
-            name: 'salePurchasedetail',
-            component: salePurchasedetail
-        },
-        {
-            path: '/salehistory',
-            name: 'saleHistory',
-            component: salePurchasehistory
-        },
-        {
-            path: '/sale/back/history',
-            name: 'saleBackHistory',
-            component: salePurchasehistory
-        },
-        {
-            path: '/saleChoosegoods',
-            name: 'saleChoosegoods',
-            component: saleChoosegoods
-        },
-
-        {
-            path: '/accountManage',
-            name: 'accountManage',
-            component: accountManage
-        },
-        {
-            path: '/accountType',
-            name: 'accountType',
-            component: accountType
-        },
-        {
-            path: '/balanceAccount',
-            name: 'balanceAccount',
-            component: balanceAccount
-        },
-        {
-            path: '/balance/add',
-            name: 'addBalanceAccount',
-            component: addBalanceAccount
-        },
-
-        {
-            path: '/customer',
-            name: 'customerManage',
-            component: customerManage
-        },
-        {
-            path: '/add/customer',
-            name: 'addCustomer',
-            component: addCustomer
-        },
-        {
-            path: '/type/customer',
-            name: 'customerType',
-            component: customerType
-        },
-        {
-            path: '/type/add/customer',
-            name: 'addCustomerType',
-            component: addCustomerType
-        },
-        //报表
-        {
-            path: '/sale/report',
-            name: 'saleReport',
-            component: saleReport
-        },
-        {
-            path: '/buy/report',
-            name: 'buyReport',
-            component: buyReport
-        },
-        //库存
-        {
-            path: '/inventory/query',
-            name: 'inventoryQuery',
-            component: inventoryQuery
-        },
-        {
-            path: '/inventory/flow',
-            name: 'inventoryFlow',
-            component: inventoryQuery
-        },
-        //角色管理
-        {
-            path: '/roleManage',
-            name: 'roleManage',
-            component: roleManage
-        },
-        {
-            path: '/addRole',
-            name: 'addRole',
-            component: roleOption
-        },
-        {
-            path: '/editRole',
-            name: 'editRole',
-            component: roleOption
-        },
-        //仓库盘点单
-        {
-            path: '/stock',
-            name: 'warehouseStock',
-            component: warehouseStock
-        },
-        {
-            path: '/add/stock',
-            name: 'addStock',
-            component: stockOption
-        },
-        {
-            path: '/edit/stock',
-            name: 'editStock',
-            component: stockOption
-        },
-        {
-            path: '/stock/goods',
-            name: 'stockGoods',
-            component: stockGoods
+          name: 'basic',
+          path: '/basic',
+          component: basic
         }
-    ],
+      ]
+    },
+    {
+      path: '/menu',
+      name: 'selMenu',
+      component: selMenu
+    },
+    {
+      path: '/today/account',
+      name: 'todayAccount',
+      component: todayAccount
+    },
+    {
+      path: '/today/account/detail',
+      name: 'todayAccountDetail',
+      component: todayAccountDetail
+    },
+    {
+      path: '/store',
+      name: 'store',
+      component: store
+    },
+    {
+      path: '/worker',
+      name: 'worker',
+      component: worker
+    },
+    {
+      path: '/workerOption',
+      name: 'workerOption',
+      component: workerOption
+    },
+    {
+      path: '/storeOption',
+      name: 'storeOption',
+      component: storeOption
+    },
+    {
+      path: '/addGoods',
+      name: 'addGoods',
+      component: addGoods
+    },
+    {
+      path: '/goods',
+      name: 'goodsManage',
+      component: goodsList
+    },
+    {
+      path: '/goods/attr',
+      name: 'goodsAttrList',
+      component: goodsAttrList
+    },
+    {
+      path: '/goods/addAttr',
+      name: 'goodsAddAttr',
+      component: goodsAddAttr
+    },
+    {
+      path: '/supplierList',
+      name: 'supplierList',
+      component: supplierList
+    },
+    {
+      path: '/addEditUpplier',
+      name: 'addEditUpplier',
+      component: addEditUpplier
+    },
+    {
+      path: '/supplierDetail',
+      name: 'supplierDetail',
+      component: supplierDetail
+    },
+    {
+      path: '/storehouseList',
+      name: 'storehouseList',
+      component: storehouseList
+    },
+    {
+      path: '/addEditStorehouse',
+      name: 'addEditStorehouse',
+      component: addEditStorehouse
+    },
+    {
+      path: '/addPurchase',
+      name: 'buyTrade',
+      component: addPurchase
+    },
+    {
+      path: '/backPurchase',
+      name: 'buyBack',
+      component: addPurchase
+    },
+    {
+      path: '/purchasedetail',
+      name: 'purchasedetail',
+      component: purchasedetail
+    },
+    {
+      path: '/purchasehistory',
+      name: 'buyHistory',
+      component: purchasehistory
+    },
+    {
+      path: '/buyBackHistory',
+      name: 'buyBackHistory',
+      component: purchasehistory
+    },
+    {
+      path: '/choosegoods',
+      name: 'choosegoods',
+      component: choosegoods
+    },
+    {
+      path: '/addSalePurchase',
+      name: 'saleTrade',
+      component: addSalePurchase
+    },
+    {
+      path: '/backSalePurchase',
+      name: 'saleBack',
+      component: addSalePurchase
+    },
+    {
+      path: '/saleDetail',
+      name: 'salePurchasedetail',
+      component: salePurchasedetail
+    },
+    {
+      path: '/salehistory',
+      name: 'saleHistory',
+      component: salePurchasehistory
+    },
+    {
+      path: '/sale/back/history',
+      name: 'saleBackHistory',
+      component: salePurchasehistory
+    },
+    {
+      path: '/saleChoosegoods',
+      name: 'saleChoosegoods',
+      component: saleChoosegoods
+    },
+
+    {
+      path: '/accountManage',
+      name: 'accountManage',
+      component: accountManage
+    },
+    {
+      path: '/accountType',
+      name: 'accountType',
+      component: accountType
+    },
+    {
+      path: '/balanceAccount',
+      name: 'balanceAccount',
+      component: balanceAccount
+    },
+    {
+      path: '/balance/add',
+      name: 'addBalanceAccount',
+      component: addBalanceAccount
+    },
+
+    {
+      path: '/customer',
+      name: 'customerManage',
+      component: customerManage
+    },
+    {
+      path: '/add/customer',
+      name: 'addCustomer',
+      component: addCustomer
+    },
+    {
+      path: '/type/customer',
+      name: 'customerType',
+      component: customerType
+    },
+    {
+      path: '/customer/charge',
+      name: 'customerCharge',
+      component: customerCharge
+    },
+    {
+      path: '/type/add/customer',
+      name: 'addCustomerType',
+      component: addCustomerType
+    },
+    //报表
+    {
+      path: '/sale/report',
+      name: 'saleReport',
+      component: saleReport
+    },
+    {
+      path: '/buy/report',
+      name: 'buyReport',
+      component: buyReport
+    },
+    //库存
+    {
+      path: '/inventory/query',
+      name: 'inventoryQuery',
+      component: inventoryQuery
+    },
+    {
+      path: '/inventory/flow',
+      name: 'inventoryFlow',
+      component: inventoryQuery
+    },
+    //角色管理
+    {
+      path: '/roleManage',
+      name: 'roleManage',
+      component: roleManage
+    },
+    {
+      path: '/addRole',
+      name: 'addRole',
+      component: roleOption
+    },
+    {
+      path: '/editRole',
+      name: 'editRole',
+      component: roleOption
+    },
+    //仓库盘点单
+    {
+      path: '/stock',
+      name: 'warehouseStock',
+      component: warehouseStock
+    },
+    {
+      path: '/add/stock',
+      name: 'addStock',
+      component: stockOption
+    },
+    {
+      path: '/edit/stock',
+      name: 'editStock',
+      component: stockOption
+    },
+    {
+      path: '/stock/goods',
+      name: 'stockGoods',
+      component: stockGoods
+    }
+  ],
 }];

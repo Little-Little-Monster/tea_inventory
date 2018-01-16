@@ -9,7 +9,7 @@
           名称 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
-          <input type="text" v-model="userInfo.name" placeholder="请输入负责人名称" style="width: 2.27rem;">
+          <input type="text" v-model="userInfo.name" placeholder="请输入供应商名称" style="width: 2.27rem;">
         </div>
       </li>
       <li>

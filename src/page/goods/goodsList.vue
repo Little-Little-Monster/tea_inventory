@@ -165,7 +165,7 @@ export default {
         editGoods(goodsId){
             // this.RECORD_GOODSINFO(list)
             if(!this.isGetGoods&&this.inputIndex!=goodsId){
-                this.$router.push({name:"addGoods",query:{edit:true,goodsId:goodsId,fromPage:this.$route.name}});
+                this.$router.push({name:"addGoods",query:{edit:true,goodsId:goodsId,fromPage2:this.$route.name}});
             }
         },
         async listenPropChange(){

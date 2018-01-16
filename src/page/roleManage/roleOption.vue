@@ -30,11 +30,11 @@
       </li>
       <li  class="role-con">
         <div class="role-left">
-          <div class="role-father" v-for="(role,index) in resource">
-            <input type="checkbox" @click="setSubSel(role.selected,index)" class="check-box-input" :id="role.id" v-model="role.selected">
+          <div class="role-father" @click="setRoleFather(index)" v-for="(role,index) in resource">
+            <input type="checkbox" @click.stop="setSubSel(role.selected,index)" class="check-box-input" :id="role.id" v-model="role.selected">
             <label :for="role.id"   :class="{'icon-radio-checked':role.selected,'icon-danxuanweizhong':!role.selected}" class="iconfont" ></label>
-            <span @click="setRoleFather(index)">{{role.name}}</span>
-            <em @click="setRoleFather(index)" :class="{'icon-xiala2':fatherIndex!=index,'icon-qianjin':fatherIndex==index}" class="iconfont"></em>
+            <span >{{role.name}}</span>
+            <em  :class="{'icon-xiala2':fatherIndex!=index,'icon-qianjin':fatherIndex==index}" class="iconfont"></em>
           </div>
         </div>
         <div class="role-right">
