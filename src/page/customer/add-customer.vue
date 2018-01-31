@@ -6,20 +6,20 @@
       </div>
     </head-top>
     <ul class="add-edit-upplier cneter-con paddingTop">
-      <li>
+      <!-- <li>
         <div class="list_left">
           名称 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
           <input type="text" v-model="customerInfo.name" placeholder="请输入客户名称" style="width: 2.27rem;">
         </div>
-      </li>
+      </li> -->
       <li>
         <div class="list_left">
           联系人<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
-          <input type="text" v-model="customerInfo.contacts" placeholder="请输入客户联系人" style="width: 2.27rem;">
+          <input type="text" v-model="customerInfo.name" placeholder="请输入客户联系人" style="width: 2.27rem;">
         </div>
       </li>
       <li>
@@ -203,12 +203,12 @@
           })
       },
       async addCustomer(){
+            // if(!this.customerInfo.name){
+            //   this.alertText = "请输入客户名称";
+            //   this.showAlert = true;
+            //   return;
+            // }
             if(!this.customerInfo.name){
-              this.alertText = "请输入客户名称";
-              this.showAlert = true;
-              return;
-            }
-            if(!this.customerInfo.contacts){
               this.alertText = "请输入联系人";
               this.showAlert = true;
               return;

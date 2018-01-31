@@ -1,14 +1,14 @@
 <template>
   <div class="main">
     <head-top signin-up='msite' goBack="" head-title="角色管理">
-      <span v-if="!chooseRule" slot="right" class="iconfont icon-jia" @click="$router.push({name:'addRole'})" ></span>
+      <span v-if="!chooseRule" slot="right" class="iconfont icon-jia" @click="$router.push({name:'addRole',query:{fromPage:fromPage}})" ></span>
       <div slot="back" class="goback" @click="goBack" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
     <ul class="supplier_list paddingTop cneter-con" :style="{'margin-bottom':chooseRule?'1rem':''}">
-      <li class="supplier_info_list" v-for="list in roleList" @click="editRole(list.id,list.roleName,list.memo)">
+      <li class="supplier_info_list" v-for="list in roleList" @click="editRole(list.id,list.roleName,list.memo,list.type)">
         <div class="list_left">
           <h4>{{list.roleName}}</h4>
           <p><span>{{list.memo}}</span></p>
@@ -90,8 +90,10 @@
         this.$router.push(name)
       },
       goBack(){
-          if(!this.chooseRule){
-          this.$router.push({name:"msite"})
+          if(!this.chooseRule&&!this.fromPage){
+          this.$router.push({name:"basic"})
+          }else if(!this.chooseRule&&this.fromPage){
+            this.$router.push({name:this.fromPage})
           }else{
             switch (this.fromPage) {
               case 'buyOrder':
@@ -137,9 +139,18 @@
           this.showAlert = err.message
         })
       },
-      editRole(roleId,roleName,memo){
+      editRole(roleId,roleName,memo,type){
         if(!this.chooseRule){
-          this.$router.push({name:'editRole',query:{roleId:roleId,roleName:roleName,memo:memo}})
+          this.$router.push({
+            name:'editRole',
+            query:{
+              roleId:roleId,
+              roleName:roleName,
+              memo:memo,
+              type:type,
+              fromPage:this.fromPage
+            }
+          })
         }
       }
     },

@@ -39,7 +39,7 @@
                     </div>
                     
                 </section>
-                <section class="total-info">
+                <!-- <section class="total-info">
                     <section>
                         <span>总库存</span> 
                         <span>{{totalQuantity}}</span>
@@ -48,17 +48,23 @@
                         <span>总金额</span> 
                         <span>￥{{totalAmount.toFixed(2)}}</span> 
                     </section>
-                </section>
+                </section> -->
                 <div v-if="$route.name!='inventoryFlow'" class="worker-list list" v-for="list in queryList">
-                    <span>
-                        {{list.goodsName}} 
-                    </span>
-                    <p class="text-info">采购单价：<em>￥{{list.buyAmount}}</em></p>
-                    <p class="text-info">销售单价：<em>￥{{list.saleAmount}}</em></p>
-                    <em class="list-option">
-                        <i class="list-sub">当前库存量</i>
-                        {{list.total}}
-                    </em>
+                    <div class="goods-pic">
+                        <img :src="list.attachmentUrl" alt="">
+                    </div>
+                    <div>   
+                        <span>
+                            {{list.goodsName}} 
+                        </span>
+                        <p class="text-info">采购单价：<em>￥{{list.buyAmount}}</em></p>
+                        <p class="text-info">销售单价：<em>￥{{list.saleAmount}}</em></p>
+                        <em class="list-option">
+                            <i class="list-sub">当前库存量</i><br>
+                            <b>{{list.total}}</b><b>{{list.goodsUnitName?('/'+list.goodsUnitName):''}}</b>
+                        </em>
+                    </div>
+                    
                 </div>
                 <div v-if="$route.name=='inventoryFlow'" class="worker-list list" v-for="list in queryList">
                     <span>
@@ -80,10 +86,10 @@
                         <em v-if="list.type==10">调拨撤销</em>
                     </p>
                     <em class="list-option">
-                        <i class="list-sub">发生数量</i> 
-                        <b v-show="list.type==2||list.type==5||list.type==7">-</b>
-                        <b v-show="list.type==4||list.type==3||list.type==8">+</b>
-                        {{list.quantity}}
+                        <i class="list-sub">发生数量</i> <br>
+                        <b v-show="list.type==2||list.type==5||list.type==7">-{{list.quantity}}</b>
+                        <b v-show="list.type==4||list.type==3||list.type==8">+{{list.quantity}}</b>
+                        <b>{{list.goodsUnitName?('/'+list.goodsUnitName):''}}</b>
                     </em>
                 </div>
                 <p v-if="touchend" class="empty_data">没有更多了</p>
@@ -386,10 +392,29 @@ export default {
                 color:$green;
             }
         };
+        &>div{
+            float: left;
+            width:80%;
+            padding-left:.3rem;
+        }
+        .goods-pic{
+            width:1.2rem;
+            height:100%;
+            float: left;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding:0;
+            img{
+                @include wh(1.2rem,1.2rem);
+                flex:1;
+            }
+        }
         .list-option{
             @include sc(.34rem,#E78787);
             b{
                 color:#E78787;
+                font-size:.24rem;
             }
             right:.4rem;
             .list-sub{

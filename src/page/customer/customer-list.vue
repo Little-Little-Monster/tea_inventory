@@ -16,11 +16,12 @@
         <li class="supplier_info_list" v-for="list in customerList">
           <left-slider :index="list.id" @swipe="swipe" @swipeRight="inputIndex=-1">
             <div class="list_left">
-              <h4>{{list.name}}
-                <span class="charge-btn" @click="$router.push({name:'customerCharge',query:{id: list.id,name:list.name}})">充值</span>
-              </h4>
+              <h4>{{list.name}}</h4>
               <p>客户分类：{{list.customerClassName}}</p>
-              <p>客户余额：￥{{list.balance.toFixed(2)}}</p>
+              <p>
+                客户余额：￥{{list.balance.toFixed(2)}}
+                <span class="charge-btn iconfont icon-3" @click="$router.push({name:'customerCharge',query:{id: list.id,name:list.name}})">充值</span>
+              </p>
             </div>
             <div class="list_right" >
               <i @click="$router.push({name:'addCustomer',query:{id: list.id}})" v-if="!chooseCustomer&&inputIndex!=list.id" class="iconfont icon-bianji"></i>
@@ -119,10 +120,10 @@
             }
             this.showLoading = false
           }else{
-            this,showTip(res.message)
+            this.showTip(res.message)
           }
         }).catch((err)=>{
-          this,showTip(err.message)
+          this.showTip(err.message)
         })
       },
       //到达底部加载更多数据
@@ -218,17 +219,16 @@
           }
           .charge-btn{
             display: inline-block;
-            width:.8rem;
+            width:1rem;
             position: relative;
+            top:.02rem;
             bottom:.05rem;
             margin-left:.3rem;
             height:.3rem;
-            line-height: .35rem;
+            line-height: .3rem;
             text-align: center;
-            background: $green;
-            font-size:.16rem;
-            color:#fff;
-            @include borderRadius(.3rem);
+            font-size:.28rem;
+            color:$green;
           }
         }
         .list_right{

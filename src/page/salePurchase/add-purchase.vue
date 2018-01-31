@@ -272,6 +272,12 @@
         if(!this.saleOrderInfo.customerId){
           this.saleOrderInfo.customerId = 0;
           this.saleOrderInfo.customerName = '匿名客户';
+        }else{
+          if(Number(this.saleOrderInfo.balance)>Number(this.saleOrderInfo.totalAmount)){
+            this.saleOrderInfo.payType=4;
+          }else{
+            this.saleOrderInfo.payType=0;
+          }
         }
         if(!this.saleOrderInfo.totalAmount){
           this.saleOrderInfo.totalAmount = 0;
@@ -436,6 +442,11 @@
         if(!this.saleOrderInfo.customerId&&this.saleOrderInfo.customerId!=0){
           this.showTip("请选择客户！");
           return;
+        }else{
+          if((Number(this.saleOrderInfo.balance)<Number(this.saleOrderInfo.totalAmount))&&this.saleOrderInfo.payType==4){
+            this.showTip("账户余额不足，请选择其他支付方式！");
+            return;
+          }
         }
         if(!this.saleOrderInfo.warehouseId){
           this.showTip("请先选择仓库！");
@@ -453,6 +464,7 @@
           this.showTip("请先选择商品！");
           return;
         }
+        
         if(this.$route.name=='saleTrade'){
           this.saleOrderInfo.type=2//销售
         }else{
@@ -460,13 +472,13 @@
         }
         this.empty = false;
         this.saleOrderInfo.showGoodsList.forEach(goods=>{
-          if(goods.quantity==''){
+          if(goods.quantity==''||goods.quantity<=0){
             this.empty = true;
           }
         })
 
         if(this.empty){
-          this.showTip("商品数量不能为空！");
+          this.showTip("商品数量必须大于0！");
           return;
         }
 
@@ -520,6 +532,11 @@
           );
           this.saleOrderInfo.realAmount = this.saleOrderInfo.realAmount.toFixed(2)
           this.saleOrderInfo.totalAmount = Number(this.saleOrderInfo.realAmount*(this.saleOrderInfo.discount/100)).toFixed(2);
+        }
+        if(Number(this.saleOrderInfo.balance)>Number(this.saleOrderInfo.totalAmount)){
+          this.saleOrderInfo.payType=4;
+        }else{
+          this.saleOrderInfo.payType=0;
         }
         // this.saleOrderInfo.debtAmount = Number(this.saleOrderInfo.totalAmount)-Number(this.saleOrderInfo.realAmount);
       }

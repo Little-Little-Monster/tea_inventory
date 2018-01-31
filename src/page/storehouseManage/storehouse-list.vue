@@ -146,7 +146,8 @@
           this.$router.push({name:'addEditStorehouse',
             query:{
               edit: true,
-              storeInfo:JSON.stringify(list)
+              storeInfo:JSON.stringify(list),
+              fromPage:this.fromPage
             }
           })
         }
@@ -180,6 +181,11 @@
             });
             break;
           case 'addStock':case 'editStock':
+            this.$router.push({
+              name:this.fromPage
+            });
+            break;
+          case 'msite':
             this.$router.push({
               name:this.fromPage
             });

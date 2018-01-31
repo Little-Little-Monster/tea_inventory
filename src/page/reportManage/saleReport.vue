@@ -5,45 +5,49 @@
                 <span class="iconfont icon-fanhui title_text"></span>
             </div>
     	</head-top>
-
-        <div class="cneter-con paddingTop">
-            <section class="title-choose">
-                <div class="login-tit">
-                    <!-- <input type="date" :class="{'full':startDate}" placeholder="开始时间" v-model="startDate"> -->
-                    <input type="text" readonly="" id="time" name="input_date" placeholder="开始时间" v-model="startDate" />
-                    <i class="time-xiala iconfont icon-xiala2"></i>
-                </div>
-                <div class="regist-tit">
-                    <!-- <input type="date" :class="{'full':endDate}" placeholder="结束时间" v-model="endDate"> -->
-                    <input type="text" readonly="" id="time2" name="input_date" placeholder="结束时间" v-model="endDate" />
-                    <i class="time-xiala iconfont icon-xiala2"></i>
-                </div>
-                <div class="store">
-                    <select v-model="storeId">
-                        <option value="0">选择店铺</option>
-                        <option :value="store.id" v-for="store in storeList">{{store.storeName}}</option>
-                    </select>
-                </div>
-            </section>
-            <section class="total-info">
-                <section>
-                    <span>销售量</span> 
-                    <span>{{totalQuantity.toFixed(2)}}</span>
-                </section>
-                <section>
-                    <span>总金额</span> 
-                    <span>￥{{totalAmount.toFixed(2)}}</span> 
-                </section>
-            </section>
-            <div class="worker-list list" v-for="list in reportList">
-                <span>
-                    {{list.goodsName}} <i class="text-info">X{{list.quantity}}</i>
-                </span>
-                <p class="text-info">单价：<em>￥{{list.unitAmount.toFixed(2)}}</em></p>
-                <p class="text-info">销售时间：<em>{{list.bizDateStr}}</em></p>
-                <em class="list-option">￥{{list.amount.toFixed(2)}}</em>
+        <section class="title-choose">
+            <div class="login-tit">
+                <!-- <input type="date" :class="{'full':startDate}" placeholder="开始时间" v-model="startDate"> -->
+                <input type="text" readonly="" id="time" name="input_date" placeholder="开始时间" v-model="startDate" />
+                <i class="time-xiala iconfont icon-xiala2"></i>
             </div>
-            <p class="empty_data">没有更多了</p>
+            <div class="regist-tit">
+                <!-- <input type="date" :class="{'full':endDate}" placeholder="结束时间" v-model="endDate"> -->
+                <input type="text" readonly="" id="time2" name="input_date" placeholder="结束时间" v-model="endDate" />
+                <i class="time-xiala iconfont icon-xiala2"></i>
+            </div>
+            <div class="store">
+                <select v-model="storeId">
+                    <option value="0">选择店铺</option>
+                    <option :value="store.id" v-for="store in storeList">{{store.storeName}}</option>
+                </select>
+            </div>
+        </section>
+        <section class="total-info">
+            <section>
+                <span>销售量</span> 
+                <span>{{totalQuantity.toFixed(2)}}</span>
+            </section>
+            <section>
+                <span>总金额</span> 
+                <span>￥{{totalAmount.toFixed(2)}}</span> 
+            </section>
+        </section>
+        <div class="cneter-con" v-load-more="loaderMore" type="2">
+            <div style="height:auto">
+                <div class="worker-list list" v-for="list in reportList">
+                    <span>
+                        {{list.goodsName}}
+                    </span>
+                    <p class="text-info">单价：<em>￥{{list.unitAmount.toFixed(2)}}</em></p>
+                    <p class="text-info">销售时间：<em>{{list.bizDateStr}}</em></p>
+                    <em class="list-option">
+                        金额：￥{{list.amount.toFixed(2)}}<br>
+                        数量：{{list.quantity+list.goodsUnitName}}
+                    </em>
+                </div>
+            </div>
+            <p class="empty_data" v-if="touchend">没有更多了</p>
         </div>
         <div class="bottom" @click="getReport">
             查询
@@ -62,6 +66,7 @@ import {get_sale_report,get_store_detail} from 'src/service/getData'
 import headTop from 'src/components/header/head'
 import alertTip from '../../components/common/alertTip'
 import loading from 'src/components/common/loading'
+import {loadMore} from 'src/components/common/mixin'
 
 export default {
 	data(){
@@ -77,6 +82,10 @@ export default {
             showAlert:false,
             alertText:'',
             showLoading: true,
+            page:0,
+            pageSize:10,
+            preventRepeatReuqest: false, //到达底部加载数据，防止重复加载
+            touchend: false, //没有更多数据
         }
     },
     created(){
@@ -98,6 +107,7 @@ export default {
     components: {
     	headTop,alertTip,loading
     },
+    mixins: [loadMore],
     computed: {
 		...mapState([
 			'headTitle','buyOrder'
@@ -120,7 +130,7 @@ export default {
         },
         getReport(){
             this.showLoading = true;
-            get_sale_report(this.userId,this.storeId,this.startDate,this.endDate).then((res)=>{
+            get_sale_report(this.userId,this.storeId,this.startDate,this.endDate,this.page,this.pageSize).then((res)=>{
                 if(res.code!=200){
                     this.showTip(res.message)
                 }else{
@@ -133,6 +143,34 @@ export default {
                  this.showTip(err.message)
                  this.showLoading = false;
             })
+        },
+        //到达底部加载更多数据
+        async loaderMore(){
+            if (this.touchend) {
+                return
+            }
+            //防止重复请求
+            if (this.preventRepeatReuqest) {
+                return 
+            }
+            this.showLoading = true;
+            this.preventRepeatReuqest = true;
+            //数据的定位加20位
+            this.page++;
+            let res = await get_sale_report(this.userId,this.storeId,this.startDate,this.endDate,this.page,this.pageSize)
+            if(res.code!=200){
+                this.showTip(res.message)
+            }else{
+                this.preventRepeatReuqest = false;
+                if (res.data.vos.length < this.pageSize) {
+                    this.touchend = true;
+                }
+                this.reportList = [...this.reportList,...res.data.vos]
+                this.totalQuantity = res.data.totalQuantity;
+                this.totalAmount = res.data.totalAmount;
+            }
+            this.showLoading = false;
+            
         },
         goBack(){
             this.$router.push({name:"sensus"})
@@ -150,7 +188,7 @@ export default {
 <style lang="scss" scoped>
     @import 'src/style/mixin';
     .cneter-con{
-        margin-bottom:1rem;
+        margin-bottom:.8rem;
     }
     .title-choose{
         width:100%;

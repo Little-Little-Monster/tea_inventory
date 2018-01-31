@@ -100,7 +100,6 @@
                         if(_this.loginContent=='登陆中....'){
                             _this.loginContent = '登陆中'
                         }
-                        console.log(_this.loginContent);
                     },500)
                 }else{
                     // _this.loginContent = '登陆'

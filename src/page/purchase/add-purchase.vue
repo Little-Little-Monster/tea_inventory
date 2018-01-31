@@ -93,7 +93,8 @@
       <ul>
         <li>
           <div class="list_left">
-            实付 <i class="required" style="position:absolute;top:.3rem;left:1rem" v-if="Number(buyOrderInfo.realAmount)">{{Number(buyOrderInfo.realAmount).toFixed(2)}}</i>
+            <b>{{$route.name=='buyBack'?'供应商实付':'实付'}}</b> 
+            <i class="required" style="position:absolute;top:.3rem;left:1rem" v-if="Number(buyOrderInfo.realAmount)">{{Number(buyOrderInfo.realAmount).toFixed(2)}}</i>
           </div>
           <div class="list_right">
             <input type="number" placeholder="未付" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyOrderInfo.realAmount" @input="getTotal">
@@ -335,12 +336,12 @@
         }
         this.empty = false;
         this.buyOrderInfo.showGoodsList.forEach(goods=>{
-          if(goods.quantity==''){
+          if(goods.quantity==''||goods.quantity<=0){
             this.empty = true;
           }
         })
         if(this.empty){
-          this.showTip("商品数量不能为空！");
+          this.showTip("商品数量必须大于0！");
           return;
         }
 

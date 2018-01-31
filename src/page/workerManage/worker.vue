@@ -22,7 +22,7 @@
                 <left-slider :index="list.employeeId" @swipe="swipe" @swipeRight="inputIndex=-1" >
                     <span>{{list.employeeName}}</span>
                     <p class="ellipsis">所属门店：<em v-for="store in list.storeNames">{{store}},</em></p>
-                    <p>最后登陆时间：<em>{{list.loginTime}}</em></p>
+                    <!-- <p>最后登陆时间：<em>{{list.loginTime}}</em></p> -->
                     <p>创建时间：<em>{{list.createDate}}</em></p>
                     <em v-if="!$route.query.getWorker&&inputIndex!=list.employeeId" class="list-option iconfont icon-qianjin"></em>
                     <em v-if="$route.query.getWorker" class="list-option iconfont check-icon" :class="{'icon-radio-checked':workerId==list.employeeId,'icon-danxuanweizhong':workerId!=list.employeeId}" @click="workerId=list.employeeId;workerName=list.employeeName"></em>

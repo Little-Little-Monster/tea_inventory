@@ -54,7 +54,8 @@ export default {
             inputIndex:-1,
             showAlert:false,
             alertText:'',
-            showLoading:false
+            showLoading:false,
+            fromPage:this.$route.query.fromPage
         }
     },
     created(){
@@ -178,7 +179,12 @@ export default {
                     }
                 )
             }else if(!this.$route.query.getStore){
-                this.$router.push({name:'basic'})
+                if(this.fromPage){
+                     this.$router.push({name:this.fromPage})
+                }else{
+                    this.$router.push({name:'basic'})
+                }
+                
             }
         },
         deleteStore(id){

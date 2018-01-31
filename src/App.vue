@@ -4,11 +4,12 @@
 			<keep-alive>
 			    <router-view v-if="$route.meta.keepAlive"></router-view>
 			</keep-alive>
-    	</transition>
-    	<transition name="router-fade">
+    </transition>
+
+    <transition name="router-fade">
 			<router-view v-if="!$route.meta.keepAlive"></router-view>
 		</transition>
-    </div>
+  </div>
 </template>
 
 <script>

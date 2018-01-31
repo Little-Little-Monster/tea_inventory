@@ -11,38 +11,45 @@
             </div>
         </section>
         <section class="option-con">
-            <div class="option-list" @click="toAddress({name:'store'})">
+            <div class="option-list" @click="toAddress({name:'store'})" v-if="menuList.indexOf('store')!=-1">
                 <span class="option-name">
                     <i class="iconfont icon-mendianguanli"></i>
                     门店管理
                 </span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
-            <div class="option-list" @click="toAddress({name:'worker'})">
+            <div class="option-list" @click="toAddress({name:'worker'})" v-if="menuList.indexOf('worker')!=-1">
                 <span class="option-name"> 
                     <i class="iconfont icon-kehuguanli"></i>
                     员工管理
                 </span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
-            <div class="option-list" @click="toAddress({name:'supplierList'})">
+            <div class="option-list" @click="toAddress({name:'supplierList'})" v-if="menuList.indexOf('supplierList')!=-1">
                 <span class="option-name"> 
                     <i class="iconfont icon-gongyingshangguanli"></i>
                     供应商管理
                 </span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
-            <div class="option-list" @click="toAddress({name: 'storehouseList'})">
+            <div class="option-list" @click="toAddress({name: 'storehouseList'})" v-if="menuList.indexOf('storehouseList')!=-1">
                 <span class="option-name">
                      <i class="iconfont icon-depot1"></i>
                      仓库管理
                 </span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
-            <div class="option-list" @click="toAddress({name: 'accountManage'})">
+            <div class="option-list" @click="toAddress({name: 'accountManage'})" v-if="menuList.indexOf('balanceAccount')!=-1">
                 <span class="option-name"> 
                     <i class="iconfont icon-account"></i>
                     账户管理
+                </span>
+                <span class="jiantou iconfont icon-qianjin"></span>
+            </div>
+            <div class="option-list" @click="toAddress({name: 'roleManage'})" v-if="menuList.indexOf('roleManage')!=-1">
+                <span class="option-name"> 
+                    <i class="iconfont icon-jiaoseguanli"></i>
+                    角色管理
                 </span>
                 <span class="jiantou iconfont icon-qianjin"></span>
             </div>
@@ -67,7 +74,8 @@ export default {
 	data(){
         return {
 			imgPath:'static/images/head.png',
-            userName:getStore('userInfo').userName
+            userName:getStore('userInfo').userName,
+            menuList:JSON.stringify(getStore("menu")),//菜单列表
         }
     },
     async beforeMount(){

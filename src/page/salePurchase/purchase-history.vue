@@ -1,7 +1,7 @@
 <template>
   <div class="purchase_detail main">
     <head-top signin-up='msite' goBack="" :headTitle="$route.name=='saleBackHistory'?'销售回退历史':'销售历史'">
-      <div slot="back" class="goback" @click="toAddress({name:'msite'});" >
+      <div slot="back" class="goback" @click="goBack" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
     </head-top>
@@ -79,8 +79,12 @@
       ...mapMutations([
         'CHANGE_HEADER'
       ]),
-      toAddress(name){
-        this.$router.push(name)
+      goBack(){
+        if(this.$route.query.fromPage){
+          this.$router.push({name:this.$route.query.fromPage})
+        }else{
+          this.$router.push({name:'msite'})
+        } 
       },
       showTip(msg){
         this.alertText = msg;

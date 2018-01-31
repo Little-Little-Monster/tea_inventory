@@ -27,7 +27,7 @@
       </div> -->
     </nav>
     <ul class="sensus_ul sensus_header">
-      <li @click="$router.push({name:'todayAccount'})">
+      <li @click="$router.push({name:'todayAccount'})" v-if="menuList.indexOf('todayAccount')!=-1">
         <div class="li_left"><i class="iconfont icon-zhouqipandianmingxi"></i>今日结余</div>
         <div class="li_right" style="text-align:right">收支明细、记账 <i class="iconfont icon-qianjin"></i></div>
       </li>
@@ -44,7 +44,7 @@
       </li> -->
     </ul>
     <ul class="sensus_ul sensus_content">
-      <li @click="$router.push({name:'saleReport'})">
+      <li @click="$router.push({name:'saleReport'})" v-if="menuList.indexOf('saleReport')!=-1">
         <div class="li_left">
           <p><i class="iconfont icon-xiaoshoubaobiao"></i>销售报表</p>
           <p>今日销售<span class="number"> {{saleInfo.saleSize}}</span> 笔<b></b>销售金额<span class="price"> ￥{{saleInfo.saleAmount}}</span></p>
@@ -52,12 +52,26 @@
           <p>今日撤销<span class="number"> {{saleInfo.saleCancelSize}}</span> 笔<b></b>撤销金额<span class="price"> ￥{{saleInfo.saleCancelAmount}}</span></p>
         </div>
       </li>
-      <li @click="$router.push({name:'buyReport'})">
+      <li @click="$router.push({name:'buyReport'})" v-if="menuList.indexOf('buyReport')!=-1">
         <div class="li_left">
           <p><i class="iconfont icon-caigoubaobiao"></i>采购报表</p>
           <p>今日采购<span class="number"> {{buyInfo.buySize}}</span> 笔<b></b>采购金额<span class="price"> ￥{{buyInfo.buyAmount}}</span></p>
           <p>今日退货<span class="number"> {{buyInfo.buyBackSize}}</span> 笔<b></b>退货金额<span class="price"> ￥{{buyInfo.buyBackAmount}}</span></p>
           <p>今日撤销<span class="number"> {{buyInfo.buyCancelSize}}</span> 笔<b></b>撤销金额<span class="price"> ￥{{buyInfo.buyCancelAmount}}</span></p>
+        </div>
+      </li>
+      <li class="sensus_ul_detail" v-if="menuList.indexOf('saleHistory')!=-1||menuList.indexOf('saleBackHistory')!=-1">
+        <div class="li_left" @click="$router.push({name:'saleHistory',query:{fromPage:$route.name}})" v-if="menuList.indexOf('saleHistory')!=-1">
+          <p>
+            <em class="iconfont icon-gerenzhongxin-caigoudan"></em>
+            <i>销售单</i>
+          </p>
+          <span>销售历史</span>
+        </div>
+        <div class="border_center"></div>
+        <div class="li_right" @click="$router.push({name:'saleBackHistory',query:{fromPage:$route.name}})" v-if="menuList.indexOf('saleBackHistory')!=-1">
+          <p class="sbZhanghq"><i class="iconfont icon-caigoutuihuodan"></i>销售退货单</p>
+          <span>销售退货历史</span>
         </div>
       </li>
       <!-- <li @click="$router.push({name:'buyReport'})">
@@ -92,7 +106,7 @@
   export default {
     data(){
       return {
-        menuList: null,//菜单列表
+        menuList: JSON.stringify(getStore('menu')),//菜单列表
         userId:getStore('userInfo').id,
         saleInfo:{},
         buyInfo:{}
@@ -221,7 +235,7 @@
           .li_right{
             width: 3.73rem;
             padding-left: 0.28rem;
-            font-size: 0.3rem;
+            font-size: 0.28rem;
           }
         }
         .border_center{
@@ -243,7 +257,7 @@
               padding-top:.24rem;
               p{
                 &:nth-child(n+1){
-                  font-size: 0.26rem;
+                  font-size: 0.28rem;
                   color: #ccc;
                   margin-top: 0.3rem;
                   margin-left: 0.42rem;
@@ -261,7 +275,10 @@
                 }
               }
             }
-          
+            .sbZhanghq{
+              font-size:.28rem;
+              margin-left: 0.42rem;
+            }
         }
       }
     }

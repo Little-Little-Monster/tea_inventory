@@ -244,6 +244,7 @@ export default {
                 const customerName = this.buyOrder.customerName;
                 const saleName = this.buyOrder.saleName;
                 const saleId = this.buyOrder.saleId;
+                const storeId = this.buyOrder.storeId;
                 this.RECORD_BUYORDER({
                     warehouseId:warehouseId,
                     warehouseName:warehouseName,
@@ -254,7 +255,8 @@ export default {
                     saleId:saleId,
                     saleName:saleName,
                     customerName:customerName,
-                    customerId:customerId
+                    customerId:customerId,
+                    storeId:storeId
                 });
                 this.returnBack();
                 this.showLoading = false
@@ -337,11 +339,11 @@ export default {
                     body: formData,
                 }).then((response) => response.json())
                     .then((responseData)=> {
-                        console.log('uploadImage', responseData);
+                        // console.log('uploadImage', responseData);
                         resolve(responseData);
                     })
                     .catch((err)=> {
-                        console.log('err', err);
+                        // console.log('err', err);
                         reject(err);
                     });
             });

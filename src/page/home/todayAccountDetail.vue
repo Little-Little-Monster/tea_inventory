@@ -40,8 +40,8 @@
                     <p class="text-info">操作员：<em>{{list.operatorName}}</em></p>
                     <p class="text-info">创建时间：<em>{{list.createDate}}</em></p>
                     <em class="list-option">
-                        <b v-if="list.type==0||list.type==4||list.type==5">-￥</b>
-                        <b v-if="list.type==1||list.type==2||list.type==3">+￥</b>
+                        <b v-if="list.type==0||list.type==4||list.type==5">￥-</b>
+                        <b v-if="list.type==1||list.type==2||list.type==3">￥+</b>
                         {{list.tradeAmount.toFixed(2)}}
                     </em>
                     <em class="list-type">{{list.typeName}}</em>

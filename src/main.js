@@ -40,16 +40,19 @@ const router = new VueRouter({
     routes,
     mode: routerMode,
     strict: process.env.NODE_ENV !== 'production',
-    scrollBehavior(to, from, savedPosition) {
-      if (savedPosition) {
-        return savedPosition
-      } else {
-        if (from.meta.keepAlive) {
-          from.meta.savedPosition = document.body.scrollTop;
-        }
-        return { x: 0, y: to.meta.savedPosition || 0 }
-      }
-    }
+    scrollBehavior: function(to, from, savedPosition) {
+      return savedPosition || { x: 0, y: 0 }
+    },
+    // scrollBehavior(to, from, savedPosition) {
+    //   if (savedPosition) {
+    //     return savedPosition
+    //   } else {
+    //     if (from.meta.keepAlive) {
+    //       from.meta.savedPosition = document.body.scrollTop;
+    //     }
+    //     return { x: 0, y: to.meta.savedPosition || 0 }
+    //   }
+    // }
   })
   //未登录只能路由到登录页
 router.beforeEach((to, from, next) => {

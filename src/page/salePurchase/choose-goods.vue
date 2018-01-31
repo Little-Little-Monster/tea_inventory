@@ -140,7 +140,7 @@
                 goodsId:goods.goodsId,
                 goodsName:goods.name,
                 quantity:goods.quantity,
-                unitAmount:this.fromPage=='saleTrade'?goods.saleAmount.toFixed(2):goods.buyAmount.toFixed(2),
+                unitAmount:(this.fromPage=='saleTrade'||this.fromPage=='saleBack')?goods.saleAmount.toFixed(2):goods.buyAmount.toFixed(2),
                 saleMode:1
               })
             }

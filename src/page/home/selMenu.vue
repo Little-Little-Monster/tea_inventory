@@ -17,6 +17,9 @@
       </li>
     </ul>
     <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
+    <transition name="loading">
+			<loading v-show="showLoading"></loading>
+		</transition>
     <div class="bottom"  @click="save">
           保存
     </div>
@@ -29,6 +32,7 @@
   import headTop from 'src/components/header/head'
   import footGuide from 'src/components/footer/footGuide'
   import alertTip from '../../components/common/alertTip'
+  import loading from 'src/components/common/loading'
 
   export default {
     data(){
@@ -43,7 +47,8 @@
         chooseId:-1,
         chooseName:null,
         showAlert:false,
-        alertText:''
+        alertText:'',
+        showLoading:false
       }
     },
     created(){
@@ -66,7 +71,8 @@
     components: {
       headTop,
       footGuide,
-      alertTip
+      alertTip,
+      loading
     },
     computed: {
       ...mapState([
@@ -92,15 +98,18 @@
           menuShowVos:this.menuList,
           userId:this.userId
         }
+        this.showLoading = true;
         save_menu(menu).then((res)=>{
           if(res.code==200){
             this.$router.push({name:"msite"});
-            setStore('menu',this.menuList)
+            setStore('menu',this.menuList);
           }else{
             this.showTip(res.message)
           }
+          this.showLoading = false;
         }).catch((err)=>{
           this.showTip(err.message)
+          this.showLoading = false;
         })
       },
       getRole(){

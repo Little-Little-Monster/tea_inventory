@@ -53,14 +53,14 @@
         historyList:[],
         status:0,
         type:this.$route.name=='buyBackHistory'?5:4,
-      page:0,
-      pageSize:10,
-       preventRepeatReuqest: false, //到达底部加载数据，防止重复加载
-			showBackStatus: false, //显示返回顶部按钮
-			showLoading: true, //显示加载动画
-      touchend: false, //没有更多数据
-      showAlert:false,
-      alertText:''
+        page:0,
+        pageSize:10,
+        preventRepeatReuqest: false, //到达底部加载数据，防止重复加载
+        showBackStatus: false, //显示返回顶部按钮
+        showLoading: true, //显示加载动画
+        touchend: false, //没有更多数据
+        showAlert:false,
+        alertText:''
       }
     },
     components: {

@@ -11,10 +11,10 @@
                 <span>结算账户管理</span>
                 <span class="list-option iconfont icon-qianjin"></span>
             </div>
-            <div class="store-list list" @click="$router.push({name:'accountType'})">
+            <!-- <div class="store-list list" @click="$router.push({name:'accountType'})">
                 <span>账目类型管理</span>
                 <span class="list-option iconfont icon-qianjin"></span>
-            </div>
+            </div> -->
         </div>
     </div>    
 </template>

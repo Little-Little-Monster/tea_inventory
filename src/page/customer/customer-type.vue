@@ -42,7 +42,7 @@ export default {
             this.typeList = res.data;
 
         }).catch((err)=>{
-            console.log(err)
+            // console.log(err)
         })
         if(this.customer.customerClassId){
             this.chooseId = this.customer.customerClassId
