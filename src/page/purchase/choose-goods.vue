@@ -18,7 +18,7 @@
       </div>
       <div class="goods_classify_list cneter-con" >
         <ul v-if="goodsList.length!=0">
-          <li v-for="goods in goodsList[typeShow].stockVos">
+          <li v-for="goods in goodsList[typeShow].stockVos" v-if="goodsList[typeShow] && goodsList[typeShow].stockVos">
             <div class="goods_pic">
               <img :src="goods.attachmentUrl" alt="">
             </div>
@@ -112,7 +112,7 @@
       getGoodsList(){
         get_warehouse_goods_list(this.params,this.userId,0,this.buyOrder.warehouseId,0,1000).then((res)=>{
           if(res.code==200){
-            this.goodsList = res.data;
+            this.goodsList = res.data.info;
             this.goodsList.forEach(element => {
               element.stockVos.forEach(el=>{
                 this.$set(el,'quantity',0);

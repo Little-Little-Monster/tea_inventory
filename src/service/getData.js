@@ -484,9 +484,10 @@ export const stock_handel = (userId, stockInfo) => fetch('/api/invoicing/' + use
 /**
  * 销售报表查询
  */
-export const get_sale_report = (userId, storeId, startDate, endDate, page, pageSize) => fetch('/api/invoicing/sale/report/query', {
+export const get_sale_report = (userId, storeId, goodsId, startDate, endDate, page, pageSize) => fetch('/api/invoicing/sale/report/query', {
   userId,
   storeId,
+  goodsId,
   startDate,
   endDate,
   page,
@@ -496,9 +497,10 @@ export const get_sale_report = (userId, storeId, startDate, endDate, page, pageS
 /**
  * 采购报表查询
  */
-export const get_buy_report = (userId, storeId, startDate, endDate, page, pageSize) => fetch('/api/invoicing/buy/report/query', {
+export const get_buy_report = (userId, storeId, goodsId, startDate, endDate, page, pageSize) => fetch('/api/invoicing/buy/report/query', {
   userId,
   storeId,
+  goodsId,
   startDate,
   endDate,
   page,

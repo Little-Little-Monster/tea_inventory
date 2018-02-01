@@ -30,7 +30,7 @@
                         <div class="goods-detail">
                             <p>{{goods.name}}</p>
                             <p>分类：{{goods.goodsClassificationName}}</p>
-                            <p>售价：<em>{{goods.saleAmount}}</em></p>
+                            <p>售价：<em>{{goods.saleAmount.toFixed(2)}}</em></p>
                             <p>品牌：{{goods.goodsBrandName}}</p>
                         </div>
                         <em v-if="!isGetGoods  " class="list-option iconfont icon-qianjin"></em>

@@ -23,6 +23,13 @@
                 </select>
             </div>
         </section>
+        <section class="title-choose">
+            <div class="search" @click="getGoods">
+                <div class="search-name">商品</div>
+                <span class="sel-goods" v-if="!goodsId">请选择商品<i class="iconfont icon-qianjin"></i></span>
+                <span class="sel-goods" v-if="goodsId">{{goodsName}}<i class="iconfont icon-qianjin"></i></span>
+            </div>
+        </section>
         <section class="total-info">
             <section>
                 <span>销售量</span> 
@@ -79,6 +86,8 @@ export default {
             startDate:"",
             endDate:"",
             storeId:0,
+            goodsId:0,
+            goodsName:'',
             showAlert:false,
             alertText:'',
             showLoading: true,
@@ -89,6 +98,10 @@ export default {
         }
     },
     created(){
+        if(this.$route.query.goodsId){
+            this.goodsId = this.$route.query.goodsId 
+            this.goodsName = this.$route.query.goodsName 
+        }
         this.getStore()
         this.getReport()
     },
@@ -128,9 +141,18 @@ export default {
                  this.showTip(err.message)
             })
         },
+        getGoods(){
+            //跳转到商品列表，获取商品
+            this.$router.push({name:"goodsManage",query:{
+                goodsId:this.goodsId,
+                goodsName:this.goodsName,
+                getGoods:true,
+                fromPage:this.$route.name
+            }})
+        },
         getReport(){
             this.showLoading = true;
-            get_sale_report(this.userId,this.storeId,this.startDate,this.endDate,this.page,this.pageSize).then((res)=>{
+            get_sale_report(this.userId,this.storeId,this.goodsId,this.startDate,this.endDate,this.page,this.pageSize).then((res)=>{
                 if(res.code!=200){
                     this.showTip(res.message)
                 }else{
@@ -226,6 +248,35 @@ export default {
                 @include ct;
                 right:0;
                 color:#999;
+            }
+        }
+        .search{
+            display: flex;
+            background: #fff;
+            padding-right:.4rem;
+            width:100%;
+            .search-name{
+                flex: 3;
+                text-align: left;
+                padding-left:.4rem;
+                font-size:.28rem;
+            }
+            .sel-goods{
+                @include sc(.20rem,#A1A1A1);
+                i{
+                    @include sc(.34rem,#A1A1A1);
+                    margin-left:.1rem;
+                }
+            }
+            .sel-con{
+                 flex: 4;
+                 text-align: right;
+                 select{
+                     width:80%;
+                     @include sc(.24rem,#A1A1A1);
+                     background: #fff;
+                     padding-right: .2rem;
+                 }
             }
         }
     }

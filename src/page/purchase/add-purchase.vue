@@ -94,7 +94,7 @@
         <li>
           <div class="list_left">
             <b>{{$route.name=='buyBack'?'供应商实付':'实付'}}</b> 
-            <i class="required" style="position:absolute;top:.3rem;left:1rem" v-if="Number(buyOrderInfo.realAmount)">{{Number(buyOrderInfo.realAmount).toFixed(2)}}</i>
+            <i class="required" style="position:absolute;top:.3rem;left:1rem" v-show="$route.name!='buyBack'" v-if="Number(buyOrderInfo.realAmount)">{{Number(buyOrderInfo.realAmount).toFixed(2)}}</i>
           </div>
           <div class="list_right">
             <input type="number" placeholder="未付" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyOrderInfo.realAmount" @input="getTotal">
@@ -349,7 +349,9 @@
         this.buyOrderInfo.operatorId = this.userId;
         let submitOrder = this.buyOrderInfo;
         submitOrder.buyGoods = this.buyOrderInfo.showGoodsList;
-        
+        submitOrder.buyGoods.forEach(goods=>{
+          goods.amount = Number(goods.quantity)*Number(goods.unitAmount)
+        })
         this.showLoading = true;
         save_buy_order(this.userId,submitOrder).then((res)=>{
           if(res.code==600){

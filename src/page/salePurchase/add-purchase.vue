@@ -273,7 +273,7 @@
           this.saleOrderInfo.customerId = 0;
           this.saleOrderInfo.customerName = '匿名客户';
         }else{
-          if(Number(this.saleOrderInfo.balance)>Number(this.saleOrderInfo.totalAmount)){
+          if(Number(this.saleOrderInfo.balance)>=Number(this.saleOrderInfo.totalAmount)){
             this.saleOrderInfo.payType=4;
           }else{
             this.saleOrderInfo.payType=0;
@@ -490,6 +490,7 @@
           if(goods.saleMode==2){
             goods.amount=0;
           }
+          goods.amount = Number(goods.quantity)*Number(goods.unitAmount)
         })
         
         this.showLoading = true;

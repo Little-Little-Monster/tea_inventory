@@ -26,7 +26,7 @@
             <div class="list_right" >
               <i @click="$router.push({name:'addCustomer',query:{id: list.id}})" v-if="!chooseCustomer&&inputIndex!=list.id" class="iconfont icon-bianji"></i>
               <span @click="$router.push({name:'addCustomer',query:{id: list.id}})" v-if="!chooseCustomer&&inputIndex!=list.id">编辑</span>
-              <em v-if="chooseCustomer" class="list-option iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click.stop="chooseId=list.id;balance=list.balance;chooseName=list.name"></em>
+              <em v-if="chooseCustomer" class="list-option iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click.stop="setChoose(list)"></em>
               <div :class="{'option-con-list':!chooseCustomer&&inputIndex==list.id,'option-none':!(!chooseCustomer&&inputIndex==list.id)}" >
                   <span @click="deleteCustomer(list.id)">删除</span>
               </div>
@@ -109,6 +109,17 @@
       showTip(msg){
           this.alertText = msg;
           this.showAlert = true;
+      },
+      setChoose(list){
+        if(this.chooseId==list.id){
+          this.chooseId='';
+          this.balance='';
+          this.chooseName=''
+        }else{
+          this.chooseId=list.id;
+          this.balance=list.balance;
+          this.chooseName=list.name
+        }
       },
       getCustomer(){
         this.showLoading = true;
