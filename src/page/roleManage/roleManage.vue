@@ -8,15 +8,18 @@
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
     <ul class="supplier_list paddingTop cneter-con" :style="{'margin-bottom':chooseRule?'1rem':''}">
-      <li class="supplier_info_list" v-for="list in roleList" @click="editRole(list.id,list.roleName,list.memo,list.type)">
-        <div class="list_left">
-          <h4>{{list.roleName}}</h4>
-          <p><span>{{list.memo}}</span></p>
-        </div>
-        <div class="list_right">
-          <i class="iconfont icon-qianjin" v-if="!chooseRule"></i>
-          <em v-if="chooseRule" class="iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click="chooseId=list.id;chooseName=list.name"></em>
-        </div>
+      <li class="supplier_info_list list goods-con" v-for="list in roleList" @click="editRole(list.id,list.roleName,list.memo,list.type)">
+        <left-slider class="parentType" :index="list.id" @swipe="swipe"  @swipeRight="inputIndex=-1">
+          <div class="list_left">
+            <h4>{{list.roleName}}</h4>
+            <p><span>{{list.memo}}</span></p>
+          </div>
+            <i class="list-option iconfont icon-qianjin" v-if="!chooseRule"></i>
+            <em v-if="chooseRule" class="list-option iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click="chooseId=list.id;chooseName=list.name"></em>
+            <div  :class="{'option-con-list':!chooseRule&&inputIndex==list.id,'option-none':!(!chooseRule&&inputIndex==list.id)}" @click="deleteRole(list.id)">
+                <span>删除</span>
+            </div>
+        </left-slider>
       </li>
       <p class="empty_data">没有更多了</p>
     </ul>
@@ -32,11 +35,12 @@
 <script>
   import { mapMutations,mapState } from 'vuex'
   import { getStore } from 'src/config/mUtils'
-  import { get_role_list } from 'src/service/getData'
+  import { get_role_list,delete_role } from 'src/service/getData'
   import headTop from 'src/components/header/head'
   import footGuide from 'src/components/footer/footGuide'
   import loading from 'src/components/common/loading'
   import alertTip from '../../components/common/alertTip'
+  import LeftSlider from '../../components/common/slideLeft.vue';
 
   export default {
     data(){
@@ -51,7 +55,8 @@
         chooseName:null,
         showLoading:false,
         showAlert:false,
-        alertText:''
+        alertText:'',
+        inputIndex:-1
       }
     },
     created(){
@@ -75,7 +80,8 @@
       headTop,
       footGuide,
       loading,
-      alertTip
+      alertTip,
+      LeftSlider
     },
     computed: {
       ...mapState([
@@ -107,6 +113,26 @@
             }
           }
       },
+      swipe(id){
+         this.inputIndex = id;
+      },
+      deleteRole(id){
+          this.showLoading = true;
+          delete_role(id).then((res)=>{
+              this.showLoading = false;
+              if(res.code==200){
+                  this.getRole();
+              }else{
+                  this.showAlert = true;
+                  this.alertText= res.message;
+              }
+              
+          }).catch((err)=>{
+              this.showLoading = false;
+              this.showAlert = true;
+              this.alertText= err.message;
+          })
+      },
       save(){
         if(!this.chooseRule){
           this.$router.push({name:"basic"})
@@ -133,6 +159,7 @@
         get_role_list(this.userId).then((res)=>{
           this.roleList=res.data;
           this.showLoading = false;
+          this.inputIndex=-1;
         }).catch((err)=>{
           this.showLoading = false;
           this.showAlert = true;
@@ -140,7 +167,7 @@
         })
       },
       editRole(roleId,roleName,memo,type){
-        if(!this.chooseRule){
+        if(!this.chooseRule&&this.inputIndex==-1){
           this.$router.push({
             name:'editRole',
             query:{
@@ -163,7 +190,7 @@
     @include same_ul_style;
     .supplier_info_list{
       height: 1.6rem;
-      padding: 0 0.2rem 0 0.4rem;
+      padding: 0 0 0 0.4rem;
       .list_left {
             font-size: 0.3rem;
             color: #444;

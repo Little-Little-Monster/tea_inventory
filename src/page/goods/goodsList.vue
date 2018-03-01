@@ -35,7 +35,7 @@
                         </div>
                         <em v-if="!isGetGoods  " class="list-option iconfont icon-qianjin"></em>
                         <em v-if="isGetGoods" class="list-option iconfont check-icon" :class="{'icon-radio-checked':chooseId==goods.id,'icon-danxuanweizhong':chooseId!=goods.id}" @click="chooseId=goods.id;chooseName=goods.name"></em>
-                        <div  :class="{'option-con-list':!isGetGoods&&inputIndex==goods.id,'option-none':!(!isGetGoods&&inputIndex==goods.id)}" >
+                        <div  :class="{'option-con-list':!isGetGoods&&inputIndex==goods.id,'option-none':!(!isGetGoods&&inputIndex==goods.id)}" @click="deleteGoods(goods.id)">
                             <span>删除</span>
                         </div>
                     </left-slider>
@@ -49,6 +49,7 @@
         <transition name="loading">
 			<loading v-show="showLoading"></loading>
 		</transition>
+        <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="showAlert=false" :alertText="alertText"></alert-tip>
     </div>    
 </template>
 
@@ -56,9 +57,10 @@
 import {mapMutations,mapState} from 'vuex'
 import {getStore,showBack, animate} from 'src/config/mUtils'
 import {loadMore} from 'src/components/common/mixin'
-import {get_goods_list,get_goods_type,get_goods_by_name} from 'src/service/getData'
+import {get_goods_list,get_goods_type,get_goods_by_name,delete_goods} from 'src/service/getData'
 import headTop from 'src/components/header/head'
 import loading from 'src/components/common/loading'
+import alertTip from '../../components/common/alertTip'
 import LeftSlider from '../../components/common/slideLeft.vue';
 
 export default {
@@ -77,6 +79,8 @@ export default {
             fromPage:this.$route.query.fromPage,
             inputIndex:-1,
             goodsType:null,
+            showAlert:false,
+            alertText:'',
 
             preventRepeatReuqest: false, //到达底部加载数据，防止重复加载
 			showBackStatus: false, //显示返回顶部按钮
@@ -114,7 +118,7 @@ export default {
         
     },
     components: {
-    	headTop,LeftSlider,loading
+    	headTop,LeftSlider,loading,alertTip
     },
     mixins: [loadMore],
     computed: {
@@ -143,6 +147,23 @@ export default {
                 this.showLoading = false;
             }).catch((err)=>{
                 this.showLoading = true;
+            })
+        },
+        deleteGoods(id){
+            this.showLoading = true;
+            delete_goods(id).then((res)=>{
+                this.showLoading = false;
+                if(res.code==200){
+                    this.getGoods();
+                }else{
+                    this.showAlert = true;
+                    this.alertText= res.message;
+                }
+                
+            }).catch((err)=>{
+                this.showLoading = false;
+                this.showAlert = true;
+                this.alertText= err.message;
             })
         },
         save(){

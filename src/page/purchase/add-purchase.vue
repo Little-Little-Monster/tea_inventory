@@ -100,14 +100,10 @@
             <input type="number" placeholder="未付" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyOrderInfo.realAmount" @input="getTotal">
           </div>
         </li>
-        <!-- <li>
-          <div class="list_left">
-            欠供应商款
-          </div>
-          <div class="list_right" style="color: #E78787">
-            ￥{{buyOrderInfo.debtAmount}}
-          </div>
-        </li> -->
+        <li class="buy-tip">
+          <span v-if="$route.name=='buyTrade'">*店铺未给供应商结算默认0，反之则店铺给供应商金额</span> 
+          <span v-if="$route.name=='buyBack'">*供应商未给店铺结算默认0，反之则供应商给店铺金额</span> 
+        </li>
         <li>
           <div class="list_left">
             业务日期
@@ -412,6 +408,13 @@
       li {
         height: 1rem;
         padding: 0 0.4rem;
+        &.buy-tip{
+          background: $bc;
+          height:.6rem;
+          span{
+            @include sc(.2rem,#F58095)
+          }
+        }
         .list_left {
             font-size: 0.3rem;
             color: #444;
@@ -455,6 +458,7 @@
           }
         }
       }
+      
       .good-con{
         width:100%;
         min-height:1rem;

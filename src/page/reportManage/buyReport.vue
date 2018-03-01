@@ -48,6 +48,7 @@
                         {{list.goodsName}}
                     </span>
                     <p class="text-info">单价：<em>￥{{list.unitAmount.toFixed(2)}}</em></p>
+                    <p class="text-info">类型：<em>{{list.typeName}}</em></p>
                     <p class="text-info">采购时间：<em>{{list.bizDateStr}}</em></p>
                     <em class="list-option">
                         金额：￥{{list.amount.toFixed(2)}}<br>
@@ -185,7 +186,7 @@ export default {
             this.preventRepeatReuqest = true;
             //数据的定位加20位
             this.page++;
-            let res = await get_buy_report(this.userId,this.storeId,this.startDate,this.endDate,this.page,this.pageSize)
+            let res = await get_buy_report(this.userId,this.storeId,this.goodsId,this.startDate,this.endDate,this.page,this.pageSize)
             if(res.code!=200){
                 this.showTip(res.message)
             }else{

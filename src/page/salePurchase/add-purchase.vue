@@ -73,8 +73,8 @@
               </p>
               <p class="sale-type">
                 <i>售出方式：</i>
-                <em class="iconfont check-icon" :class="{'icon-radio-checked':showList[index].saleMode==1,'icon-danxuanweizhong':showList[index].saleMode==2}" @click="changeType(index,1)">正常出售</em>
-                <em class="iconfont check-icon" :class="{'icon-radio-checked':showList[index].saleMode==2,'icon-danxuanweizhong':showList[index].saleMode==1}" @click="changeType(index,2)">赠品</em>
+                <em class="iconfont check-icon" :class="{'icon-radio-checked':showList[index].saleMode==1,'icon-danxuanweizhong':showList[index].saleMode==2}" @click="changeType(index,1);getTotal()">正常出售</em>
+                <em class="iconfont check-icon" :class="{'icon-radio-checked':showList[index].saleMode==2,'icon-danxuanweizhong':showList[index].saleMode==1}" @click="changeType(index,2);getTotal()">赠品</em>
               </p>
             </div>
             <div class="goods-right" v-if="saleOrderInfo.status!=2&&saleOrderInfo.status!=3">
@@ -108,16 +108,21 @@
           </div>
           <div class="list_right">
             <!-- <input type="date" placeholder="请选择日期" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="saleOrderInfo.bizDateStr"> -->
-            <input type="text" readonly="" id="time" name="input_date" :placeholder="saleOrderInfo.bizDateStr" v-model="saleOrderInfo.bizDateStr" />
+            <input type="text" readonly="" id="time" name="input_date" :disabled="edit&&saleOrderInfo.status==2" :placeholder="saleOrderInfo.bizDateStr" v-model="saleOrderInfo.bizDateStr" />
             <i class="time-xiala iconfont icon-xiala2"></i>
           </div>
         </li>
-        <li style="margin-bottom:0" @click="showPay = !showPay">
+        <li style="margin-bottom:0" @click="saleOrderInfo.status==2?'':showPay = !showPay">
           <div class="list_left">
             支付方式
           </div>
           <div class="list_right">
-            <em class="iconfont icon-xiala2"></em>
+            <b style="color:#9FC894" v-show="saleOrderInfo.payType==0">支付宝</b>
+            <b style="color:#9FC894" v-show="saleOrderInfo.payType==1">微信</b>
+            <b style="color:#9FC894" v-show="saleOrderInfo.payType==2">现金</b>
+            <b style="color:#9FC894" v-show="saleOrderInfo.payType==3">POS</b>
+            <b style="color:#9FC894" v-show="saleOrderInfo.payType==4">余额</b>
+            <em class="iconfont icon-xiala2" style="margin-left:.4rem"></em>
           </div>
         </li>
         <li style="margin-bottom:0" v-show="showPay">
@@ -273,12 +278,18 @@
           this.saleOrderInfo.customerId = 0;
           this.saleOrderInfo.customerName = '匿名客户';
         }else{
-          if(Number(this.saleOrderInfo.balance)>=Number(this.saleOrderInfo.totalAmount)){
-            this.saleOrderInfo.payType=4;
+          if(this.$route.name!='saleBack'){
+            if(Number(this.saleOrderInfo.balance)>=Number(this.saleOrderInfo.totalAmount)){
+              this.saleOrderInfo.payType=4;
+            }else{
+              this.saleOrderInfo.payType=0;
+            }
           }else{
-            this.saleOrderInfo.payType=0;
+            this.saleOrderInfo.payType=4;
           }
+          
         }
+        
         if(!this.saleOrderInfo.totalAmount){
           this.saleOrderInfo.totalAmount = 0;
         }
@@ -339,12 +350,13 @@
             workerId:this.saleOrderInfo.saleId,
             workerName:this.saleOrderInfo.saleName,
             fromPage:this.$route.name,
+            edit:this.edit,
             getWorker:true
           }})
         }
       },
       closeTip(){
-        if(this.showPayWay){
+        if(this.showPayWay||this.saleOrderInfo.customerId!=0){
         this.showLoading = true;
           cancel_sale_order(this.userId,this.saleOrderInfo.id,this.payType).then((res)=>{
             this.returnBack()
@@ -385,7 +397,8 @@
         if(!this.saleOrderInfo.status || this.saleOrderInfo.status!=2&& this.saleOrderInfo.status!=3){
           this.$router.push({name:"customerManage",query:{
             chooseCustomer:true,
-            fromPage:this.$route.name
+            fromPage:this.$route.name,
+            edit:this.edit,
           }})
         }
       },
@@ -394,7 +407,8 @@
         if(!this.saleOrderInfo.status || this.saleOrderInfo.status!=2&& this.saleOrderInfo.status!=3){
           this.$router.push({name:"storehouseList",query:{
             chooseWareHouse:true,
-            fromPage:this.$route.name
+            fromPage:this.$route.name,
+            edit:this.edit,
           }})
         }
       },
@@ -402,7 +416,8 @@
         if(this.saleOrderInfo.warehouseId){
           if(!this.saleOrderInfo.status || this.saleOrderInfo.status!=2&& this.saleOrderInfo.status!=3){
             this.$router.push({name:'saleChoosegoods',query:{
-              fromPage:this.$route.name
+              fromPage:this.$route.name,
+              edit:this.edit,
             }})
           }
         }else{
@@ -434,7 +449,8 @@
         if(!this.saleOrderInfo.status || this.saleOrderInfo.status!=2&& this.saleOrderInfo.status!=3){
           this.$router.replace({name:"balanceAccount",query:{
             getAccount:true,
-            fromPage:this.$route.name
+            fromPage:this.$route.name,
+            edit:this.edit,
           }})
         }
       },
@@ -443,7 +459,7 @@
           this.showTip("请选择客户！");
           return;
         }else{
-          if((Number(this.saleOrderInfo.balance)<Number(this.saleOrderInfo.totalAmount))&&this.saleOrderInfo.payType==4){
+          if((Number(this.saleOrderInfo.balance)<Number(this.saleOrderInfo.totalAmount))&&this.saleOrderInfo.payType==4&&this.$route.name!='saleBack'){
             this.showTip("账户余额不足，请选择其他支付方式！");
             return;
           }
@@ -509,8 +525,13 @@
       },
       cancel(){
         //撤销已采购订单
-        this.showPayWay = true;
-        this.showAlert = true;
+        if(this.saleOrderInfo.customerId!=0){
+          //如果是会员撤销，则原路退回
+          this.closeTip();
+        }else{
+          this.showPayWay = true;
+          this.showAlert = true;
+        }
       },
       deleteOrder(){
         //删除草稿订单
@@ -528,16 +549,20 @@
         this.saleOrderInfo.realAmount = 0;
         if(this.saleOrderInfo.showGoodsList&&this.saleOrderInfo.showGoodsList.length!=0){
            this.saleOrderInfo.showGoodsList.forEach(element => {
-              this.saleOrderInfo.realAmount = (this.saleOrderInfo.realAmount + Number(element.unitAmount)*Number(element.quantity));
+             if(element.saleMode==1){
+               this.saleOrderInfo.realAmount = (this.saleOrderInfo.realAmount + Number(element.unitAmount)*Number(element.quantity));
+             }
             }
           );
           this.saleOrderInfo.realAmount = this.saleOrderInfo.realAmount.toFixed(2)
           this.saleOrderInfo.totalAmount = Number(this.saleOrderInfo.realAmount*(this.saleOrderInfo.discount/100)).toFixed(2);
         }
-        if(Number(this.saleOrderInfo.balance)>Number(this.saleOrderInfo.totalAmount)){
-          this.saleOrderInfo.payType=4;
-        }else{
-          this.saleOrderInfo.payType=0;
+        if(this.$route.name!='saleBack'){
+          if(Number(this.saleOrderInfo.balance)>Number(this.saleOrderInfo.totalAmount)){
+            this.saleOrderInfo.payType=4;
+          }else{
+            this.saleOrderInfo.payType=0;
+          }
         }
         // this.saleOrderInfo.debtAmount = Number(this.saleOrderInfo.totalAmount)-Number(this.saleOrderInfo.realAmount);
       }

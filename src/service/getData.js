@@ -266,6 +266,11 @@ export const save_goods = (userId, goodsInfo) => fetch('/api/invoicing/goods/han
  * 创建/更新商品类别
  */
 
+export const delete_goods = (id) => fetch('/api/invoicing/goods/delete', { id });
+/**
+ * 创建/更新商品类别
+ */
+
 export const save_goods_type = (userId, info) => fetch('/api/invoicing/goods/classification/handler/' + userId, info, "POST");
 
 /**
@@ -322,11 +327,14 @@ export const save_buy_order = (userId, buyOrder) => fetch('/api/invoicing/' + us
  * 采购历史查询
  */
 
-export const get_buy_history = (userId, page, pageSize, status, type) => fetch('/api/invoicing/' + userId + '/buy/trade/query/list', {
+export const get_buy_history = (userId, page, pageSize, status, type, supplierId, startDate, endDate) => fetch('/api/invoicing/' + userId + '/buy/trade/query/list', {
   page,
   pageSize,
   status,
-  type
+  type,
+  supplierId,
+  startDate,
+  endDate
 });
 
 /**

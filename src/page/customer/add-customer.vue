@@ -48,14 +48,14 @@
           <kswitch :checked="enable" @click.native="enable=!enable"></kswitch>
         </div>
       </li>
-      <li v-if="!$route.query.id">
+      <!-- <li v-if="!$route.query.id">
         <div class="list_left">
            余额
         </div>
         <div class="list_right">
           <input type="number" step="0.01" v-model="customerInfo.balance" placeholder="请输入账户初始金额" style="width: 2.42rem;">
         </div>
-      </li>
+      </li> -->
       <!-- <li>
         <div class="list_left">
           折扣(%)

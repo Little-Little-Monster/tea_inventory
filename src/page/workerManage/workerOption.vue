@@ -29,14 +29,14 @@
                 <em class="required">*</em>
                 <span>门店</span>
                 <em class="store-name ellipsis">
-                    <i v-for="store in worker.storeIds">{{store.storeName}}，</i> 
+                    <i v-for="store in storeIds">{{store.storeName}}，</i> 
                 </em>
                 <em class="list-option iconfont icon-qianjin"></em>
             </div>
-            <div class="list" v-if="!employeeId">
+            <div class="list">
                 <em class="required">*</em>
                 <span>密码</span>
-                <input type="password" placeholder="请输入密码" v-model="worker.password">
+                <input type="password" placeholder="请输入密码" v-model="password">
             </div>
             <div class="list" v-if="!employeeId">
                 <em class="required">*</em>
@@ -45,7 +45,7 @@
             </div>
             <div class="list" @click="worker.status==0?worker.status=1:worker.status=0">
                 <span>账户是否启用</span>
-                <em class="user-satus list-option iconfont " :class="{'icon-radio-checked':worker.status==1,'icon-danxuanweizhong':worker.status==0}"></em>
+                <em class="user-satus list-option iconfont " :class="{'icon-radio-checked':worker.status==0,'icon-danxuanweizhong':worker.status==1}"></em>
             </div>
             <div class="list">
                 <span>性别</span>
@@ -96,8 +96,10 @@ export default {
         return {
             worker:{},
             userId:getStore('userInfo').id,
+            storeIds:[],
             alertText:null,
             showAlert:false,
+            password:'',
             secondPwd:null,
             roleList:null,
             employeeId:null,
@@ -105,24 +107,31 @@ export default {
         }
     },
     created(){
-        this.$set(this.worker,'status',1)
+        this.$set(this.worker,'status',0)
         this.$set(this.worker,'sex',1)
         this.getRoleList();
         if(this.$route.query.employeeId &&!this.$route.query.worker){
             //编辑员工，获取员工信息
             this.employeeId = this.$route.query.employeeId;
+            this.password = "******"
+            this.secondPwd = "******"
             this.getEmployee()
         }else if(this.$route.query.employeeId && this.$route.query.worker){
             //编辑员工(从store返回)
             this.employeeId = this.$route.query.employeeId;
             this.worker = JSON.parse(this.$route.query.worker);
-            this.$set(this.worker,'storeIds', JSON.parse(this.$route.query.storeIds))
+            this.storeIds = JSON.parse(this.$route.query.storeIds);
+
+            // this.$set(this.worker,'storeIds', JSON.parse(this.$route.query.storeIds))
             this.secondPwd = this.worker.secondPwd;
+            this.password = this.worker.password;
             // this.worker = this.$route.query.worker;
         }else if(!this.$route.query.employeeId && this.$route.query.worker){
             this.worker = JSON.parse(this.$route.query.worker);
-            this.$set(this.worker,'storeIds', JSON.parse(this.$route.query.storeIds));
+            this.storeIds = JSON.parse(this.$route.query.storeIds);
+            // this.$set(this.worker,'storeIds', JSON.parse(this.$route.query.storeIds));
             this.secondPwd = this.worker.secondPwd;
+            this.password = this.worker.password;
             //获取员工角色列表
             this.getRoleList();
         }
@@ -154,7 +163,7 @@ export default {
                 this.roleList = res.data.roleVos;
                 this.worker.storeVos.forEach(el=>{
                     if(el.selected){
-                        this.worker.storeIds.push({
+                        this.storeIds.push({
                             id:el.storeId,
                             storeName:el.storeName
                         })
@@ -169,6 +178,7 @@ export default {
         },
         goStore(){
             this.worker.secondPwd = this.secondPwd
+            this.worker.password = this.password
             this.$router.push(
                 {
                     name:'store',
@@ -196,13 +206,13 @@ export default {
                this.showTip('请输入姓名！');
                return;
             }
-            if(!this.worker.password){
+            if(!this.password){
                this.showTip('请输入密码！');
                return;
             }
             let newsStore = []
-            if(this.worker.storeIds){
-                this.worker.storeIds.forEach(el=>{
+            if(this.storeIds){
+                this.storeIds.forEach(el=>{
                     newsStore.push(el.id)
                 });
                 this.worker.storeIds = newsStore;
@@ -211,16 +221,22 @@ export default {
                 return;
             }
             
-            if(!this.employeeId){
-                if(!this.secondPwd){
-                    this.showTip('请输入确认密码！');
-                    return;
-                }
-                if(this.worker.password!==this.secondPwd){
-                    this.showTip('两次输入密码不一致！');
-                    return;
-                }else{
+            if(!this.secondPwd){
+                this.showTip('请输入确认密码！');
+                return;
+            }
+            if(this.password!==this.secondPwd&&!this.employeeId){
+                this.showTip('两次输入密码不一致！');
+                return;
+            }else{
+                if(!this.employeeId){
+                    //新增员工
                     this.worker.password = md5(this.secondPwd)
+                }else{
+                    if(this.password!='******'){
+                        //编辑员工，密码有改动
+                        this.worker.password = md5(this.password)
+                    }
                 }
             }
             this.showLoading = true

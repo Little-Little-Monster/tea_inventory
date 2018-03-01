@@ -1,7 +1,7 @@
 <template>
   <div class="main">
     <head-top signin-up='msite' goBack="" head-title="供应商列表">
-      <span slot="right" class="iconfont icon-jia" @click="$router.push({name:'addEditUpplier'})" ></span>
+      <span slot="right" class="iconfont icon-jia" v-if="fromPage!='buyHistory'" @click="$router.push({name:'addEditUpplier'})" ></span>
       <div slot="back" class="goback" @click="goBack" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
@@ -12,10 +12,13 @@
         <input type="text" v-model="params" placeholder="请输入供应商名称" @keydown.enter="getSupplier">
         <em class="list-option iconfont icon-sousuo" @click="getSupplier"></em>
       </div>
+      <div class="tip">
+        *正数表示欠供应商金额，负数表示供应商欠店铺金额
+      </div>
       <li class="supplier_info_list" v-for="list in suppList" @click="editSupp(list)">
         <div class="list_left">
           <h4>{{list.name}}</h4>
-          <p>欠供应商欠款： <span>￥{{list.balance}}</span></p>
+          <p>账户金额： <span>￥{{list.balance}}</span></p>
           <p>联系电话： <span>{{list.mobile}}</span></p>
           <p>负责人： <span>{{list.personHead}}</span></p>
         </div>
@@ -68,7 +71,9 @@
               this.chooseId = this.buyOrder.supplierId
               this.chooseName = this.buyOrder.supplierName
               break;
-          
+           case 'buyHistory':
+            this.chooseId = this.$route.query.supplierId
+            this.chooseName = this.$route.queryr.supplierName
             default:
               break;
         }
@@ -111,7 +116,14 @@
                   name:this.fromPage
                 })
                 break;
-            
+              case 'buyHistory':
+              this.$router.push({
+                name:this.fromPage,
+                query:{
+                  supplierId:this.chooseId==-1?'':this.chooseId,
+                  supplierName:this.chooseName
+                }
+              })
               default:
                 break;
             }
@@ -132,7 +144,14 @@
               })
               this.RECORD_BUYORDER(order)
               break;
-          
+            case 'buyHistory':
+            this.$router.push({
+              name:this.fromPage,
+              query:{
+                supplierId:this.chooseId==-1?'':this.chooseId,
+                supplierName:this.chooseName
+              }
+            })
             default:
               break;
           }
@@ -214,5 +233,12 @@
   }
   .check-icon{
     @include sc(.4rem,$green)
+  }
+  .tip{
+    @include sc(.2rem,#F58095);
+    background: $bc;
+    @include wh(100%,.6rem);
+    text-indent: .4rem;
+    line-height: .6rem;
   }
 </style>

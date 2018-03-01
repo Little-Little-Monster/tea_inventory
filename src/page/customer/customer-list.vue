@@ -8,7 +8,7 @@
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
     <div class="search-goods">
-      <input type="text" v-model="params" placeholder="请输入客户名称" @keydown.enter="getCustomer">
+      <input type="text" style="font-size:.16rem" v-model="params" placeholder="请输入客户名称或者手机号后4位" @keydown.enter="getCustomer">
       <em class="list-option iconfont icon-sousuo" @click="getCustomer"></em>
     </div>
     <ul class="customer-content cneter-con" v-load-more="loaderMore" type="2" :style="{'margin-bottom':chooseCustomer?'1rem':''}">
@@ -171,7 +171,12 @@
       },
       save(){
         if(this.chooseCustomer){
-          this.$router.push({name:this.fromPage});
+          this.$router.push({
+            name:this.fromPage,
+            query:{
+              edit:this.$route.query.edit
+            }
+          })
           let buyorder = this.buyOrder;
           buyorder.customerId = this.chooseId;
           buyorder.customerName = this.chooseName;

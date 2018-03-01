@@ -75,6 +75,7 @@
         clock:0,
         userId:getStore('userInfo').id,
         userName:getStore('userInfo').userName,
+        userType:getStore('userInfo').type,
         goodsName:""
       }
     },
@@ -114,9 +115,11 @@
         this.$router.push({name:"goodsManage",query:{fromPage:this.$route.name,goodsName:this.goodsName}})
       },
       toDetail(){
-        this.$router.push({name:'todayAccount',query:{
-          fromPage:this.$route.name
-        }})
+        if(this.userType<2){
+          this.$router.push({name:'todayAccount',query:{
+            fromPage:this.$route.name
+          }})
+        }
       }
     },
     watch: {}

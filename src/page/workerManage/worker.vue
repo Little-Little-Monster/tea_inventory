@@ -18,10 +18,15 @@
                     <em v-if="!isOn"></em>
                 </div>
             </section>
-            <div class="worker-list list" v-for="list in workerList" @click="editWorker(list)" v-if="list.status==Number(isOn)">
+            <div class="worker-list list" v-for="list in workerList" @click="editWorker(list)" v-if="list.status==Number(!isOn)">
                 <left-slider :index="list.employeeId" @swipe="swipe" @swipeRight="inputIndex=-1" >
                     <span>{{list.employeeName}}</span>
-                    <p class="ellipsis">所属门店：<em v-for="store in list.storeNames">{{store}},</em></p>
+                    <p class="ellipsis">所属门店：
+                        <em v-for="(store,index) in list.storeNames">
+                            {{store}}
+                            <b v-if="index!=list.storeNames.length-1">,</b>
+                        </em>
+                    </p>
                     <!-- <p>最后登陆时间：<em>{{list.loginTime}}</em></p> -->
                     <p>创建时间：<em>{{list.createDate}}</em></p>
                     <em v-if="!$route.query.getWorker&&inputIndex!=list.employeeId" class="list-option iconfont icon-qianjin"></em>

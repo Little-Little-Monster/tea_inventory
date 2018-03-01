@@ -87,8 +87,11 @@
                     </p>
                     <em class="list-option">
                         <i class="list-sub">发生数量</i> <br>
-                        <b v-show="list.type==2||list.type==5||list.type==7">-{{list.quantity}}</b>
-                        <b v-show="list.type==4||list.type==3||list.type==8">+{{list.quantity}}</b>
+                        <b>
+                            <em v-show="list.type==2||list.type==5||list.type==7">-</em>
+                            <em v-show="list.type==4||list.type==3||list.type==8">+</em>
+                            {{list.quantity}}
+                        </b>
                         <b>{{list.goodsUnitName?('/'+list.goodsUnitName):''}}</b>
                     </em>
                 </div>

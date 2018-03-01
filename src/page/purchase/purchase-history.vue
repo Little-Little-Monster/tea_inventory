@@ -11,6 +11,25 @@
       <div class="right_button" :class="{'active':status==1}" @click="status=1;page=0;touchend=false">草稿 <span></span></div>
       <div class="right_button" :class="{'active':status==3}" @click="status=3;page=0;touchend=false">撤销 <span></span></div>
     </div>
+    <section class="title-choose">
+        <div class="login-tit">
+            <!-- <input type="date" :class="{'full':startDate}" placeholder="开始时间" v-model="startDate"> -->
+            <input type="text" readonly="" id="time" name="input_date" placeholder="开始时间" v-model="startDate" />
+            <i class="time-xiala iconfont icon-xiala2"></i>
+        </div>
+        <div class="regist-tit">
+            <!-- <input type="date" :class="{'full':endDate}" placeholder="结束时间" v-model="endDate"> -->
+            <input type="text" readonly="" id="time2" name="input_date" placeholder="结束时间" v-model="endDate" />
+            <i class="time-xiala iconfont icon-xiala2"></i>
+        </div>
+    </section>
+    <section class="title-choose">
+        <div class="search" @click="goSupplier">
+            <div class="search-name">供应商</div>
+            <span class="sel-goods" v-if="!supplierId">请选择供应商<i class="iconfont icon-qianjin"></i></span>
+            <span class="sel-goods" v-if="supplierId">{{supplierName}}<i class="iconfont icon-qianjin"></i></span>
+        </div>
+    </section>
     <div class="cneter-con" v-load-more="loaderMore" type="2">
       <div style="height:auto">
         <div class="list buy-list" v-for="history in historyList" @click="editBuyOrder(history.id)">
@@ -26,7 +45,9 @@
         </div> 
          <p v-if="touchend" class="empty_data">没有更多了</p>
       </div>
-      
+    </div>
+    <div class="bottom" @click="getHistory">
+        查询
     </div>
     <transition name="loading">
 			<loading v-show="showLoading"></loading>
@@ -60,7 +81,11 @@
         showLoading: true, //显示加载动画
         touchend: false, //没有更多数据
         showAlert:false,
-        alertText:''
+        alertText:'',
+        endDate:'',
+        startDate:'',
+        supplierId:this.$route.query.supplierId?this.$route.query.supplierId:0,
+        supplierName:this.$route.query.supplierName?this.$route.query.supplierName:''
       }
     },
     components: {
@@ -74,7 +99,16 @@
       this.getHistory();
     },
     mounted(){
-
+      var calendar = new LCalendar();
+      var calendar2 = new LCalendar();
+      calendar.init({
+          'trigger': '#time',//标签id
+          'type': 'date',//date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择
+      });
+      calendar2.init({
+          'trigger': '#time2',//标签id
+          'type': 'date',//date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择
+      });
     },
     mixins: [loadMore],
     methods: {
@@ -88,13 +122,22 @@
           this.$router.push({name:'msite'})
         } 
       },
+      goSupplier(){
+        //跳转到供应商
+        this.$router.push({name:"supplierList",query:{
+          chooseSupplier:true,
+          fromPage:this.$route.name,
+          supplierId:this.supplierId,
+          supplierName:this.supplierName
+        }})
+      },
       showTip(msg){
         this.alertText = msg;
         this.showAlert =true;
       },
       getHistory(){
         this.showLoading = true
-        get_buy_history(this.userId,this.page,this.pageSize,this.status,this.type).then((res)=>{
+        get_buy_history(this.userId,this.page,this.pageSize,this.status,this.type,this.supplierId,this.startDate,this.endDate).then((res)=>{
           if(res.code==200){
             this.historyList = res.data.info;
             this.showLoading = false
@@ -153,7 +196,74 @@
 </script>
 <style lang="scss" scoped>
   @import '../../../src/style/mixin';
-
+  .title-choose{
+        width:100%;
+        height:.8rem;
+        margin-bottom: 0.1rem;
+        background: #fff;
+        &>div{
+            width:50%;
+            height:.8rem;
+            float: left;
+            text-align: center;
+            position: relative;
+            line-height: .8rem;
+            font-size:.32rem;
+            em{
+                display: inline-block;
+                @include wh(0.3rem,0.06rem);
+                background:$green;
+                position: absolute;
+                bottom: 0;
+                left:45%;
+            }
+            input{
+                right: 0;
+                @include ct;
+                width:80%;
+            }
+        }
+        .store{
+            width:33%;
+            select{
+                width:80%;
+                text-align: center;
+                background: #fff;
+                @include ct;
+                right:0;
+                color:#999;
+            }
+        }
+        .search{
+            display: flex;
+            background: #fff;
+            padding-right:.4rem;
+            width:100%;
+            .search-name{
+                flex: 3;
+                text-align: left;
+                padding-left:.4rem;
+                font-size:.28rem;
+            }
+            .sel-goods{
+                @include sc(.20rem,#A1A1A1);
+                i{
+                    @include sc(.34rem,#A1A1A1);
+                    margin-left:.1rem;
+                }
+            }
+            .sel-con{
+                 flex: 4;
+                 text-align: right;
+                 select{
+                     width:80%;
+                     @include sc(.24rem,#A1A1A1);
+                     background: #fff;
+                     padding-right: .2rem;
+                 }
+            }
+        }
+    }
   .purchase_detail {
     .purchase_detail_header {
       display: flex;
@@ -206,5 +316,8 @@
         }
       }
     }
+  }
+  .cneter-con{
+    padding-bottom: .8rem;
   }
 </style>

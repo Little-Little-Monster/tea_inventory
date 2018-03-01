@@ -27,7 +27,7 @@
       </div> -->
     </nav>
     <ul class="sensus_ul sensus_header">
-      <li @click="$router.push({name:'todayAccount'})" v-if="menuList.indexOf('todayAccount')!=-1">
+      <li @click="$router.push({name:'todayAccount'})" v-if="menuList.indexOf('todayAccount')!=-1&&userType<2">
         <div class="li_left"><i class="iconfont icon-zhouqipandianmingxi"></i>今日结余</div>
         <div class="li_right" style="text-align:right">收支明细、记账 <i class="iconfont icon-qianjin"></i></div>
       </li>
@@ -44,6 +44,21 @@
       </li> -->
     </ul>
     <ul class="sensus_ul sensus_content">
+      <li class="sensus_ul_detail" v-show="userType>1" v-if="menuList.indexOf('saleHistory')!=-1||menuList.indexOf('saleBackHistory')!=-1">
+        <div class="li_left" @click="$router.push({name:'saleHistory',query:{fromPage:$route.name}})" v-if="menuList.indexOf('saleHistory')!=-1">
+          <p>
+            <em class="iconfont icon-gerenzhongxin-caigoudan"></em>
+            <i>销售单</i>
+          </p>
+          <span>销售历史</span>
+        </div>
+        <div class="border_center"></div>
+        <div class="li_right" @click="$router.push({name:'saleBackHistory',query:{fromPage:$route.name}})" v-if="menuList.indexOf('saleBackHistory')!=-1">
+          <p class="sbZhanghq"><i class="iconfont icon-caigoutuihuodan"></i>销售退货单</p>
+          <span>销售退货历史</span>
+        </div>
+      </li>
+
       <li @click="$router.push({name:'saleReport'})" v-if="menuList.indexOf('saleReport')!=-1">
         <div class="li_left">
           <p><i class="iconfont icon-xiaoshoubaobiao"></i>销售报表</p>
@@ -60,7 +75,7 @@
           <p>今日撤销<span class="number"> {{buyInfo.buyCancelSize}}</span> 笔<b></b>撤销金额<span class="price"> ￥{{buyInfo.buyCancelAmount}}</span></p>
         </div>
       </li>
-      <li class="sensus_ul_detail" v-if="menuList.indexOf('saleHistory')!=-1||menuList.indexOf('saleBackHistory')!=-1">
+      <li class="sensus_ul_detail" v-show="userType<2" v-if="menuList.indexOf('saleHistory')!=-1||menuList.indexOf('saleBackHistory')!=-1">
         <div class="li_left" @click="$router.push({name:'saleHistory',query:{fromPage:$route.name}})" v-if="menuList.indexOf('saleHistory')!=-1">
           <p>
             <em class="iconfont icon-gerenzhongxin-caigoudan"></em>
@@ -108,6 +123,7 @@
       return {
         menuList: JSON.stringify(getStore('menu')),//菜单列表
         userId:getStore('userInfo').id,
+        userType:getStore('userInfo').type,
         saleInfo:{},
         buyInfo:{}
       }

@@ -115,7 +115,7 @@
       },
       getGoodsList(){
         get_warehouse_goods_list(this.params,this.userId,0,this.stockState.warehouseId,0,1000).then((res)=>{
-          this.goodsList = res.data;
+          this.goodsList = res.data.info;
           this.goodsList.forEach(element => {
             element.stockVos.forEach(el=>{
               this.$set(el,'quantity',0);

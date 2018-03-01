@@ -8,7 +8,7 @@
       <!-- <span slot="right" class="iconfont icon-jia" @click="addStore"></span> -->
     </head-top>
     <div class="search-goods">
-      <input type="text" v-model="params" @keydown.enter="getStoreHouse" placeholder="请输入客户名称">
+      <input type="text" v-model="params" @keydown.enter="getStoreHouse" placeholder="请输入仓库名称">
       <em class="list-option iconfont icon-sousuo" @click="getStoreHouse"></em>
     </div>
     <div class="cneter-con">
