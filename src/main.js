@@ -14,6 +14,16 @@ Vue.use(VueTouch, { name: 'v-touch' })
 //引入字体
 import "./iconfont/iconfont.css";
 
+if (process.env.NODE_ENV == 'development') {
+  const VConsole = require('vconsole');
+  let option = {
+    maxLogNumber: 5000 // 超出上限的日志会被自动清除。
+  };
+  let vConsole = new VConsole(option);
+  //显示 vConsole 主面板
+  vConsole.show();
+}
+
 if ('addEventListener' in document) {
   document.addEventListener('DOMContentLoaded', function() {
     FastClick.attach(document.body);

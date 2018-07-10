@@ -5,11 +5,7 @@ import { getStore } from '../config/mUtils'
  * 获取短信验证码
  */
 
-export const mobile_code = phone => fetch('/v4/mobile/verify_code/send', {
-  mobile: phone,
-  scene: 'login',
-  type: 'sms'
-}, 'POST');
+export const mobile_code = (params) => fetch('/api/invoicing/user/verify/code', params, 'GET');
 
 
 /**
@@ -369,11 +365,14 @@ export const save_sale_order = (userId, saleOrder) => fetch('/api/invoicing/' + 
 /**
  * 销售历史查询
  */
-export const get_sale_history = (userId, page, pageSize, status, type) => fetch('/api/invoicing/' + userId + '/sale/trade/query/list', {
+export const get_sale_history = (userId, page, pageSize, status, type, startDate, endDate, mobile) => fetch('/api/invoicing/' + userId + '/sale/trade/query/list', {
   page,
   pageSize,
   status,
-  type
+  type,
+  startDate,
+  endDate,
+  mobile
 });
 
 /**
@@ -519,6 +518,18 @@ export const get_buy_report = (userId, storeId, goodsId, startDate, endDate, pag
  * 账号密码登录
  */
 export const account_login = (mobile, password) => fetch('/api/invoicing/user/login', { mobile, password }, 'POST');
+
+/**
+ * openId登录
+ */
+export const openId_login = (openId) => fetch('/api/invoicing/user/menu/list', {
+  openid:openId
+ }, 'GET');
+
+/**
+ * 注册账号
+ */
+export const account_regist = (params) => fetch('/api/invoicing/user/rigist/handler', params, 'POST');
 
 
 /**

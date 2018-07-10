@@ -1,7 +1,7 @@
 <template>
   <div class="storehouse_list main">
     <head-top signin-up='msite' goBack="" head-title="仓库管理">
-      <span slot="right" class="iconfont icon-jia" @click="toAddHouse"></span>
+      <span slot="right" v-if="userType!=2" class="iconfont icon-jia" @click="toAddHouse"></span>
       <div slot="back" class="goback" @click="goBack" >
           <span class="iconfont icon-fanhui title_text"></span>
       </div>
@@ -66,6 +66,7 @@
         chooseId:-1,
         chooseName:'',
         userId:getStore('userInfo').id,
+        userType:getStore('userInfo').type,
         storeId:-1,
         inputIndex:-1,
         showAlert:false,

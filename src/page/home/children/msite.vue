@@ -45,7 +45,7 @@
         </div>
       </section>
       <div class="menu-con">
-        <div class="menu-item" v-if="menu.selected" v-for="menu in menuList" @click="$router.push({name:menu.routerCode,query:{fromPage:$route.name}})">
+        <div class="menu-item" v-if="menu.selected" v-for="menu in menuList" :key="menu.name" @click="$router.push({name:menu.routerCode,query:{fromPage:$route.name}})">
           <p class="iconfont" :class="menu.icon"></p>
           <p>{{menu.name}}</p>
         </div>

@@ -381,7 +381,9 @@
         switch (this.fromPage) {
           case 'saleHistory':
           case 'saleBackHistory':
-            this.toAddress({name:this.fromPage});
+            this.toAddress({name:this.fromPage,query:{
+              status:this.$route.query.status
+            }});
             break;
           case 'todayAccountDetail':
             this.toAddress({name:this.fromPage,query:{id:this.$route.query.detailId}});

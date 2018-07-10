@@ -1,14 +1,14 @@
 <template>
     <div class="main">
     	<head-top signin-up='msite' goBack="" head-title="结算账户管理">
-            <span  slot="right" class="iconfont icon-jia" @click="$router.push({name:'addBalanceAccount',query:{'fromPage':$route.query.fromPage,'getAccount':$route.query.getAccount}})"></span>
+            <span  slot="right" class="iconfont icon-jia" v-if="userType!=2" @click="$router.push({name:'addBalanceAccount',query:{'fromPage':$route.query.fromPage,'getAccount':$route.query.getAccount}})"></span>
             <span slot="back" @click="goBack">
                 <span class="save iconfont icon-fanhui"></span>
             </span>
     	</head-top>
 
         <div class="cneter-con paddingTop" :style="{'margin-bottom':getAccount?'1rem':''}">
-            <section class="total-info">
+            <section class="total-info" v-if="userType!=2">
                  <section>
                     <span>总账户数</span> 
                     <span class="green">{{accountInfo.size}}</span>
@@ -25,7 +25,7 @@
                 <div class="list-con" v-for="list in account.list" @click="toEdit(list.id)">
                     <div class="list">
                         <span>{{list.accountName}}</span> 
-                        <em class="list-option" :style="{'right':getAccount?'.8rem':''}">￥{{list.balance.toFixed(2)}}</em>
+                        <em class="list-option" v-if="userType!=2" :style="{'right':getAccount?'.8rem':''}">￥{{list.balance.toFixed(2)}}</em>
                         <em v-if="getAccount" class="list-option iconfont check-icon" :class="{'icon-radio-checked':chooseId==list.id,'icon-danxuanweizhong':chooseId!=list.id}" @click="chooseId=list.id;chooseName=list.accountName"></em>
                     </div>    
                 </div>
@@ -62,6 +62,7 @@ export default {
             fromPage:this.$route.query.fromPage,
             getAccount:this.$route.query.getAccount,
             chooseId:-1,
+            userType:getStore('userInfo').type,
             chooseName:null,
             showLoading:true
         }

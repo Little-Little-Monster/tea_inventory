@@ -1,7 +1,7 @@
 <template>
     <div class="main">
     	<head-top signin-up='msite' goBack="" head-title="员工管理">
-            <span  slot="right" class="iconfont icon-jia" @click="$router.push({name:'workerOption',query:{fromPage:$route.query.fromPage,getWorker:$route.query.getWorker}})"></span>
+            <span  slot="right" class="iconfont icon-jia" v-if="userType!=2" @click="$router.push({name:'workerOption',query:{fromPage:$route.query.fromPage,getWorker:$route.query.getWorker}})"></span>
             <div slot="back" class="goback" @click="goBack" >
                 <span class="iconfont icon-fanhui title_text"></span>
             </div>
@@ -61,6 +61,7 @@ export default {
 	data(){
         return {
             userId:getStore('userInfo').id,
+            userType:getStore('userInfo').type,
             workerList:null,
             isOn:true,//是否启用,
             workerId:null,

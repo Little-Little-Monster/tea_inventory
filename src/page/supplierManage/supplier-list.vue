@@ -12,13 +12,16 @@
         <input type="text" v-model="params" placeholder="请输入供应商名称" @keydown.enter="getSupplier">
         <em class="list-option iconfont icon-sousuo" @click="getSupplier"></em>
       </div>
-      <div class="tip">
+      <!-- <div class="tip">
         *正数表示欠供应商金额，负数表示供应商欠店铺金额
-      </div>
+      </div> -->
       <li class="supplier_info_list" v-for="list in suppList" @click="editSupp(list)">
         <div class="list_left">
           <h4>{{list.name}}</h4>
-          <p>账户金额： <span>￥{{list.balance}}</span></p>
+          <p>
+            {{list.balance>=0?'欠供应商金额：':'供应商欠店铺金额：'}} 
+            <span>￥{{Math.abs(list.balance)}}</span>
+          </p>
           <p>联系电话： <span>{{list.mobile}}</span></p>
           <p>负责人： <span>{{list.personHead}}</span></p>
         </div>
@@ -195,6 +198,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: flex-start;
+            flex:2
         }
         .list_right {
             font-size: 0.26rem;
@@ -203,6 +207,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: flex-end;
+            flex:1
         }
       .list_left{
         h4{

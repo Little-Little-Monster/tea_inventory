@@ -27,27 +27,31 @@
         <form class="loginForm" @submit.prevent="goRegist" v-if="!isLogin">
             <section class="input_container">
                 <span class="iconfont icon-2shoujirenzheng"></span>
-                <input type="text" placeholder="请输入手机号" v-model.lazy="mobile">
+                <input type="text" placeholder="请输入手机号" name="mobile" v-model.lazy="mobile">
             </section>
             <section class="input_container captcha_code_container">
                 <span class="iconfont icon-safe"></span>
-                <input type="text" placeholder="验证码" class="code" maxlength="4" v-model="codeNumber">
+                <input type="text" placeholder="验证码" class="code" maxlength="4" name="codeNumber" v-model="codeNumber">
                 <em class="get-code" @click="getVerifyCode">
                     <i v-if="computedTime==0">获取验证码</i>
-                    <i v-if="computedTime!=0">{{computedTime}}</i>
+                    <i v-if="computedTime!=0">{{computedTime}}s</i>
                 </em>
             </section>
             <section class="input_container">
                 <span class="iconfont icon-lock"></span>
-                <input type="password" placeholder="请输入6位数以上密码"  v-model="newPassWord">
+                <input type="password" placeholder="请输入6位数以上密码"   minlength="6" v-model="passWord">
             </section>
-             <button type="submit" class="login_container">注册</button>
+            <section class="input_container">
+                <span class="iconfont icon-lock"></span>
+                <input type="password" placeholder="请输入确认密码"  minlength="6" v-model="newPassWord">
+            </section>
+             <button type="submit" class="login_container" :disabled="canRegist">注册</button>
         </form>
         <!-- <router-link to="/forget" class="to_forget" v-if="!loginWay">重置密码？</router-link> -->
         <alert-tip v-if="showAlert" :showHide="showAlert" @closeTip="closeTip" :alertText="alertText"></alert-tip>
-        <!-- <transition name="loading">
+        <transition name="loading">
 			<loading v-show="showLoading"></loading>
-		</transition> -->
+		</transition>
     </div>
 </template>
 
@@ -58,7 +62,7 @@
     import {getStore, setStore, removeStore} from 'src/config/mUtils'
     import md5 from "blueimp-md5";
     import {mapState, mapMutations} from 'vuex'
-    import {mobile_code, checkExsis, send_login, get_captchas, account_login} from '../../service/getData'
+    import {mobile_code, checkExsis, send_login, get_captchas, account_login, account_regist, openId_login} from '../../service/getData'
     import loading from 'src/components/common/loading'
     export default {
         data(){
@@ -80,7 +84,10 @@
 
                 showLoading:false,
                 loginContent:'登陆',
-                timer:null
+                timer:null,
+                uuid:this.getUuid(),
+                openId:this.$route.query.openid,
+                canRegist:false
             }
         },
         beforeRouteEnter: (to, from, next) => {
@@ -108,7 +115,9 @@
             }
         },
         created(){
-
+            if(this.openId){
+                this.openidLogin()
+            }
         },
         components: {
             headTop,
@@ -118,16 +127,40 @@
         computed: {
             //判断手机号码
             rightPhoneNumber: function (){
-                return /^1\d{10}$/gi.test(this.mobile)
+                return this.mobile.length == 11 && /^((13|14|15|17|18|10|19)[0-9]{1}\d{8})$/.test(this.mobile)
             }
         },
         methods: {
             ...mapMutations([
                 'RECORD_USERINFO'
             ]),
+            async openidLogin(){
+                this.userInfo = await openId_login(this.openId);
+                this.showLoading = false;
+                clearInterval(this.timer);
+                console.log(this.userInfo)
+                if(this.userInfo.code==200){
+                    console.log(this.userInfo.data)
+                    this.RECORD_USERINFO(this.userInfo.data);
+                    /*
+                        userInfo中
+                        type表示用户类型
+                        0表示管理员用户；
+                        1表示店长用户；
+                        2表示店员用户；
+                    */
+                    this.$router.push({name:"msite"});
+                }
+            },
             //是否显示密码
             change_passwordType(){
                 this.showPassword = !this.showPassword;
+            },
+            getUuid() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+                return v.toString(16);
+                });
             },
             //获取验证吗，线上环境使用固定的图片，生产环境使用真实的验证码
             async getCaptchaCode(){
@@ -136,17 +169,30 @@
             },
             //获取短信验证码
             async getVerifyCode(){
-                if (this.rightPhoneNumber) {
-                    this.computedTime = 30;
-                    this.timer = setInterval(() => {
-                        this.computedTime --;
-                        if (this.computedTime == 0) {
-                            clearInterval(this.timer)
-                        }
-                    }, 1000)
+                console.log(this.rightPhoneNumber,this.computedTime)
+                if(!this.rightPhoneNumber){
+                    this.showAlert = true;
+                    this.alertText = "手机号格式错误"
+                    return;
+                }
+                if (this.computedTime==0) {
                     //发送短信验证码
-                    let res = await mobile_code(this.mobile);
+                    let res = await mobile_code({
+                        mobile:this.mobile,
+                        uuid:this.uuid,
+                        uuidMd5:md5(this.mobile + "!@#$%^" + this.uuid)
+                    });
                     if (res.message) {
+                        if(res.code==200){
+                            this.computedTime = 50;
+                            this.timer = setInterval(() => {
+                                this.computedTime --;
+                                if (this.computedTime == 0) {
+                                    clearInterval(this.timer)
+                                    this.computedTime==0
+                                }
+                            }, 1000)   
+                        }
                         this.showAlert = true;
                         this.alertText = res.message;
                         return
@@ -166,8 +212,58 @@
                 }
                 this.showLoading = true;
                 //用户名登录
+                this.canRegist = true
                 this.userInfo = await account_login(this.userAccount, md5(this.passWord));
                 //如果返回的值不正确，则弹出提示框，返回的值正确则返回上一页
+                this.showLoading = false;
+                this.canRegist = false
+                clearInterval(this.timer);
+                if (this.userInfo.code!=200) {
+                    this.showAlert = true;
+                    this.alertText = this.userInfo.message;
+                }else{
+                    this.RECORD_USERINFO(this.userInfo.data);
+                    /*
+                        userInfo中
+                        type表示用户类型
+                        0表示管理员用户；
+                        1表示店长用户；
+                        2表示店员用户；
+                    */
+                    this.$router.push({name:"msite"});
+                }
+            },
+            //发送注册信息
+            async goRegist(formValue){
+                if (!this.mobile) {
+                    this.showAlert = true;
+                    this.alertText = '请输入手机号';
+                    return
+                }else if(!this.rightPhoneNumber){
+                    this.showAlert = true;
+                    this.alertText = '手机号格式不正确';
+                    return
+                }else if(!this.codeNumber){
+                    this.showAlert = true;
+                    this.alertText = '请输入验证码';  
+                }else if(!this.passWord){
+                    this.showAlert = true;
+                    this.alertText = '请输入密码';
+                    return
+                }else if(this.passWord!==this.newPassWord){
+                    this.showAlert = true;
+                    this.alertText = '输入的密码不一致';
+                    return
+                }
+                //注册
+                this.showLoading = true;
+                this.userInfo = await account_regist({
+                    mobile:this.mobile,
+                    verifyCode:this.codeNumber,
+                    password:md5(this.newPassWord),
+                    uuid:this.uuid,
+                    openId:this.openId
+                });
                 this.showLoading = false;
                 clearInterval(this.timer);
                 if (this.userInfo.code!=200) {
@@ -175,32 +271,17 @@
                     this.alertText = this.userInfo.message;
                 }else{
                     this.RECORD_USERINFO(this.userInfo.data);
+                    /*
+                        userInfo中
+                        type表示用户类型
+                        0表示管理员用户；
+                        1表示店长用户；
+                        2表示店员用户；
+                    */
                     this.$router.push({name:"msite"});
                 }
-            },
-            //发送注册信息
-            async goRegist(){
-                if (!this.userAccount) {
-                    this.showAlert = true;
-                    this.alertText = '请输入手机号/邮箱/用户名';
-                    return
-                }else if(!this.passWord){
-                    this.showAlert = true;
-                    this.alertText = '请输入密码';
-                    return
-                }
-                //用户名登录
-                this.userInfo = await account_login(this.userAccount, this.passWord, this.codeNumber);
-                
-                //如果返回的值不正确，则弹出提示框，返回的值正确则返回上一页
-                if (!this.userInfo.user_id) {
-                    this.showAlert = true;
-                    this.alertText = this.userInfo.message;
-                }else{
-                    this.RECORD_USERINFO(this.userInfo);
-                    this.$router.go(-1);
 
-                }
+                
             },
             closeTip(){
                 this.showAlert = false;

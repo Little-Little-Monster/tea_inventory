@@ -7,15 +7,44 @@
     </head-top>
     <div class="purchase_detail_header paddingTop">
       <div class="left_button" :class="{'active':status==0}" @click="status=0;page=0;touchend=false">全部 <span></span></div>
-      <div class="left_button" :class="{'active':status==2}" @click="status=2;page=0;touchend=false">已销售 <span></span></div>
+      <div class="left_button" v-if="$route.name!='saleBackHistory'" :class="{'active':status==2}" @click="status=2;page=0;touchend=false">已销售 <span></span></div>
+      <div class="left_button" v-if="$route.name=='saleBackHistory'" :class="{'active':status==2}" @click="status=2;page=0;touchend=false">已退回 <span></span></div>
       <div class="right_button" :class="{'active':status==1}" @click="status=1;page=0;touchend=false">草稿 <span></span></div>
       <div class="right_button" :class="{'active':status==3}" @click="status=3;page=0;touchend=false">撤销 <span></span></div>
     </div>
     <div class="cneter-con" v-load-more="loaderMore" type="2">
       <div style="height:auto">
+        <section class="title-choose">
+            <div class="search">
+                <div class="search-name">客户手机号</div>
+                <input  placeholder="请输入客户手机号" type="text" v-model="mobile">
+            </div>
+            <div class="search">
+                <div class="search-name">开始日期</div>
+                <input type="text" readonly="" id="time" name="input_date" :placeholder="startDate" v-model="startDate" />
+                <i class=" iconfont icon-xiala2"></i>
+            </div>
+            <div class="search">
+                <div class="search-name">结束日期</div>
+                <input type="text" readonly="" id="time2" name="input_date" :placeholder="endDate" v-model="endDate" />
+                <i class=" iconfont icon-xiala2"></i>
+            </div>
+        </section>
+        <section class="total-info">
+            <section>
+                <span>销售总笔数</span> 
+                <span>{{totalQuantity}}</span>
+            </section>
+            <section>
+                <span>销售总金额</span> 
+                <span>￥{{totalAmount.toFixed(2)}}</span> 
+            </section>
+        </section>
         <div class="list buy-list" v-for="history in historyList" @click="editSaleOrder(history.id)">
           <p>{{history.customerName}}</p>
-          <p class="text-info">{{history.createDateStr}}</p>
+          <p class="text-info">时间：{{history.createDateStr}}</p>
+          <p class="text-info">客户名称：<span class="green">{{history.customerName}}</span></p>
+          <p class="text-info">销售员工：<span class="green">{{history.employeeName}}</span></p>
           <div class="list-more">
             <em>￥{{history.totalAmount.toFixed(2)}}</em><br>
             <em>{{history.warehouseName}}</em>
@@ -25,6 +54,9 @@
           </span>
         </div> 
         <p v-if="touchend" class="empty_data">没有更多了</p>
+      </div>
+      <div class="bottom" @click="getHistory">
+          <i >查询</i> 
       </div>
     </div>
     <transition name="loading">
@@ -48,7 +80,12 @@
         enable: true,
         imgPath: 'static/images/head.png',
         userId:getStore('userInfo').id,
+        startDate:'',
+        endDate:'',
+        totalAmount:0,
+        totalQuantity:0,
         historyList:[],
+        mobile:'',
         status:0,
         type:this.$route.name=='saleBackHistory'?3:2,
         page:0,
@@ -70,10 +107,22 @@
     mixins: [loadMore],
     computed: {},
     created(){
+      if(this.$route.query.status||this.$route.query.status==0){
+        this.status = this.$route.query.status;
+      }
       this.getHistory();
     },
     mounted(){
-
+       var calendar = new LCalendar();
+      var calendar2 = new LCalendar();
+      calendar.init({
+          'trigger': '#time',//标签id
+          'type': 'date',//date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择
+      });
+      calendar2.init({
+          'trigger': '#time2',//标签id
+          'type': 'date',//date 调出日期选择 datetime 调出日期时间选择 time 调出时间选择 ym 调出年月选择
+      });
     },
     methods: {
       ...mapMutations([
@@ -92,11 +141,13 @@
       },
       getHistory(){
         this.showLoading = true;
-        get_sale_history(this.userId,this.page,this.pageSize,this.status,this.type).then((res)=>{
+        get_sale_history(this.userId,this.page,this.pageSize,this.status,this.type,this.startDate,this.endDate,this.mobile).then((res)=>{
           if(res.code!=200){
             this.showTip(res.message)
           }else{
             this.historyList = res.data.info;
+            this.totalAmount = res.data.totalAmount
+            this.totalQuantity = res.data.total
             if (res.data.info.length < this.pageSize) {
                 this.touchend = true;
               }
@@ -120,7 +171,7 @@
         this.preventRepeatReuqest = true;
         //数据的定位加20位
         this.page++;
-        let res = await get_sale_history(this.userId,this.page,this.pageSize,this.status,this.type)
+        let res = await get_sale_history(this.userId,this.page,this.pageSize,this.status,this.type,this.startDate,this.endDate,this.mobile)
         this.showLoading = false;
         if(res.code!=200){
            this.showTip(res.message)
@@ -136,6 +187,7 @@
         this.$router.push({name:this.$route.name=='saleBackHistory'?'saleBack':'saleTrade',query:{
           edit:true,
           fromPage:this.$route.name,
+          status:this.status,
           id:id
         }})
       }
@@ -149,7 +201,89 @@
 </script>
 <style lang="scss" scoped>
   @import '../../../src/style/mixin';
-
+  .title-choose{
+        width:100%;
+        height:.22rem;
+        background: #fff;
+        margin-top: .2rem;
+        &>div{
+            width:100%;
+            height:.7rem;
+            background: #fff;
+            border-bottom: 0.01rem solid $bc;
+            float: left;
+            text-align: center;
+            position: relative;
+            line-height: .7rem;
+            font-size:.26rem;
+            color:$text;
+        }
+        .search{
+            display: flex;
+            background: #fff;
+            padding-right:.4rem;
+            .search-name{
+                flex: 3;
+                text-align: left;
+                padding-left:.4rem;
+            }
+            .sel-goods{
+                @include sc(.28rem,#A1A1A1);
+                i{
+                    @include sc(.38rem,#A1A1A1);
+                    margin-left:.1rem;
+                }
+            }
+            .sel-con{
+                 flex: 4;
+                 text-align: right;
+                 select{
+                     width:80%;
+                     @include sc(.28rem,#A1A1A1);
+                     background: #fff;
+                     padding-right: .2rem;
+                 }
+            }
+            input{
+                text-indent: .4rem;
+                flex:3;
+                height:.6rem;
+                text-align: right;
+                background: #fff;
+            }
+            input[type='date']{
+                flex:2;
+                color:#A1A1A1;
+            }
+        }
+    }
+    .total-info{
+        @include wh(100%,1.5rem);
+        display: flex;
+        padding:.2rem .4rem;
+        background:#fff;
+        border-bottom: 0.01rem solid $bc;
+        section{
+            flex:1;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            span{
+                // width:100%;
+                flex:1;
+                &:nth-child(1){
+                    @include sc(.28rem,$text_light)
+                }
+                &:nth-child(2){
+                    @include sc(.34rem,#E78787 )
+                }
+            }
+        }
+    }
+    .cneter-con{
+      padding-bottom:.8rem;
+    }
   .purchase_detail {
     .purchase_detail_header {
       display: flex;
@@ -178,7 +312,7 @@
       }
     }
     .buy-list{
-      @include wh(100%,1.8rem);
+      @include wh(100%,2.5rem);
       padding:.4rem .8rem;
       margin-bottom:.1rem;
       p{
@@ -189,6 +323,9 @@
       .text-info{
         @include sc(.24rem,$text_light);
         margin:.1rem 0;
+      }
+      .green{
+        color:$green;
       }
       .list-more{
         @include ct;
@@ -201,6 +338,11 @@
           line-height:.3rem;
         }
       }
+    }
+    .bottom{
+        i{
+            color:#fff;
+        }
     }
   }
 </style>

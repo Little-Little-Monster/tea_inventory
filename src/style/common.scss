@@ -46,6 +46,16 @@ figcaption {
   }
 }
 
+#__vconsole {
+  width: auto;
+  height: auto;
+}
+
+#__vconsole div {
+  width: auto;
+  height: auto;
+}
+
 
 /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
 
@@ -82,6 +92,15 @@ input[type="reset"] {
 
 textarea {
   -webkit-appearance: none;
+}
+
+#__vconsole .vc-switch {
+  width: auto;
+  height: auto;
+  div {
+    width: auto;
+    height: auto;
+  }
 }
 
 html,
