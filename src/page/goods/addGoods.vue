@@ -13,20 +13,20 @@
                     名称 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
                     </div>
                     <div class="list_right">
-                        <input type="text" v-model="goodsInfo.name" placeholder="由数字或字母组成" style="width: 2.99rem;">
+                        <input type="text" v-model="goodsInfo.name" placeholder="请输入商品名称" style="width: 2.99rem;">
                     </div>
                 </li>
-                <li class="margin-bot">
+                <!-- <li class="margin-bot">
                     <div class="list_left">
                     货号 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
                     </div>
                     <div class="list_right">
                         <input type="text" v-model="goodsInfo.idCard" placeholder="货号唯一，保存后不能修改" style="width: 3.99rem;">
                     </div>
-                </li>
+                </li> -->
                 <li>
                     <div class="list_left">
-                    采购价 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
+                    采购价 
                     </div>
                     <div class="list_right">
                         <input type="number" step="0.01" v-model="goodsInfo.buyAmount" placeholder="￥0.00" style="width: 2.99rem;">
@@ -34,7 +34,7 @@
                 </li>
                 <li class="margin-bot">
                     <div class="list_left">
-                    销售价 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
+                    销售价 
                     </div>
                     <div class="list_right">
                         <input type="number" step="0.01" v-model="goodsInfo.saleAmount" placeholder="￥0.00" style="width: 2.99rem;">
@@ -42,7 +42,7 @@
                 </li>
                 <li>
                     <div class="list_left">
-                    净含量 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
+                    净含量 
                     </div>
                     <div class="list_right">
                         <input type="number" step="0.01" v-model="goodsInfo.modelSize" placeholder="0.00" style="width: 2.99rem;">
@@ -153,7 +153,7 @@
 <script>
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
-import {save_goods,get_goods_info} from 'src/service/getData'
+import {save_goods,get_goods_info,get_goods_unit} from 'src/service/getData'
 import headTop from 'src/components/header/head'
 import kswitch from 'src/components/common/kswitch'
 import alertTip from '../../components/common/alertTip'
@@ -178,11 +178,21 @@ export default {
     },
     created(){
         this.$set(this.goodsInfo,"status",1);
+        this.$set(this.goodsInfo,"buyAmount",'1.00');
+        this.$set(this.goodsInfo,"saleAmount",'1.00');
+        this.$set(this.goodsInfo,"modelSize",'1.00');
         if(JSON.stringify(this.storeGoodsInfo)!='{}'){
             this.goodsInfo = this.storeGoodsInfo;
         }
         if(this.$route.query.edit){
             this.getGoodsInfo()
+        }else{
+            get_goods_unit(this.userId).then((res) => {
+                if(res.data.length===1){
+                    this.$set(this.goodsInfo,"goodsUnitId",res.data[0].id);
+                    this.$set(this.goodsInfo,"goodsUnitName",res.data[0].name);
+                }
+            })
         }
         
     },

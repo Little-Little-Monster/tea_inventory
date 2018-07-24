@@ -9,7 +9,7 @@
       </div>
     </head-top>
     <ul class="add-edit-upplier cneter-con paddingTop" :class="{'marginBottom0':!isFocus}">
-      <li>
+      <!-- <li>
         <div class="list_left">
           名称 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
@@ -32,7 +32,7 @@
         <div class="list_right">
           <input type="text"  @focus="isFocus=false"  @blur="isFocus=true" v-model="accountInfo.accountHolder" placeholder="请输入开户人" style="width: 1.99rem;">
         </div>
-      </li>
+      </li> -->
       <li @click="toStore" style="margin:.1rem 0;">
         <div class="list_left">
           门店<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
@@ -91,14 +91,14 @@
           <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':accountInfo.type==4,'icon-danxuanweizhong':accountInfo.type!=4}" @click="accountInfo.type=4"></em>
         </div>
       </li>
-      <li style="margin:.1rem 0;">
+      <!-- <li style="margin:.1rem 0;">
         <div class="list_left">
            启用
         </div>
         <div class="list_right">
           <kswitch :checked="enable" @click.native="enable=!enable"></kswitch>
         </div>
-      </li>
+      </li> -->
       <li class="remark">
         <div class="list_left">
           <p>备注</p>
@@ -119,7 +119,7 @@
 <script>
   import { mapState,mapMutations } from 'vuex'
   import { getStore } from 'src/config/mUtils'
-  import { balance_account_handel,get_balance_account_detail,balance_account_delete } from 'src/service/getData'
+  import { balance_account_handel,get_balance_account_detail,balance_account_delete,get_store_detail } from 'src/service/getData'
   import headTop from 'src/components/header/head'
   import alertTip from '../../components/common/alertTip'
   import kswitch from 'src/components/common/kswitch'
@@ -146,6 +146,15 @@
       }
       if(this.$route.query.id){
         this.getAccount()
+      }else{
+        if(!this.accountInfo.storeId){
+          get_store_detail(this.userId).then(res=>{
+              // if(res.data.length===1){
+                this.$set(this.accountInfo,'storeId',res.data[0].id)
+                this.$set(this.accountInfo,'storeName',res.data[0].storeName)
+              // }
+          })
+        }
       }
     },
     mounted(){
@@ -218,21 +227,21 @@
         })
       },
       async addAccount(){
-            if(!this.accountInfo.accountName){
-              this.alertText = "请输入账户名称";
-              this.showAlert = true;
-              return;
-            }
-            if(!this.accountInfo.account){
-              this.alertText = "请输入账号";
-              this.showAlert = true;
-              return;
-            }
-            if(!this.accountInfo.accountHolder){
-              this.alertText = "请输入开户人";
-              this.showAlert = true;
-              return;
-            }
+            // if(!this.accountInfo.accountName){
+            //   this.alertText = "请输入账户名称";
+            //   this.showAlert = true;
+            //   return;
+            // }
+            // if(!this.accountInfo.account){
+            //   this.alertText = "请输入账号";
+            //   this.showAlert = true;
+            //   return;
+            // }
+            // if(!this.accountInfo.accountHolder){
+            //   this.alertText = "请输入开户人";
+            //   this.showAlert = true;
+            //   return;
+            // }
             if(!this.accountInfo.storeId){
               this.alertText = "请选择门店";
               this.showAlert = true;

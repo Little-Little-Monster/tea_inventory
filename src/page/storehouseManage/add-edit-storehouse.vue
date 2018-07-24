@@ -25,14 +25,14 @@
           <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
         </div>
       </li>
-      <li>
+      <!-- <li>
         <div class="list_left">
           启用
         </div>
         <div class="list_right">
-          <kswitch :checked="Boolean(storeHouse.status)" @click.native="storeHouse.status==0?storeHouse.status=1:storeHouse.status=0"></kswitch>
+          <kswitch :checked="Boolean(storeHouse.status)"></kswitch>
         </div>
-      </li>
+      </li> -->
     </ul>
     <ul class="add_edit_content">
       <li @click="goStore">
@@ -65,7 +65,7 @@
   import { mapMutations } from 'vuex'
   import { getStore } from 'src/config/mUtils'
   import headTop from 'src/components/header/head'  
-  import { save_wirehouse } from 'src/service/getData';
+  import { save_wirehouse, get_worker_list, get_store_detail } from 'src/service/getData';
   import kswitch from 'src/components/common/kswitch'
   import alertTip from '../../components/common/alertTip'
   import loading from 'src/components/common/loading'
@@ -74,6 +74,7 @@
     data(){
       return {
         imgPath: 'static/images/head.png',
+        userId:getStore('userInfo').id,
         enable: true,
         showAlert:false,
         alertText:null,
@@ -85,11 +86,13 @@
     },
     created(){
         this.$set(this.storeHouse,'status',1);
+        
         this.$set(this.storeHouse,'storeName',this.$route.query.singleName)
         this.$set(this.storeHouse,'storeId',this.$route.query.singleId)
         this.$set(this.storeHouse,'workerId',this.$route.query.workerId)
         this.$set(this.storeHouse,'workerName',this.$route.query.workerName)
         this.$set(this.storeHouse,'memo',this.$route.query.memo)
+        
         if(this.$route.query.status==0||this.$route.query.status==1){
           this.$set(this.storeHouse,'status',this.$route.query.status)
         }
@@ -118,6 +121,23 @@
         this.storeHouse = JSON.parse(this.$route.query.storeInfo);
         this.storeHouse.workerId = this.storeHouse.warehouseHead
         this.storeHouse.workerName = this.storeHouse.warehouseHeadName
+      }else{
+        if(!this.$route.query.workerId){
+          get_worker_list(this.userId).then(res=>{
+              if(res.data.length===1){
+              this.$set(this.storeHouse,'workerName',res.data[0].employeeName)
+              this.$set(this.storeHouse,'workerId',res.data[0].employeeId)
+              }
+          })
+        }
+        if(!this.$route.query.storeId){
+          get_store_detail(this.userId).then(res=>{
+              if(res.data.length===1){
+                this.$set(this.storeHouse,'storeId',res.data[0].id)
+                this.$set(this.storeHouse,'storeName',res.data[0].storeName)
+              }
+          })
+        }
       }
     },
     mounted(){

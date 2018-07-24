@@ -81,7 +81,7 @@
     },
     async beforeMount(){
       this.menuList = getStore("menu");
-      this.CHANGE_HEADER('茶叶进销存管理系统')
+      this.CHANGE_HEADER('小店进销存')
     },
     created(){
      

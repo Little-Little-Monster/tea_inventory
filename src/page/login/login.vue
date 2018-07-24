@@ -1,50 +1,70 @@
 <template>
-    <div class="loginContainer main" >
+    <div class="loginContainer main" v-if="showLoginCon">
         <head-top :head-title="'登录'" goBack="">
             <!-- <div slot="changeLogin" class="change_login" @click="changeLoginWay">{{loginWay? "密码登录":"短信登录"}}</div> -->
         </head-top>
         <section class="title-choose">
             <div class="login-tit" @click="!isLogin?isLogin=!isLogin:''">
-                <span>登陆</span>
+                <span>店员登陆</span>
                 <em v-if="isLogin"></em>
             </div>
             <div class="regist-tit" @click="isLogin?isLogin=!isLogin:''">
-                <span>注册</span>
+                <span>老板注册</span>
                 <em v-if="!isLogin"></em>
             </div>
         </section>
         <form class="loginForm cneter-con" @submit.prevent="mobileLogin" v-if="isLogin">
             <section class="input_container">
                 <span class="iconfont icon-2shoujirenzheng"></span>
-                <input type="text" placeholder="请输入手机号" v-model.lazy="userAccount">
+                <input type="text" autocomplete="new-password" v-show="false">
+                <input type="text" placeholder="请输入登录手机号" autocomplete="new-password" v-model.lazy="userAccount">
             </section>
-            <section class="input_container">
+            <section class="input_container captcha_code_container">
+                <span class="iconfont icon-safe"></span>
+                <input type="text" autocomplete="new-password" v-show="false">
+                <input type="text" placeholder="验证码" class="code" autocomplete="new-password" maxlength="4" v-model="codeNumberLogin">
+                <em class="get-code" @click="getVerifyCode('login')">
+                    <i v-if="computedTimeLogin==0">获取验证码</i>
+                    <i v-if="computedTimeLogin!=0">{{computedTimeLogin}}s</i>
+                </em>
+            </section>
+            <!-- <section class="input_container">
                 <span class="iconfont icon-lock"></span>
-                <input type="password" placeholder="请输入登陆密码"  v-model="passWord">
-            </section>
+                <input type="text" autocomplete="new-password" v-show="false">
+                <input type="password" placeholder="请输入登陆密码" autocomplete="new-password" v-model="passWord">
+            </section> -->
             <button type="submit" class="login_container">{{loginContent}}</button>
         </form>
         <form class="loginForm" @submit.prevent="goRegist" v-if="!isLogin">
             <section class="input_container">
                 <span class="iconfont icon-2shoujirenzheng"></span>
-                <input type="text" placeholder="请输入手机号" name="mobile" v-model.lazy="mobile">
+                <input type="text" autocomplete="new-password" v-show="false">
+                <input type="text" placeholder="请输入手机号" autocomplete="new-password" v-model.lazy="mobile">
+            </section>
+            <section class="input_container">
+                <span class="iconfont icon-lock"></span>
+                <input type="text" autocomplete="new-password" v-show="false">
+                <input type="text" placeholder="请输入总店名称" autocomplete="new-password" v-model.lazy="storeName">
             </section>
             <section class="input_container captcha_code_container">
                 <span class="iconfont icon-safe"></span>
-                <input type="text" placeholder="验证码" class="code" maxlength="4" name="codeNumber" v-model="codeNumber">
-                <em class="get-code" @click="getVerifyCode">
+                <input type="text" autocomplete="new-password" v-show="false">
+                <input type="text" placeholder="验证码" class="code" autocomplete="new-password" maxlength="4" v-model="codeNumber">
+                <em class="get-code" @click="getVerifyCode('regist')">
                     <i v-if="computedTime==0">获取验证码</i>
                     <i v-if="computedTime!=0">{{computedTime}}s</i>
                 </em>
             </section>
-            <section class="input_container">
+            <!-- <section class="input_container">
                 <span class="iconfont icon-lock"></span>
-                <input type="password" placeholder="请输入6位数以上密码"   minlength="6" v-model="passWord">
+                <input type="text" autocomplete="new-password" v-show="false">
+                <input type="password" placeholder="请输入6位数以上密码"   autocomplete="new-password" minlength="6" v-model="passWord">
             </section>
             <section class="input_container">
                 <span class="iconfont icon-lock"></span>
-                <input type="password" placeholder="请输入确认密码"  minlength="6" v-model="newPassWord">
-            </section>
+                <input type="text" autocomplete="new-password" v-show="false">
+                <input type="password" placeholder="请输入确认密码"  autocomplete="off" minlength="6" v-model="newPassWord">
+            </section> -->
              <button type="submit" class="login_container" :disabled="canRegist">注册</button>
         </form>
         <!-- <router-link to="/forget" class="to_forget" v-if="!loginWay">重置密码？</router-link> -->
@@ -67,15 +87,18 @@
     export default {
         data(){
             return {
-                mobile: null, //电话号码
-                codeNumber: null, //短信验证码
+                mobile: "", //电话号码
+                codeNumber: null, //短信验证码（注册用）
+                codeNumberLogin: null, //短信验证码(登录用)
                 newPassWord:null,//注册密码
 
-                computedTime: 0, //倒数记时
+                computedTime: 0, //倒数记时（注册用）
+                computedTimeLogin: 0, //倒数记时（登录用）
                 userInfo: null, //获取到的用户信息
 
-                userAccount: null, //登陆用户名
+                userAccount: "", //登陆用户名
                 passWord: null, //登录密码
+                storeName:null,//总店名称
                 captchaCodeImg: null, //验证码地址
 
                 showAlert: false, //显示提示组件
@@ -85,9 +108,11 @@
                 showLoading:false,
                 loginContent:'登陆',
                 timer:null,
+                timerLogin:null,
                 uuid:this.getUuid(),
                 openId:this.$route.query.openid,
-                canRegist:false
+                canRegist:false,
+                showLoginCon:true
             }
         },
         beforeRouteEnter: (to, from, next) => {
@@ -125,16 +150,18 @@
             loading
         },
         computed: {
-            //判断手机号码
-            rightPhoneNumber: function (){
-                return this.mobile.length == 11 && /^((13|14|15|17|18|10|19)[0-9]{1}\d{8})$/.test(this.mobile)
-            }
+           
         },
         methods: {
             ...mapMutations([
                 'RECORD_USERINFO'
             ]),
+             //判断手机号码
+            rightPhoneNumber(value){
+                return value.length == 11 && /^((13|14|15|17|18|10|19)[0-9]{1}\d{8})$/.test(value)
+            },
             async openidLogin(){
+                this.showLoginCon = false;
                 this.userInfo = await openId_login(this.openId);
                 this.showLoading = false;
                 clearInterval(this.timer);
@@ -150,6 +177,8 @@
                         2表示店员用户；
                     */
                     this.$router.push({name:"msite"});
+                }else{
+                    this.showLoginCon = true;
                 }
             },
             //是否显示密码
@@ -168,31 +197,37 @@
                 this.captchaCodeImg = res.code;
             },
             //获取短信验证码
-            async getVerifyCode(){
-                console.log(this.rightPhoneNumber,this.computedTime)
-                if(!this.rightPhoneNumber){
+            async getVerifyCode(flag){
+                // console.log(this.rightPhoneNumber,this.computedTime)
+                
+                const mobile = flag==='regist'?this.mobile:this.userAccount
+                const timeStr = flag==='regist'?'computedTime':'computedTimeLogin'
+                const timeName = flag==='regist'?'timer':'timerLogin'
+                if(!this.rightPhoneNumber(mobile)){
                     this.showAlert = true;
                     this.alertText = "手机号格式错误"
                     return;
                 }
-                if (this.computedTime==0) {
+                if (this[timeStr]==0) {
                     //发送短信验证码
+                    this.uuid = this.getUuid()
                     let res = await mobile_code({
-                        mobile:this.mobile,
+                        mobile:mobile,
                         uuid:this.uuid,
-                        uuidMd5:md5(this.mobile + "!@#$%^" + this.uuid)
+                        uuidMd5:md5(mobile + "!@#$%^" + this.uuid)
                     });
                     if (res.message) {
                         if(res.code==200){
-                            this.computedTime = 50;
-                            this.timer = setInterval(() => {
-                                this.computedTime --;
-                                if (this.computedTime == 0) {
-                                    clearInterval(this.timer)
-                                    this.computedTime==0
+                            this[timeStr] = 50;
+                            this[timeName] = setInterval(() => {
+                                this[timeStr] --;
+                                if (this[timeStr] == 0) {
+                                    clearInterval(this[timeName])
+                                    this[timeStr]==0
                                 }
-                            }, 1000)   
+                            }, 1000)  
                         }
+                             
                         this.showAlert = true;
                         this.alertText = res.message;
                         return
@@ -205,15 +240,15 @@
                     this.showAlert = true;
                     this.alertText = '请输入手机号';
                     return
-                }else if(!this.passWord){
+                }else if(!this.codeNumberLogin){
                     this.showAlert = true;
-                    this.alertText = '请输入密码';
+                    this.alertText = '请输入验证码';
                     return
                 }
                 this.showLoading = true;
                 //用户名登录
                 this.canRegist = true
-                this.userInfo = await account_login(this.userAccount, md5(this.passWord));
+                this.userInfo = await account_login(this.userAccount, this.codeNumberLogin,this.openId, this.uuid);
                 //如果返回的值不正确，则弹出提示框，返回的值正确则返回上一页
                 this.showLoading = false;
                 this.canRegist = false
@@ -246,22 +281,27 @@
                 }else if(!this.codeNumber){
                     this.showAlert = true;
                     this.alertText = '请输入验证码';  
-                }else if(!this.passWord){
+                }else if(!this.storeName){
                     this.showAlert = true;
-                    this.alertText = '请输入密码';
-                    return
-                }else if(this.passWord!==this.newPassWord){
-                    this.showAlert = true;
-                    this.alertText = '输入的密码不一致';
-                    return
+                    this.alertText = '请输入总店名称';  
                 }
+                // else if(!this.passWord){
+                //     this.showAlert = true;
+                //     this.alertText = '请输入密码';
+                //     return
+                // }else if(this.passWord!==this.newPassWord){
+                //     this.showAlert = true;
+                //     this.alertText = '输入的密码不一致';
+                //     return
+                // }
                 //注册
                 this.showLoading = true;
                 this.userInfo = await account_regist({
                     mobile:this.mobile,
                     verifyCode:this.codeNumber,
-                    password:md5(this.newPassWord),
+                    // password:md5(this.newPassWord),
                     uuid:this.uuid,
+                    storeName:this.storeName,
                     openId:this.openId
                 });
                 this.showLoading = false;

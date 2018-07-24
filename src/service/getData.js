@@ -517,7 +517,7 @@ export const get_buy_report = (userId, storeId, goodsId, startDate, endDate, pag
 /**
  * 账号密码登录
  */
-export const account_login = (mobile, password) => fetch('/api/invoicing/user/login', { mobile, password }, 'POST');
+export const account_login = (mobile, password, openId) => fetch('/api/invoicing/user/login', { mobile, password,openId }, 'POST');
 
 /**
  * openId登录

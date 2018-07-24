@@ -8,7 +8,7 @@ Vue.use(Vuex)
 
 const state = {
     userInfo: null, //用户信息
-    headTitle: "茶叶进销存管理系统",
+    headTitle: "小店进销存",
     storeGoodsInfo: {},
     buyOrder: {},
     customer: {},

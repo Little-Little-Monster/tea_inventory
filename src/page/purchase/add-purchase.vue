@@ -70,22 +70,22 @@
               <p>
                 <i>商品单价：</i>
                 <!-- <em class="iconfont icon-icon02"  @click="buyGoods.unitAmount = Number(buyGoods.unitAmount)+1"></em>  -->
-                <input type="number" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyGoods.unitAmount" @blur="getTotal">
+                <input type="number" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyGoods.unitAmount" @blur="getTotal(false)">
                 <!-- <em class="iconfont icon-jian" @click="buyGoods.unitAmount = Number(buyGoods.unitAmount)-1"></em> -->
               </p>
               <p>
                 <i>商品数量：</i>
                 <!-- <em class="iconfont icon-icon02" @click="buyGoods.quantity = Number(buyGoods.quantity)+1"></em>  -->
-                <input type="number" step="1" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyGoods.quantity" @blur="getTotal">
+                <input type="number" step="1" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyGoods.quantity" @blur="getTotal(false)">
                 <!-- <em class="iconfont icon-jian"  @click="buyGoods.quantity = Number(buyGoods.quantity)-1"></em> -->
               </p>
               <p>
                 <i>商品总价：</i>
-                ￥{{(Number(buyGoods.unitAmount)*Number(buyGoods.quantity)).toFixed(2)}}
+                ￥<input type="number" step="0.01" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyGoods.amount" @blur="getTotal(true)">
               </p>
             </div>
             <div class="goods-right" v-if="buyOrderInfo.status!=2&&buyOrderInfo.status!=3">
-              <span class="list-option iconfont icon-jian jian-goods" @click="buyOrderInfo.showGoodsList.splice(index,1);getTotal()"></span>
+              <span class="list-option iconfont icon-jian jian-goods" @click="buyOrderInfo.showGoodsList.splice(index,1);getTotal(true)"></span>
             </div>
           </div>
         </li>
@@ -97,7 +97,7 @@
             <i class="required" style="position:absolute;top:.3rem;left:1rem" v-show="$route.name!='buyBack'" v-if="Number(buyOrderInfo.realAmount)">{{Number(buyOrderInfo.realAmount).toFixed(2)}}</i>
           </div>
           <div class="list_right">
-            <input type="number" placeholder="未付" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyOrderInfo.realAmount" @input="getTotal">
+            <input type="number" placeholder="未付" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyOrderInfo.realAmount" @input="getTotal(true)">
           </div>
         </li>
         <li class="buy-tip">
@@ -124,7 +124,7 @@
         </li>
       </ul>
       <div class="bottom" v-if="edit">
-        <div class="bottom_left" v-if="Number(buyOrderInfo.totalAmount)">合计：<span>￥{{buyOrderInfo.totalAmount.toFixed(2)}}</span></div>
+        <div class="bottom_left" v-if="Number(buyOrderInfo.totalAmount)">合计：<span>￥{{Number(buyOrderInfo.totalAmount).toFixed(2)}}</span></div>
         <div class="bottom_right" v-if="buyOrderInfo.status!=3">
           <span @click="submitOrder(1)" class="model" v-if="!buyOrderInfo.status||buyOrderInfo.status!=1&&fromPage!='todayAccountDetail'" v-show="buyOrderInfo.status!=2">草稿</span> 
           <span @click="submitOrder(2)" class="model" v-if="buyOrderInfo.status==1&&fromPage!='todayAccountDetail'" >{{$route.name=='buyTrade'?'采购':'退货'}}</span> 
@@ -137,7 +137,7 @@
         </div>
       </div>
       <div class="bottom" v-if="!edit">
-        <div class="bottom_left">合计：<span>￥{{buyOrderInfo.totalAmount.toFixed(2)}}</span></div>
+        <div class="bottom_left">合计：<span>￥{{Number(buyOrderInfo.totalAmount).toFixed(2)}}</span></div>
         <div class="bottom_right" >
           <button :class="{returnGoods: false}"  v-show="buyOrderInfo.status!=2&&fromPage!='todayAccountDetail'" @click="submitOrder(2)">{{$route.name=='buyTrade'?'采购':'退货'}}</button>
           <span @click="submitOrder(1)" v-if="fromPage!='todayAccountDetail'" class="model">草稿</span> 
@@ -155,7 +155,7 @@
   import { getStore } from 'src/config/mUtils'
   import headTop from 'src/components/header/head'
   import alertTip from '../../components/common/alertTip'
-  import {save_buy_order,get_buy_order,delete_buy_order,cancel_buy_order} from 'src/service/getData'
+  import {save_buy_order,get_buy_order,delete_buy_order,cancel_buy_order, get_supplier, get_storehouse,get_balance_account_list } from 'src/service/getData'
   import footGuide from 'src/components/footer/footGuide'
   import loading from 'src/components/common/loading'
 
@@ -202,7 +202,32 @@
           this.buyOrderInfo.bizDateStr = this.formatDate(date)
         }
         if(this.buyOrderInfo.showGoodsList&&this.buyOrderInfo.showGoodsList.length!=0){
-          this.getTotal();
+          this.getTotal(true);
+        }
+        if(!this.buyOrderInfo.settleAccountId){
+          get_balance_account_list(this.userId).then(res=>{
+              if(res.data.size===1&&res.data.vos[0].list.length===1){
+                const account = res.data.vos[0].list[0]
+                this.$set(this.buyOrderInfo,'settleAccountId',account.id)
+                this.$set(this.buyOrderInfo,'settleAccountName',account.accountName)
+              }
+          })
+        }
+        if(!this.buyOrderInfo.supplierId){
+          get_supplier(this.userId,"").then(res=>{
+              if(res.data.length===1){
+                this.$set(this.buyOrderInfo,'supplierId',res.data[0].id)
+                this.$set(this.buyOrderInfo,'supplierName',res.data[0].name)
+              }
+          })
+        }
+        if(!this.buyOrderInfo.warehouseId){
+          get_storehouse(this.userId,"").then(res=>{
+              if(res.data.length===1){
+                this.$set(this.buyOrderInfo,'warehouseId',res.data[0].warehouseId)
+                this.$set(this.buyOrderInfo,'warehouseName',res.data[0].warehouseName)
+              }
+          })
         }
       }
     },
@@ -293,8 +318,12 @@
         this.showLoading = true;
         get_buy_order(this.$route.query.id).then((res)=>{
           if(res.code==200){
-             this.buyOrderInfo = res.data;
+            this.buyOrderInfo = res.data;
+            // res.data.buyGoods.forEach(item=>{
+            //   item.totalMoney = (Number(item.unitAmount)*Number(item.quantity)).toFixed(2)
+            // })
             this.buyOrderInfo.showGoodsList = res.data.buyGoods;
+            
             if(this.buyOrderInfo.status==1){
               this.RECORD_BUYORDER(this.buyOrderInfo)
             }
@@ -345,9 +374,6 @@
         this.buyOrderInfo.operatorId = this.userId;
         let submitOrder = this.buyOrderInfo;
         submitOrder.buyGoods = this.buyOrderInfo.showGoodsList;
-        submitOrder.buyGoods.forEach(goods=>{
-          goods.amount = Number(goods.quantity)*Number(goods.unitAmount)
-        })
         this.showLoading = true;
         save_buy_order(this.userId,submitOrder).then((res)=>{
           if(res.code==600){
@@ -384,14 +410,21 @@
           this.showLoading = false;
         })
       },
-      getTotal(){
+      getTotal(flag){
+        
         this.buyOrderInfo.totalAmount = 0;
         if(this.buyOrderInfo.showGoodsList&&this.buyOrderInfo.showGoodsList.length!=0){
-           this.buyOrderInfo.showGoodsList.forEach(element => {
-              this.buyOrderInfo.totalAmount = this.buyOrderInfo.totalAmount + Number(element.unitAmount)*Number(element.quantity)
+          this.buyOrderInfo.showGoodsList.forEach(element => {
+            if(!flag){
+              //不计算合计总价
+              element.amount = (Number(element.unitAmount)*Number(element.quantity)).toFixed(2)
+            }
+            
+              this.buyOrderInfo.totalAmount = Number(Number(this.buyOrderInfo.totalAmount) + Number(element.amount)).toFixed(2)
             }
           );
         }
+       
         // this.buyOrderInfo.debtAmount = Number(this.buyOrderInfo.totalAmount)-Number(this.buyOrderInfo.realAmount);
       }
     },

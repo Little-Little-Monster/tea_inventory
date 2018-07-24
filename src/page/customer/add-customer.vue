@@ -36,18 +36,18 @@
         </div>
         <div class="list_right">
             <span v-if="customerInfo.customerClassId||customerInfo.customerClassId==0">{{customerInfo.customerClassName}}</span>
-            <span v-if="!customerInfo.customerClassId && customerInfo.customerClassId!=0">请选择分类</span>
+            <span v-if="!customerInfo.customerClassId && customerInfo.customerClassId!=0">Vip</span>
             <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
         </div>
       </li>
-      <li>
+      <!-- <li>
         <div class="list_left">
            启用
         </div>
         <div class="list_right">
-          <kswitch :checked="enable" @click.native="enable=!enable"></kswitch>
+          <kswitch :checked="enable"></kswitch>
         </div>
-      </li>
+      </li> -->
       <!-- <li v-if="!$route.query.id">
         <div class="list_left">
            余额
@@ -84,7 +84,7 @@
           <i class="time-xiala iconfont icon-xiala2"></i>
         </div>
       </li>
-      <li class="address-con">
+      <!-- <li class="address-con">
         <div style="position:relative;min-height:1rem;height:auto">
             <div class="list_left">
             地址
@@ -101,7 +101,7 @@
                 <input type="text" v-model="customerInfo.address" placeholder="请输入详细地址" style="width: 3.27rem;margin-top:.1rem">
             </div>
         </div>
-      </li>
+      </li> -->
       
       
     </ul>

@@ -76,7 +76,7 @@
 <script>
   import { mapMutations,mapState } from 'vuex'
   import { getStore } from 'src/config/mUtils'
-  import { stock_handel,get_stock_info,delete_stock } from 'src/service/getData'
+  import { stock_handel,get_stock_info,delete_stock, get_storehouse } from 'src/service/getData'
   import headTop from 'src/components/header/head'
   import footGuide from 'src/components/footer/footGuide'
   import alertTip from '../../components/common/alertTip'
@@ -102,6 +102,14 @@
         this.stockInfo = this.stockState
         this.$set(this.stockInfo,'totalQuantity',0);
         this.getTotal();
+        if(!this.stockInfo.warehouseId){
+          get_storehouse(this.userId,'').then(res=>{
+              if(res.data.length===1){
+                this.$set(this.stockInfo,'warehouseId',res.data[0].warehouseId)
+                this.$set(this.stockInfo,'warehouseName',res.data[0].warehouseName)
+              }
+          })
+        }
       }else{
         this.getStockInfo()
       }

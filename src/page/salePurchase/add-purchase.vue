@@ -57,49 +57,49 @@
               <p>
                 <i>商品单价：</i>
                 <!-- <em class="iconfont icon-icon02"  @click="buyGoods.unitAmount = Number(buyGoods.unitAmount)+1"></em>  -->
-                <input type="number" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.unitAmount" @blur="getTotal">
+                <input type="number" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.unitAmount" @blur="getTotal(false)">
                 <!-- <em class="iconfont icon-jian" @click="buyGoods.unitAmount = Number(buyGoods.unitAmount)-1"></em> -->
               </p>
               <p>
                 <i>商品数量：</i>
                 <!-- <em class="iconfont icon-icon02" @click="buyGoods.quantity = Number(buyGoods.quantity)+1"></em>  -->
-                <input type="number" step="1" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.quantity" @blur="getTotal">
+                <input type="number" step="1" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.quantity" @blur="getTotal(false)">
                 <!-- <em class="iconfont icon-jian"  @click="buyGoods.quantity = Number(buyGoods.quantity)-1"></em> -->
               </p>
               <p>
                 <i>商品总价：</i>
-                ￥<b v-if="showList[index].saleMode==1">{{(Number(buyGoods.unitAmount)*Number(buyGoods.quantity)).toFixed(2)}}</b> 
+                ￥<input type="number" step="0.01" v-if="showList[index].saleMode==1" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.amount" @blur="getTotal(true)">
+                <!-- ￥<b v-if="showList[index].saleMode==1">{{(Number(buyGoods.unitAmount)*Number(buyGoods.quantity)).toFixed(2)}}</b>  -->
                 <b v-if="showList[index].saleMode==2">0.00</b> 
               </p>
               <p class="sale-type">
                 <i>售出方式：</i>
-                <em class="iconfont check-icon" :class="{'icon-radio-checked':showList[index].saleMode==1,'icon-danxuanweizhong':showList[index].saleMode==2}" @click="changeType(index,1);getTotal()">正常出售</em>
-                <em class="iconfont check-icon" :class="{'icon-radio-checked':showList[index].saleMode==2,'icon-danxuanweizhong':showList[index].saleMode==1}" @click="changeType(index,2);getTotal()">赠品</em>
+                <em class="iconfont check-icon" :class="{'icon-radio-checked':showList[index].saleMode==1,'icon-danxuanweizhong':showList[index].saleMode==2}" @click="changeType(index,1);getTotal(true)">正常出售</em>
+                <em class="iconfont check-icon" :class="{'icon-radio-checked':showList[index].saleMode==2,'icon-danxuanweizhong':showList[index].saleMode==1}" @click="changeType(index,2);getTotal(true)">赠品</em>
               </p>
             </div>
             <div class="goods-right" v-if="saleOrderInfo.status!=2&&saleOrderInfo.status!=3">
-              <span class="list-option iconfont icon-jian jian-goods" @click="saleOrderInfo.showGoodsList.splice(index,1);getTotal()"></span>
+              <span class="list-option iconfont icon-jian jian-goods" @click="saleOrderInfo.showGoodsList.splice(index,1);getTotal(true)"></span>
             </div>
           </div>
         </li>
       </ul>
       <ul>
-        <li>
+        <!-- <li>
           <div class="list_left">
             折扣 <i class="required" style="position:absolute;top:.3rem;left:.8rem">%</i>
           </div>
           <div class="list_right">
             <input type="number" placeholder="未付" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="saleOrderInfo.discount" @input="getTotal">
           </div>
-        </li>
-        <li @click="goWorker" >
+        </li> -->
+        <li>
           <div class="list_left">
             销售员<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
           </div>
           <div class="list_right" >
-            <span v-if="saleOrderInfo.saleId">{{saleOrderInfo.saleName}}</span>
-            <span v-if="!saleOrderInfo.saleId">请选择销售员</span>
-            <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
+            <span>{{userName}}</span>
+            <!-- <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i> -->
           </div>
         </li>
         <li>
@@ -235,7 +235,7 @@
   import { getStore } from 'src/config/mUtils'
   import headTop from 'src/components/header/head'
   import alertTip from '../../components/common/alertTip'
-  import {save_sale_order,get_sale_order,delete_sale_order,cancel_sale_order} from 'src/service/getData'
+  import {save_sale_order,get_sale_order,delete_sale_order,cancel_sale_order, get_supplier, get_storehouse,get_balance_account_list } from 'src/service/getData'
   import footGuide from 'src/components/footer/footGuide'
   import loading from 'src/components/common/loading'
 
@@ -248,6 +248,7 @@
         showAlert:false,
         alertText:'',
         userId:getStore('userInfo').id,
+        userName:getStore('userInfo').userName,
         edit:this.$route.query.edit,
         fromPage:this.$route.query.fromPage,
         showPay:false,
@@ -296,9 +297,9 @@
         if(!this.saleOrderInfo.realAmount){
           this.saleOrderInfo.realAmount = 0;
         }
-        if(!this.saleOrderInfo.discount){
-          this.saleOrderInfo.discount = 100;
-        }
+        // if(!this.saleOrderInfo.discount){
+        //   this.saleOrderInfo.discount = 100;
+        // }
         if(!this.saleOrderInfo.payType){
           this.$set(this.saleOrderInfo,'payType',0);
         }
@@ -309,7 +310,32 @@
         // this.saleOrderInfo.debtAmount = 0;
         if(this.saleOrderInfo.showGoodsList&&this.saleOrderInfo.showGoodsList.length!=0){
           this.showList = this.saleOrderInfo.showGoodsList;
-          this.getTotal();
+          this.getTotal(true);
+        }
+        if(!this.saleOrderInfo.settleAccountId){
+          get_balance_account_list(this.userId).then(res=>{
+              if(res.data.size===1&&res.data.vos[0].list.length===1){
+                const account = res.data.vos[0].list[0]
+                this.$set(this.saleOrderInfo,'settleAccountId',account.id)
+                this.$set(this.saleOrderInfo,'settleAccountName',account.accountName)
+              }
+          })
+        }
+        if(!this.saleOrderInfo.supplierId){
+          get_supplier(this.userId,"").then(res=>{
+              if(res.data.length===1){
+                this.$set(this.saleOrderInfo,'supplierId',res.data[0].id)
+                this.$set(this.saleOrderInfo,'supplierName',res.data[0].name)
+              }
+          })
+        }
+        if(!this.saleOrderInfo.warehouseId){
+          get_storehouse(this.userId,"").then(res=>{
+              if(res.data.length===1){
+                this.$set(this.saleOrderInfo,'warehouseId',res.data[0].warehouseId)
+                this.$set(this.saleOrderInfo,'warehouseName',res.data[0].warehouseName)
+              }
+          })
         }
       }
     },
@@ -344,17 +370,17 @@
       toAddress(name){
         this.$router.push(name)
       },
-      goWorker(){
-        if(!this.saleOrderInfo.status || this.saleOrderInfo.status!=2&& this.saleOrderInfo.status!=3){
-          this.$router.replace({name:'worker',query:{
-            workerId:this.saleOrderInfo.saleId,
-            workerName:this.saleOrderInfo.saleName,
-            fromPage:this.$route.name,
-            edit:this.edit,
-            getWorker:true
-          }})
-        }
-      },
+      // goWorker(){
+      //   if(!this.saleOrderInfo.status || this.saleOrderInfo.status!=2&& this.saleOrderInfo.status!=3){
+      //     this.$router.replace({name:'worker',query:{
+      //       workerId:this.saleOrderInfo.saleId,
+      //       workerName:this.saleOrderInfo.saleName,
+      //       fromPage:this.$route.name,
+      //       edit:this.edit,
+      //       getWorker:true
+      //     }})
+      //   }
+      // },
       closeTip(){
         if(this.showPayWay||this.saleOrderInfo.customerId!=0){
         this.showLoading = true;
@@ -502,13 +528,14 @@
 
         this.saleOrderInfo.status=status//1提交，0草稿
         this.saleOrderInfo.operatorId = this.userId;
+        this.saleOrderInfo.saleId = this.userId;
+        this.saleOrderInfo.saleName = this.userName;
         let submitOrder = this.saleOrderInfo;
         submitOrder.saleGoods = this.saleOrderInfo.showGoodsList;
         submitOrder.saleGoods.forEach(goods=>{
           if(goods.saleMode==2){
             goods.amount=0;
           }
-          goods.amount = Number(goods.quantity)*Number(goods.unitAmount)
         })
         
         this.showLoading = true;
@@ -552,12 +579,12 @@
         if(this.saleOrderInfo.showGoodsList&&this.saleOrderInfo.showGoodsList.length!=0){
            this.saleOrderInfo.showGoodsList.forEach(element => {
              if(element.saleMode==1){
-               this.saleOrderInfo.realAmount = (this.saleOrderInfo.realAmount + Number(element.unitAmount)*Number(element.quantity));
+               this.saleOrderInfo.realAmount = (this.saleOrderInfo.realAmount + Number(element.amount));
              }
             }
           );
           this.saleOrderInfo.realAmount = this.saleOrderInfo.realAmount.toFixed(2)
-          this.saleOrderInfo.totalAmount = Number(this.saleOrderInfo.realAmount*(this.saleOrderInfo.discount/100)).toFixed(2);
+          this.saleOrderInfo.totalAmount = this.saleOrderInfo.realAmount
         }
         if(this.$route.name!='saleBack'){
           if(Number(this.saleOrderInfo.balance)>Number(this.saleOrderInfo.totalAmount)){

@@ -13,18 +13,18 @@
             <div class="list">
                 <em class="required">*</em>
                 <span>登陆账号</span>
-                <input type="text" maxlength="16" placeholder="由数字或字母组成，用于员工登录" v-model="worker.account">
+                <input type="text" maxlength="11" minlength="11" placeholder="请输入11位手机号，用于员工登录" v-model="worker.account">
             </div>
             <div class="list">
                 <em class="required">*</em>
                 <span>姓名</span>
                 <input type="text" placeholder="请输入姓名" v-model="worker.employeeName">
             </div>
-            <div class="list">
+            <!-- <div class="list">
                 <em class="required">*</em>
                 <span>电话</span>
                 <input type="text" placeholder="请输入联系电话" v-model="worker.mobile">
-            </div>
+            </div> -->
             <div class="list" @click="goStore">
                 <em class="required">*</em>
                 <span>门店</span>
@@ -33,7 +33,7 @@
                 </em>
                 <em class="list-option iconfont icon-qianjin"></em>
             </div>
-            <div class="list">
+            <!-- <div class="list">
                 <em class="required">*</em>
                 <span>密码</span>
                 <input type="password" placeholder="请输入密码" v-model="password">
@@ -42,7 +42,7 @@
                 <em class="required">*</em>
                 <span>确认密码</span>
                 <input type="password" placeholder="请输入确认密码" v-model="secondPwd">
-            </div>
+            </div> -->
             <div class="list" @click="worker.status==0?worker.status=1:worker.status=0">
                 <span>账户是否启用</span>
                 <em class="user-satus list-option iconfont " :class="{'icon-radio-checked':worker.status==0,'icon-danxuanweizhong':worker.status==1}"></em>
@@ -85,7 +85,7 @@
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
 import alertTip from '../../components/common/alertTip'
-import {worker_handel,get_rolelist,get_employee} from 'src/service/getData'
+import {worker_handel,get_rolelist,get_employee } from 'src/service/getData'
 import headTop from 'src/components/header/head';
 import {omit} from 'lodash'
 import md5 from "blueimp-md5"
@@ -196,9 +196,9 @@ export default {
                this.showTip('请输入账号！');
                return;
             }else{
-                let reg = new RegExp(/^[a-z0-9]{6,16}$/);
+                let reg = new RegExp(/^((13|14|15|17|18|10|19)[0-9]{1}\d{8})$/);
                 if(!reg.test(this.worker.account)){
-                    this.showTip('账号为6-16位的数字或字母');
+                    this.showTip('手机号格式错误');
                     return;
                 }
             }
@@ -206,10 +206,10 @@ export default {
                this.showTip('请输入姓名！');
                return;
             }
-            if(!this.password){
-               this.showTip('请输入密码！');
-               return;
-            }
+            // if(!this.password){
+            //    this.showTip('请输入密码！');
+            //    return;
+            // }
             let newsStore = []
             if(this.storeIds){
                 this.storeIds.forEach(el=>{
@@ -221,24 +221,24 @@ export default {
                 return;
             }
             
-            if(!this.secondPwd){
-                this.showTip('请输入确认密码！');
-                return;
-            }
-            if(this.password!==this.secondPwd&&!this.employeeId){
-                this.showTip('两次输入密码不一致！');
-                return;
-            }else{
-                if(!this.employeeId){
-                    //新增员工
-                    this.worker.password = md5(this.secondPwd)
-                }else{
-                    if(this.password!='******'){
-                        //编辑员工，密码有改动
-                        this.worker.password = md5(this.password)
-                    }
-                }
-            }
+            // if(!this.secondPwd){
+            //     this.showTip('请输入确认密码！');
+            //     return;
+            // }
+            // if(this.password!==this.secondPwd&&!this.employeeId){
+            //     this.showTip('两次输入密码不一致！');
+            //     return;
+            // }else{
+            //     if(!this.employeeId){
+            //         //新增员工
+            //         this.worker.password = md5(this.secondPwd)
+            //     }else{
+            //         if(this.password!='******'){
+            //             //编辑员工，密码有改动
+            //             this.worker.password = md5(this.password)
+            //         }
+            //     }
+            // }
             this.showLoading = true
             
             this.worker.roles =  this.roleList
