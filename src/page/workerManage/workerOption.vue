@@ -12,8 +12,8 @@
         <div class="cneter-con paddingTop">
             <div class="list">
                 <em class="required">*</em>
-                <span>登陆账号</span>
-                <input type="text" maxlength="11" minlength="11" placeholder="请输入11位手机号，用于员工登录" v-model="worker.account">
+                <span>手机号</span>
+                <input type="text" maxlength="11" minlength="11" placeholder="请输入11位手机号" v-model="worker.account">
             </div>
             <div class="list">
                 <em class="required">*</em>
@@ -85,7 +85,7 @@
 import {mapMutations,mapState} from 'vuex'
 import {getStore} from 'src/config/mUtils'
 import alertTip from '../../components/common/alertTip'
-import {worker_handel,get_rolelist,get_employee } from 'src/service/getData'
+import {worker_handel,get_rolelist,get_employee, get_store_detail } from 'src/service/getData'
 import headTop from 'src/components/header/head';
 import {omit} from 'lodash'
 import md5 from "blueimp-md5"
@@ -134,6 +134,17 @@ export default {
             this.password = this.worker.password;
             //获取员工角色列表
             this.getRoleList();
+        }else{
+             if(this.storeIds.length===0){
+                get_store_detail(this.userId).then(res=>{
+                    if(res.data.length===1){
+                        this.storeIds.push({
+                            storeId:res.data[0].id,
+                            storeName:res.data[0].storeName
+                        })
+                    }
+                })
+            }
         }
     },
     mounted(){

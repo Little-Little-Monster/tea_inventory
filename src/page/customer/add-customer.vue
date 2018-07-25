@@ -35,7 +35,7 @@
           分类<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
         <div class="list_right">
-            <span v-if="customerInfo.customerClassId||customerInfo.customerClassId==0">{{customerInfo.customerClassName}}</span>
+            <span v-if="customerInfo.customerClassId||customerInfo.customerClassId==0">{{customerInfo.customerClassName||'Vip'}}</span>
             <span v-if="!customerInfo.customerClassId && customerInfo.customerClassId!=0">Vip</span>
             <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
         </div>
@@ -219,11 +219,11 @@
               this.showAlert = true;
               return;
             }
-            if(!this.customerInfo.customerClassId){
-              this.alertText = "请选择分类";
-              this.showAlert = true;
-              return;
-            }
+            // if(!this.customerInfo.customerClassId){
+            //   this.alertText = "请选择分类";
+            //   this.showAlert = true;
+            //   return;
+            // }
             this.showLoading = true
             this.enable?this.customerInfo.status=1:this.customerInfo.status=0;
             this.customerInfo.province =  this.household.province

@@ -7,6 +7,12 @@ import { getStore } from '../config/mUtils'
 
 export const mobile_code = (params) => fetch('/api/invoicing/user/verify/code', params, 'GET');
 
+/**
+ * 获取员工登录短信验证码
+ */
+
+export const login_verify_code = (params) => fetch('/api/invoicing/employee/verify/code', params, 'GET');
+
 
 /**
  * 获取图片验证码
@@ -517,7 +523,7 @@ export const get_buy_report = (userId, storeId, goodsId, startDate, endDate, pag
 /**
  * 账号密码登录
  */
-export const account_login = (mobile, password, openId) => fetch('/api/invoicing/user/login', { mobile, password,openId }, 'POST');
+export const account_login = (mobile, verifyCode, openId,uuid) => fetch('/api/invoicing/user/login', { mobile, verifyCode,openId,uuid }, 'POST');
 
 /**
  * openId登录

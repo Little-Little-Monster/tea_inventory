@@ -82,7 +82,7 @@
     import {getStore, setStore, removeStore} from 'src/config/mUtils'
     import md5 from "blueimp-md5";
     import {mapState, mapMutations} from 'vuex'
-    import {mobile_code, checkExsis, send_login, get_captchas, account_login, account_regist, openId_login} from '../../service/getData'
+    import {mobile_code, checkExsis, send_login, get_captchas, account_login, account_regist, openId_login, login_verify_code} from '../../service/getData'
     import loading from 'src/components/common/loading'
     export default {
         data(){
@@ -211,11 +211,22 @@
                 if (this[timeStr]==0) {
                     //发送短信验证码
                     this.uuid = this.getUuid()
-                    let res = await mobile_code({
-                        mobile:mobile,
-                        uuid:this.uuid,
-                        uuidMd5:md5(mobile + "!@#$%^" + this.uuid)
-                    });
+                    let res = null;
+                    if(flag==='regist'){
+                        res = await mobile_code({
+                            mobile:mobile,
+                            uuid:this.uuid,
+                            uuidMd5:md5(mobile + "!@#$%^" + this.uuid)
+                        });
+                    }else if(flag==="login"){
+                        res = await login_verify_code({
+                            mobile:mobile,
+                            uuid:this.uuid,
+                            uuidMd5:md5(mobile + "!@#$%^" + this.uuid)
+                        });
+                        
+                    }
+                    
                     if (res.message) {
                         if(res.code==200){
                             this[timeStr] = 50;

@@ -149,10 +149,10 @@
       }else{
         if(!this.accountInfo.storeId){
           get_store_detail(this.userId).then(res=>{
-              // if(res.data.length===1){
+              if(res.data.length===1){
                 this.$set(this.accountInfo,'storeId',res.data[0].id)
                 this.$set(this.accountInfo,'storeName',res.data[0].storeName)
-              // }
+              }
           })
         }
       }
