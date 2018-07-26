@@ -48,27 +48,27 @@
           </div>
         </li>
         <li class="good-con" v-if="saleOrderInfo.showGoodsList&&saleOrderInfo.showGoodsList.length!=0">
-           <div class="goods-lists" v-for="(buyGoods,index) in saleOrderInfo.showGoodsList">
+           <div class="goods-lists" :key="goods.id" v-for="(goods,index) in saleOrderInfo.showGoodsList">
             <div class="goods-left">
               <p>
                 <i>商品名称：</i> 
-                {{buyGoods.goodsName}}
+                {{goods.goodsName}}
               </p>
               <p>
                 <i>商品单价：</i>
                 <!-- <em class="iconfont icon-icon02"  @click="buyGoods.unitAmount = Number(buyGoods.unitAmount)+1"></em>  -->
-                <input type="number" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.unitAmount" @blur="getTotal(false)">
+                <input type="number" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="goods.unitAmount" @input="getTotal(false)">
                 <!-- <em class="iconfont icon-jian" @click="buyGoods.unitAmount = Number(buyGoods.unitAmount)-1"></em> -->
               </p>
               <p>
                 <i>商品数量：</i>
                 <!-- <em class="iconfont icon-icon02" @click="buyGoods.quantity = Number(buyGoods.quantity)+1"></em>  -->
-                <input type="number" step="1" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.quantity" @blur="getTotal(false)">
+                <input type="number" step="1" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="goods.quantity" @input="getTotal(false)">
                 <!-- <em class="iconfont icon-jian"  @click="buyGoods.quantity = Number(buyGoods.quantity)-1"></em> -->
               </p>
               <p>
                 <i>商品总价：</i>
-                ￥<input type="number" step="0.01" v-if="showList[index].saleMode==1" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="buyGoods.amount" @blur="getTotal(true)">
+                ￥<input type="number" step="0.01" v-if="showList[index].saleMode==1" :disabled="saleOrderInfo.status==2||saleOrderInfo.status==3" v-model="goods.amount" @input="getTotal(true)">
                 <!-- ￥<b v-if="showList[index].saleMode==1">{{(Number(buyGoods.unitAmount)*Number(buyGoods.quantity)).toFixed(2)}}</b>  -->
                 <b v-if="showList[index].saleMode==2">0.00</b> 
               </p>
@@ -176,7 +176,7 @@
         </li>
       </ul>
       <div class="bottom" v-if="edit">
-        <div class="bottom_left">合计：<span v-if="Number(saleOrderInfo.totalAmount)">￥{{Number(saleOrderInfo.totalAmount).toFixed(2)}}</span></div>
+        <div class="bottom_left">合计：<span v-if="Number(saleOrderInfo.totalAmount)||Number(saleOrderInfo.totalAmount)==0">￥{{Number(saleOrderInfo.totalAmount).toFixed(2)}}</span></div>
         <div class="bottom_right" v-if="saleOrderInfo.status!=3">
           <span @click="submitOrder(1)" class="model" v-if="!saleOrderInfo.status||saleOrderInfo.status!=1&&fromPage!='todayAccountDetail'" v-show="saleOrderInfo.status!=2">草稿</span> 
           <span @click="submitOrder(2)" class="model" v-if="saleOrderInfo.status==1&&fromPage!='todayAccountDetail'" >{{$route.name=='saleTrade'?'销售':'退货'}}</span> 
@@ -192,7 +192,7 @@
         </div>
       </div>
       <div class="bottom" v-if="!edit">
-        <div class="bottom_left">合计：<span v-if="Number(saleOrderInfo.totalAmount)">￥{{Number(saleOrderInfo.totalAmount).toFixed(2)}}</span></div>
+        <div class="bottom_left">合计：<span v-if="Number(saleOrderInfo.totalAmount)||Number(saleOrderInfo.totalAmount)==0">￥{{Number(saleOrderInfo.totalAmount).toFixed(2)}}</span></div>
         <div class="bottom_right" >
           <button :class="{returnGoods: false}"  v-show="saleOrderInfo.status!=1&&fromPage!='todayAccountDetail'" @click="submitOrder(2)">{{$route.name=='saleTrade'?'销售':'退货'}}</button>
           <span @click="submitOrder(1)" v-if="fromPage!='todayAccountDetail'" class="model">草稿</span> 
@@ -260,6 +260,10 @@
       }
     },
     created(){
+      this.saleOrderInfo.saleId = this.userId;
+      this.saleOrderInfo.saleName = this.userName;
+      this.$set(this.saleOrderInfo,'showGoodsList',[])
+      this.$set(this.saleOrderInfo,'totalAmount','0.00')
       if(this.edit){//编辑采购单
         switch (this.fromPage) {
           case 'saleHistory':
@@ -273,7 +277,7 @@
             break;
         }
       }else{//添加采购单
-        this.saleOrderInfo = this.buyOrder;
+        this.saleOrderInfo = Object.assign({},this.saleOrderInfo,this.buyOrder);
 
         if(!this.saleOrderInfo.customerId){
           this.saleOrderInfo.customerId = 0;
@@ -337,6 +341,7 @@
               }
           })
         }
+        this.RECORD_BUYORDER(this.saleOrderInfo)
       }
     },
     mounted(){
@@ -400,8 +405,8 @@
         this.payType = 0
       },
       changeType(index,flag){
-        Object.assign(this.showList[index],{},{saleMode:flag})
-        this.saleOrderInfo.showGoodsList = this.showList;
+        Object.assign(this.showList[index],this.saleOrderInfo[index],{},{saleMode:flag})
+        this.$set(this.saleOrderInfo,'showGoodsList', this.showList);
       },
       returnBack(){
         switch (this.fromPage) {
@@ -460,8 +465,8 @@
         //编辑采购单时获取信息
         this.showLoading = true;
         get_sale_order(this.$route.query.id).then((res)=>{
-          this.saleOrderInfo = res.data;
-          this.saleOrderInfo.showGoodsList = res.data.saleGoods;
+          this.saleOrderInfo = Object.assign({},this.saleOrderInfo,res.data);
+          this.$set(this.saleOrderInfo,'showGoodsList',res.data.saleGoods);
           if(this.saleOrderInfo.status==1){
              this.RECORD_BUYORDER(this.saleOrderInfo)
           }
@@ -528,8 +533,6 @@
 
         this.saleOrderInfo.status=status//1提交，0草稿
         this.saleOrderInfo.operatorId = this.userId;
-        this.saleOrderInfo.saleId = this.userId;
-        this.saleOrderInfo.saleName = this.userName;
         let submitOrder = this.saleOrderInfo;
         submitOrder.saleGoods = this.saleOrderInfo.showGoodsList;
         submitOrder.saleGoods.forEach(goods=>{
@@ -573,27 +576,37 @@
           this.showLoading = false;
         })
       },
-      getTotal(){
-        this.saleOrderInfo.totalAmount = 0;
-        this.saleOrderInfo.realAmount = 0;
-        if(this.saleOrderInfo.showGoodsList&&this.saleOrderInfo.showGoodsList.length!=0){
-           this.saleOrderInfo.showGoodsList.forEach(element => {
-             if(element.saleMode==1){
-               this.saleOrderInfo.realAmount = (this.saleOrderInfo.realAmount + Number(element.amount));
-             }
+      getTotal(flag){
+        let showGoodsList = JSON.parse(JSON.stringify(this.saleOrderInfo.showGoodsList));
+        let totalAmount = 0
+        let realAmount = 0
+        if(showGoodsList&&showGoodsList.length!=0){
+          
+          showGoodsList.forEach((element,index) => {
+            if(!flag){
+              //计算合计总价
+              element.amount=(Number(element.unitAmount)*Number(element.quantity)).toFixed(2)
             }
-          );
-          this.saleOrderInfo.realAmount = this.saleOrderInfo.realAmount.toFixed(2)
-          this.saleOrderInfo.totalAmount = this.saleOrderInfo.realAmount
-        }
-        if(this.$route.name!='saleBack'){
-          if(Number(this.saleOrderInfo.balance)>Number(this.saleOrderInfo.totalAmount)){
-            this.saleOrderInfo.payType=4;
-          }else{
-            this.saleOrderInfo.payType=0;
+            if(element.saleMode==1 ){
+              realAmount = (realAmount + Number(element.amount));
+            }
+            realAmount = Number(realAmount).toFixed(2)
+            totalAmount = realAmount
+          });
+
+          if(this.$route.name!='saleBack'){
+            if(Number(this.saleOrderInfo.balance)>Number(this.saleOrderInfo.totalAmount)){
+              this.saleOrderInfo.payType=4;
+            }else{
+              this.saleOrderInfo.payType=0;
+            }
           }
+
+          this.$set(this.saleOrderInfo,'showGoodsList',showGoodsList)
+          this.$set(this.saleOrderInfo,'totalAmount',totalAmount)
+          this.$set(this.saleOrderInfo,'realAmount',realAmount)
         }
-        // this.saleOrderInfo.debtAmount = Number(this.saleOrderInfo.totalAmount)-Number(this.saleOrderInfo.realAmount);
+
       }
     },
     watch: {}

@@ -9,7 +9,7 @@
       </div>
     </head-top>
     <ul class="add-edit-upplier cneter-con paddingTop" :class="{'marginBottom0':!isFocus}">
-      <!-- <li>
+      <li>
         <div class="list_left">
           名称 <i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
@@ -17,7 +17,7 @@
           <input type="text" @focus="isFocus=false"  @blur="isFocus=true" v-model="accountInfo.accountName" placeholder="请输入账户名称" style="width: 2.27rem;">
         </div>
       </li>
-      <li>
+      <!-- <li>
         <div class="list_left">
           账号<i class="required" style="position:absolute;top:.4rem;left:-.2rem">*</i>
         </div>
@@ -43,7 +43,7 @@
             <i class="iconfont icon-xiala2" style="position: relative;top: 1px;"></i>
         </div>
       </li>
-     <li @click="showPay = !showPay" :style="{'margin':showPay?'0':'.1rem 0'}">
+     <!-- <li @click="showPay = !showPay" :style="{'margin':showPay?'0':'.1rem 0'}">
         <div class="list_left">
           账户类型
         </div>
@@ -90,7 +90,7 @@
         <div class="list_right">
           <em class="list-option iconfont check-icon" :class="{'icon-radio-checked':accountInfo.type==4,'icon-danxuanweizhong':accountInfo.type!=4}" @click="accountInfo.type=4"></em>
         </div>
-      </li>
+      </li> -->
       <!-- <li style="margin:.1rem 0;">
         <div class="list_left">
            启用
@@ -227,11 +227,11 @@
         })
       },
       async addAccount(){
-            // if(!this.accountInfo.accountName){
-            //   this.alertText = "请输入账户名称";
-            //   this.showAlert = true;
-            //   return;
-            // }
+            if(!this.accountInfo.accountName){
+              this.alertText = "请输入账户名称";
+              this.showAlert = true;
+              return;
+            }
             // if(!this.accountInfo.account){
             //   this.alertText = "请输入账号";
             //   this.showAlert = true;

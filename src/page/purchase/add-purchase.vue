@@ -61,27 +61,27 @@
             <span>{{(Number(buyGoods.unitAmount)*Number(buyGoods.quantity)).toFixed(2)}}</span>
             <span class="list-option iconfont icon-jian jian-goods" v-if="buyOrderInfo.status!=2&&buyOrderInfo.status!=3" @click="buyOrderInfo.showGoodsList.splice(index,1);getTotal()"></span>
           </div> -->
-          <div class="goods-lists" v-for="(buyGoods,index) in buyOrderInfo.showGoodsList">
+          <div class="goods-lists" :key="goods.goodsId" v-for="(goods,index) in buyOrderInfo.showGoodsList">
             <div class="goods-left">
               <p>
                 <i>商品名称：</i> 
-                {{buyGoods.goodsName}}
+                {{goods.goodsName}}
               </p>
               <p>
                 <i>商品单价：</i>
                 <!-- <em class="iconfont icon-icon02"  @click="buyGoods.unitAmount = Number(buyGoods.unitAmount)+1"></em>  -->
-                <input type="number" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyGoods.unitAmount" @blur="getTotal(false)">
+                <input type="number" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="goods.unitAmount" @input="getTotal(false)">
                 <!-- <em class="iconfont icon-jian" @click="buyGoods.unitAmount = Number(buyGoods.unitAmount)-1"></em> -->
               </p>
               <p>
                 <i>商品数量：</i>
                 <!-- <em class="iconfont icon-icon02" @click="buyGoods.quantity = Number(buyGoods.quantity)+1"></em>  -->
-                <input type="number" step="1" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyGoods.quantity" @blur="getTotal(false)">
+                <input type="number" step="1" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="goods.quantity" @input="getTotal(false)">
                 <!-- <em class="iconfont icon-jian"  @click="buyGoods.quantity = Number(buyGoods.quantity)-1"></em> -->
               </p>
               <p>
                 <i>商品总价：</i>
-                ￥<input type="number" step="0.01" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="buyGoods.amount" @blur="getTotal(true)">
+                ￥<input type="number" step="0.01" :disabled="buyOrderInfo.status==2||buyOrderInfo.status==3" v-model="goods.amount" @input="getTotal(true)">
               </p>
             </div>
             <div class="goods-right" v-if="buyOrderInfo.status!=2&&buyOrderInfo.status!=3">
@@ -124,7 +124,7 @@
         </li>
       </ul>
       <div class="bottom" v-if="edit">
-        <div class="bottom_left" v-if="Number(buyOrderInfo.totalAmount)">合计：<span>￥{{Number(buyOrderInfo.totalAmount).toFixed(2)}}</span></div>
+        <div class="bottom_left" v-if="Number(buyOrderInfo.totalAmount)||Number(buyOrderInfo.totalAmount)==0">合计：<span>￥{{Number(buyOrderInfo.totalAmount).toFixed(2)}}</span></div>
         <div class="bottom_right" v-if="buyOrderInfo.status!=3">
           <span @click="submitOrder(1)" class="model" v-if="!buyOrderInfo.status||buyOrderInfo.status!=1&&fromPage!='todayAccountDetail'" v-show="buyOrderInfo.status!=2">草稿</span> 
           <span @click="submitOrder(2)" class="model" v-if="buyOrderInfo.status==1&&fromPage!='todayAccountDetail'" >{{$route.name=='buyTrade'?'采购':'退货'}}</span> 
@@ -175,6 +175,8 @@
       }
     },
     created(){
+      this.$set(this.buyOrderInfo,'showGoodsList',[])
+      this.$set(this.buyOrderInfo,'totalAmount','0.00')
       if(this.edit){//编辑采购单
         switch (this.fromPage) {
           case 'buyHistory':
@@ -188,7 +190,7 @@
             break;
         }
       }else{//添加采购单
-        this.buyOrderInfo = this.buyOrder;
+        this.buyOrderInfo = Object.assign({},this.buyOrderInfo,this.buyOrder);
         if(!this.buyOrderInfo.totalAmount){
           this.buyOrderInfo.totalAmount = 0;
         }
@@ -229,6 +231,7 @@
               }
           })
         }
+        this.RECORD_BUYORDER(this.buyOrderInfo)
       }
     },
     mounted(){
@@ -318,11 +321,11 @@
         this.showLoading = true;
         get_buy_order(this.$route.query.id).then((res)=>{
           if(res.code==200){
-            this.buyOrderInfo = res.data;
+            this.buyOrderInfo = Object.assign({},this.buyOrderInfo,res.data);
             // res.data.buyGoods.forEach(item=>{
             //   item.totalMoney = (Number(item.unitAmount)*Number(item.quantity)).toFixed(2)
             // })
-            this.buyOrderInfo.showGoodsList = res.data.buyGoods;
+            this.$set(this.buyOrderInfo,'showGoodsList',res.data.buyGoods);
             
             if(this.buyOrderInfo.status==1){
               this.RECORD_BUYORDER(this.buyOrderInfo)
@@ -411,18 +414,22 @@
         })
       },
       getTotal(flag){
-        
-        this.buyOrderInfo.totalAmount = 0;
-        if(this.buyOrderInfo.showGoodsList&&this.buyOrderInfo.showGoodsList.length!=0){
-          this.buyOrderInfo.showGoodsList.forEach(element => {
+        let showGoodsList = JSON.parse(JSON.stringify(this.buyOrderInfo.showGoodsList));
+        let totalAmount = 0
+        if(showGoodsList&&showGoodsList.length!=0){
+          
+          showGoodsList.forEach((element,index) => {
             if(!flag){
-              //不计算合计总价
-              element.amount = (Number(element.unitAmount)*Number(element.quantity)).toFixed(2)
+              //计算合计总价
+              element.amount=(Number(element.unitAmount)*Number(element.quantity)).toFixed(2)
             }
-            
-              this.buyOrderInfo.totalAmount = Number(Number(this.buyOrderInfo.totalAmount) + Number(element.amount)).toFixed(2)
-            }
-          );
+            totalAmount = Number(Number(totalAmount) + Number(element.amount)).toFixed(2)
+          });
+
+          this.$set(this.buyOrderInfo,'showGoodsList',showGoodsList)
+          this.$set(this.buyOrderInfo,'totalAmount',totalAmount)
+          // this.buyOrderInfo.showGoodsList = Object.assign({},this.buyOrderInfo.showGoodsList,showGoodsList)
+          // this.buyOrderInfo = Object.assign({},this.buyOrderInfo,{totalAmount})
         }
        
         // this.buyOrderInfo.debtAmount = Number(this.buyOrderInfo.totalAmount)-Number(this.buyOrderInfo.realAmount);

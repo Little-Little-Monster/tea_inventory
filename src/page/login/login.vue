@@ -42,7 +42,7 @@
                 <input type="text" placeholder="请输入手机号" autocomplete="new-password" v-model.lazy="mobile">
             </section>
             <section class="input_container">
-                <span class="iconfont icon-lock"></span>
+                <span class="iconfont icon-mendianguanli"></span>
                 <input type="text" autocomplete="new-password" v-show="false">
                 <input type="text" placeholder="请输入总店名称" autocomplete="new-password" v-model.lazy="storeName">
             </section>
