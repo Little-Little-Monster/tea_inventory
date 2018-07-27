@@ -199,7 +199,7 @@
             //获取短信验证码
             async getVerifyCode(flag){
                 // console.log(this.rightPhoneNumber,this.computedTime)
-                
+                this.showLoading = true;
                 const mobile = flag==='regist'?this.mobile:this.userAccount
                 const timeStr = flag==='regist'?'computedTime':'computedTimeLogin'
                 const timeName = flag==='regist'?'timer':'timerLogin'
@@ -226,15 +226,15 @@
                         });
                         
                     }
-                    
+                    this.showLoading = false;
                     if (res.message) {
                         if(res.code==200){
                             this[timeStr] = 50;
                             this[timeName] = setInterval(() => {
                                 this[timeStr] --;
-                                if (this[timeStr] == 0) {
+                                if (this[timeStr] <= 0) {
                                     clearInterval(this[timeName])
-                                    this[timeStr]==0
+                                    this[timeStr]=0
                                 }
                             }, 1000)  
                         }
@@ -263,11 +263,11 @@
                 //如果返回的值不正确，则弹出提示框，返回的值正确则返回上一页
                 this.showLoading = false;
                 this.canRegist = false
-                clearInterval(this.timer);
                 if (this.userInfo.code!=200) {
                     this.showAlert = true;
                     this.alertText = this.userInfo.message;
                 }else{
+                    clearInterval(this.timerLogin);
                     this.RECORD_USERINFO(this.userInfo.data);
                     /*
                         userInfo中
@@ -316,11 +316,11 @@
                     openId:this.openId
                 });
                 this.showLoading = false;
-                clearInterval(this.timer);
                 if (this.userInfo.code!=200) {
                     this.showAlert = true;
                     this.alertText = this.userInfo.message;
                 }else{
+                    clearInterval(this.timer);
                     this.RECORD_USERINFO(this.userInfo.data);
                     /*
                         userInfo中
